@@ -28,68 +28,10 @@
  */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import dev.nextftc.ftc.NextFTCOpMode;
 
-import ftc.robot.components.intake.intakebase;
-import ftc.robot.components.intake.intakeMotor;
-
-@TeleOp(name = "Main OpMode", group = "Main")
-public class Main extends OpMode {
-    private intakebase intake;
-    int gamepadxcounter = 0;
-
-    /*
-     * This is executed once after the driver presses INIT.
-     * ドライバーがINITを押した後、1度実行される
-     */
-    @Override
-    public void init() {
-        DcMotor intakeMotor = hardwareMap.get(DcMotor.class, "Intake");
-
-        intake = new intakeMotor(intakeMotor);
-    }
-
-    /*
-     * This is executed repeatedly between INIT and PLAY.
-     * ドライバーがINITを押した後からPLAYを押すまでの間、繰り返し実行される
-     */
-    @Override
-    public void init_loop() {
-    }
-
-    /*
-     * This is executed once at the start.
-     * 開始時に一度だけ実行される
-     */
-    @Override
-    public void start() {
-    }
-
-    /*
-     * This runs continuously while enabled.
-     * Enableの間ずっと実行される
-     */
-    @Override
-    public void loop() {
-        if (gamepad2.xWasPressed()) {
-            gamepadxcounter = gamepadxcounter + 1;
-                    if (gamepadxcounter % 2 == 1) {
-                        intake.start();
-                    } else if (gamepadxcounter % 2 == 0) {
-                        intake.stop();
-                    }
-        }
-    }
-
-
-    /*
-     * This is executed once when the code is stopped.
-     * コードが停止されるときに一度だけ実行される
-     */
-    @Override
-    public void stop() {
-    }
+@TeleOp(name = "Main")
+public class Main extends NextFTCOpMode {
 
 }
