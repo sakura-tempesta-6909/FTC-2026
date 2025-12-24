@@ -38,6 +38,7 @@ import ftc.robot.components.intake.intakeMotor;
 @TeleOp(name = "Main OpMode", group = "Main")
 public class Main extends OpMode {
     private intakebase intake;
+    int gamepadxcounter = 0;
 
     /*
      * This is executed once after the driver presses INIT.
@@ -73,9 +74,12 @@ public class Main extends OpMode {
     @Override
     public void loop() {
         if (gamepad2.xWasPressed()) {
-            intake.start();
-        } else if (gamepad2.yWasPressed()) {
-            intake.stop();
+            gamepadxcounter = gamepadxcounter + 1;
+                    if (gamepadxcounter % 2 == 1) {
+                        intake.start();
+                    } else if (gamepadxcounter % 2 == 0) {
+                        intake.stop();
+                    }
         }
     }
 
