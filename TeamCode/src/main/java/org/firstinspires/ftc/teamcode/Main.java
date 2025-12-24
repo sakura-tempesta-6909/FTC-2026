@@ -29,9 +29,47 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import dev.nextftc.ftc.NextFTCOpMode;
+
+import intake.intakeCommand;
+
 
 @TeleOp(name = "Main")
 public class Main extends NextFTCOpMode {
 
+    @Override
+    public void onInit() {
+    }
+
+    @Override
+    public void onWaitForStart() {
+    }
+
+    @Override
+    public void onStartButtonPressed() {
+    }
+
+    @Override
+    public void onUpdate() {
+        if (gamepad2.xWasPressed()) {
+            new intakeCommand();
+        } else if (gamepad2.yWasPressed()) {
+            stop();
+        }
+    }
+
+    @Override
+    public void onStop() {
+            stop();
+    }
 }
+
+
+
+
+    /*
+     * ドライバーがINITを押した後、PLAYを押す前に繰り返し実行するコード
+     */
+
+
