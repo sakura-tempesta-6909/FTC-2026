@@ -30,9 +30,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import ftc.robot.components.intake.intakebase;
+import ftc.robot.components.intake.intakeMotor;
 
 @TeleOp(name = "Main OpMode", group = "Main")
 public class Main extends OpMode {
+    private intakebase intake;
 
     /*
      * This is executed once after the driver presses INIT.
@@ -40,6 +45,9 @@ public class Main extends OpMode {
      */
     @Override
     public void init() {
+        DcMotor intakeMotor = hardwareMap.get(DcMotor.class, "Intake");
+
+        intake = new intakeMotor(intakeMotor);
     }
 
     /*
@@ -64,7 +72,13 @@ public class Main extends OpMode {
      */
     @Override
     public void loop() {
+        if (gamepad2.xWasPressed()) {
+            intake.start();
+        } else if (gamepad2.yWasPressed()) {
+            intake.stop();
+        }
     }
+
 
     /*
      * This is executed once when the code is stopped.
@@ -73,4 +87,5 @@ public class Main extends OpMode {
     @Override
     public void stop() {
     }
+
 }
