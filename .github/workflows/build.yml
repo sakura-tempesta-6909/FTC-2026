@@ -2,7 +2,6 @@ name: Android Build
 
 on:
   push:
-  pull_request:
 
 jobs:
   build:
@@ -36,19 +35,3 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
-
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: debug-apk
-          path: TeamCode/build/outputs/apk/debug/*.apk
-          retention-days: 7
-
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: release-apk
-          path: TeamCode/build/outputs/apk/release/*.apk
-          retention-days: 7
