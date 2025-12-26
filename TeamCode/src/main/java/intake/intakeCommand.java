@@ -3,9 +3,12 @@ package intake;
 import dev.nextftc.core.commands.Command;
 
 public class intakeCommand extends Command {
-    private intakeSubsystem intake;
-    public intakeCommand() {
+    private final intakeSubsystem intake;
+    private final double power;
+
+    public intakeCommand(intakeSubsystem intake, double power) {
         this.intake = intake;
+        this.power = power;
         requires(intake);
     }
 
@@ -16,7 +19,8 @@ public class intakeCommand extends Command {
 
     @Override
     public void start() {
-        intake.intakeIn();
+        intake.setPower(power);
+        System.out.println("INTAKE COMMAND START");
         // executed when the command begins
     }
 
