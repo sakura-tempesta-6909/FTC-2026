@@ -1,15 +1,16 @@
-package intake;
+package org.firstinspires.ftc.teamcode.intake;
 
 import dev.nextftc.core.commands.Command;
 
-public class intakeCommand extends Command {
-    private final intakeSubsystem intake;
+public class IntakeCommand extends Command {
+    private final IntakeSubsystem intake;
     private final double power;
 
-    public intakeCommand(intakeSubsystem intake, double power) {
+    public IntakeCommand(IntakeSubsystem intake, double power) {
         this.intake = intake;
         this.power = power;
         requires(intake);
+        setInterruptible(false);
     }
 
     @Override
@@ -19,7 +20,6 @@ public class intakeCommand extends Command {
 
     @Override
     public void start() {
-        intake.setPower(power);
         System.out.println("INTAKE COMMAND START");
         // executed when the command begins
     }
@@ -31,7 +31,6 @@ public class intakeCommand extends Command {
 
     @Override
     public void stop(boolean interrupted) {
-        intake.stop();
         // executed when the command ends
     }
 }
