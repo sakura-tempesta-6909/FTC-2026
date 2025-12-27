@@ -6,8 +6,8 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
+import org.firstinspires.ftc.teamcode.config.Const;
 import org.firstinspires.ftc.teamcode.util.TrapezoidInterpolator;
-import org.firstinspires.ftc.teamcode.util.TrapezoidParameters;
 
 public class IntakeSubsystem implements Subsystem {
     public static final IntakeSubsystem INSTANCE = new IntakeSubsystem();
@@ -15,11 +15,11 @@ public class IntakeSubsystem implements Subsystem {
     private MotorEx intakeMotor;
 
     private final TrapezoidInterpolator powerProfile =
-            new TrapezoidInterpolator(new TrapezoidParameters(2.0, 10.0, 0.05, -1.0, 1.0), 0.0);
+            new TrapezoidInterpolator(Const.Intake.createProfile(), 0.0);
 
     @Override
     public void initialize() {
-        intakeMotor = new MotorEx("IntakeMotor");
+        intakeMotor = new MotorEx(Const.Motor.INTAKE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         powerProfile.reset();
     }
@@ -34,7 +34,7 @@ public class IntakeSubsystem implements Subsystem {
 
     public final Command intake() {
         return new LambdaCommand()
-                .setStart(() -> powerProfile.setGoal(1.0))
+                .setStart(() -> powerProfile.setGoal(Const.Intake.INTAKE_POWER))
                 .setIsDone(() -> false)
                 .setStop(i -> powerProfile.setGoal(0.0))
                 .requires(this)
@@ -43,7 +43,7 @@ public class IntakeSubsystem implements Subsystem {
 
     public final Command outtake() {
         return new LambdaCommand()
-                .setStart(() -> powerProfile.setGoal(-1.0))
+                .setStart(() -> powerProfile.setGoal(Const.Intake.OUTTAKE_POWER))
                 .setIsDone(() -> false)
                 .setStop(i -> powerProfile.setGoal(0.0))
                 .requires(this)
