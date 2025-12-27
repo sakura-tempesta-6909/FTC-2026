@@ -3,6 +3,22 @@ package org.firstinspires.ftc.teamcode.util;
 import dev.nextftc.control.KineticState;
 import dev.nextftc.control.interpolators.InterpolatorElement;
 
+/**
+ * 台形速度プロファイルを用いた補間器。
+ *
+ * <p>目標値に向かって、加速→定速→減速の滑らかな動きを生成します。
+ * モーターパワーなどを急激に変化させず、機械に優しい制御を実現します。</p>
+ *
+ * <h3>使用例:</h3>
+ * <pre>{@code
+ * TrapezoidInterpolator profile = new TrapezoidInterpolator(
+ *     new TrapezoidParameters(2.0, 10.0, 0.05, -1.0, 1.0),
+ *     0.0
+ * );
+ * profile.setGoal(1.0);           // 目標を設定
+ * double current = profile.getPosition();  // 現在の補間値を取得
+ * }</pre>
+ */
 public class TrapezoidInterpolator implements InterpolatorElement {
     private final TrapezoidParameters params;
 
@@ -12,6 +28,12 @@ public class TrapezoidInterpolator implements InterpolatorElement {
     private double acceleration;
     private long lastTimeNanos = System.nanoTime();
 
+    /**
+     * 補間器を作成します。
+     *
+     * @param params        台形プロファイルのパラメータ
+     * @param startPosition 初期位置
+     */
     public TrapezoidInterpolator(TrapezoidParameters params, double startPosition) {
         this.params = params;
         this.position = startPosition;
@@ -22,33 +44,65 @@ public class TrapezoidInterpolator implements InterpolatorElement {
 
     // ========== 目標設定 ==========
 
+    /**
+     * 目標状態を設定します。位置は自動的に範囲内にクランプされます。
+     *
+     * @param goal 目標状態（位置・速度・加速度）
+     */
     @Override
     public void setGoal(KineticState goal) {
         double clampedPosition = clamp(goal.getPosition(), params.minValue, params.maxValue);
         this.goal = new KineticState(clampedPosition, goal.getVelocity(), goal.getAcceleration());
     }
 
+    /**
+     * 目標位置を設定します（速度・加速度は0）。
+     *
+     * @param targetPosition 目標位置
+     */
     public void setGoal(double targetPosition) {
         setGoal(new KineticState(targetPosition, 0.0, 0.0));
     }
 
     // ========== 状態取得 ==========
 
+    /**
+     * 現在の目標状態を取得します。
+     *
+     * @return 目標状態
+     */
     @Override
     public KineticState getGoal() {
         return goal;
     }
 
+    /**
+     * 現在の目標位置を取得します。
+     *
+     * @return 目標位置
+     */
     public double getGoalPosition() {
         return goal.getPosition();
     }
 
+    /**
+     * 現在の参照状態を取得します（位置・速度・加速度）。
+     * 呼び出すたびに内部状態が更新されます。
+     *
+     * @return 現在の参照状態
+     */
     @Override
     public KineticState getCurrentReference() {
         step();
         return new KineticState(position, velocity, acceleration);
     }
 
+    /**
+     * 現在の位置を取得します（範囲内にクランプ済み）。
+     * 呼び出すたびに内部状態が更新されます。
+     *
+     * @return 現在の位置
+     */
     public double getPosition() {
         step();
         return clamp(position, params.minValue, params.maxValue);
@@ -56,6 +110,9 @@ public class TrapezoidInterpolator implements InterpolatorElement {
 
     // ========== リセット ==========
 
+    /**
+     * 現在位置を目標位置に即座に移動し、速度・加速度を0にリセットします。
+     */
     @Override
     public void reset() {
         position = goal.getPosition();
