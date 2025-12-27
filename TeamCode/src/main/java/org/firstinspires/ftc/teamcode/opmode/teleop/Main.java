@@ -9,9 +9,9 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
-import org.firstinspires.ftc.teamcode.command.IntakeCommand;
+import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class Main extends NextFTCOpMode {
 
     public Main() {
         addComponents(
-                new SubsystemComponent(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE),
+                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
@@ -33,11 +33,11 @@ public class Main extends NextFTCOpMode {
     @Override
     public void onStartButtonPressed() {
         Gamepads.gamepad1().x()
-                .whenTrue(IntakeCommand.intakeArtifacts())
-                .whenBecomesFalse(IntakeCommand.stopAll());
+                .whenTrue(ShooterCommand.shootArtifacts())
+                .whenBecomesFalse(ShooterCommand.stopAll());
         Gamepads.gamepad1().y()
-                .whenTrue(IntakeCommand.outtakeArtifacts())
-                .whenBecomesFalse(IntakeCommand.stopAll());
+                .whenTrue(ShooterCommand.reverseArtifacts())
+                .whenBecomesFalse(ShooterCommand.stopAll());
     }
 
     @Override

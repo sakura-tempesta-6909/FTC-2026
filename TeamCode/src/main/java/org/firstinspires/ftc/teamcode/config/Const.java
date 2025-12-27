@@ -12,14 +12,14 @@ public final class Const {
 
     // ========== モーター名 ==========
     public static final class Motor {
-        public static final String INTAKE = "IntakeMotor";
+        public static final String SHOOTER = "ShooterMotor";
         public static final String FEEDER = "FeederMotor";
     }
 
-    // ========== インテーク設定 ==========
-    public static final class Intake {
-        public static final double INTAKE_POWER = 1.0;
-        public static final double OUTTAKE_POWER = -1.0;
+    // ========== シューター設定 ==========
+    public static final class Shooter {
+        public static final double SHOOT_POWER = 1.0;
+        public static final double REVERSE_POWER = -1.0;
 
         // 台形プロファイル
         public static final double MAX_VEL = 2.0;      // [power/sec]

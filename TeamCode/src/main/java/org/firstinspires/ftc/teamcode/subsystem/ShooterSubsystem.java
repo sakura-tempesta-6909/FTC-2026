@@ -9,45 +9,45 @@ import dev.nextftc.hardware.impl.MotorEx;
 import org.firstinspires.ftc.teamcode.config.Const;
 import org.firstinspires.ftc.teamcode.util.TrapezoidInterpolator;
 
-public class IntakeSubsystem implements Subsystem {
-    public static final IntakeSubsystem INSTANCE = new IntakeSubsystem();
+public class ShooterSubsystem implements Subsystem {
+    public static final ShooterSubsystem INSTANCE = new ShooterSubsystem();
 
-    private MotorEx intakeMotor;
+    private MotorEx shooterMotor;
 
     private final TrapezoidInterpolator powerProfile =
-            new TrapezoidInterpolator(Const.Intake.createProfile(), 0.0);
+            new TrapezoidInterpolator(Const.Shooter.createProfile(), 0.0);
 
     @Override
     public void initialize() {
-        intakeMotor = new MotorEx(Const.Motor.INTAKE);
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        shooterMotor = new MotorEx(Const.Motor.SHOOTER);
+        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         powerProfile.reset();
     }
 
     @Override
     public void periodic() {
         double power = powerProfile.getPosition();
-        intakeMotor.setPower(power);
+        shooterMotor.setPower(power);
         PanelsTelemetry.INSTANCE.getTelemetry().addData("goal", powerProfile.getGoalPosition());
         PanelsTelemetry.INSTANCE.getTelemetry().addData("power", power);
     }
 
-    public final Command intake() {
+    public final Command shoot() {
         return new LambdaCommand()
-                .setStart(() -> powerProfile.setGoal(Const.Intake.INTAKE_POWER))
+                .setStart(() -> powerProfile.setGoal(Const.Shooter.SHOOT_POWER))
                 .setIsDone(() -> false)
                 .setStop(i -> powerProfile.setGoal(0.0))
                 .requires(this)
-                .named("intakeIntake");
+                .named("shooterShoot");
     }
 
-    public final Command outtake() {
+    public final Command reverse() {
         return new LambdaCommand()
-                .setStart(() -> powerProfile.setGoal(Const.Intake.OUTTAKE_POWER))
+                .setStart(() -> powerProfile.setGoal(Const.Shooter.REVERSE_POWER))
                 .setIsDone(() -> false)
                 .setStop(i -> powerProfile.setGoal(0.0))
                 .requires(this)
-                .named("intakeOuttake");
+                .named("shooterReverse");
     }
 
     public final Command stop() {
@@ -55,7 +55,7 @@ public class IntakeSubsystem implements Subsystem {
                 .setStart(() -> powerProfile.setGoal(0.0))
                 .setIsDone(() -> true)
                 .requires(this)
-                .named("intakeStop");
+                .named("shooterStop");
     }
 
 }

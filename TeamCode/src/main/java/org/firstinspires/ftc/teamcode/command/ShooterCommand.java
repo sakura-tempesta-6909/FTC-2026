@@ -4,44 +4,42 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
-public class IntakeCommand {
+public class ShooterCommand {
 
-
-    public static Command intakeArtifacts() {
+    public static Command shootArtifacts() {
         return new LambdaCommand()
                 .setStart(() -> new ParallelGroup(
-                                IntakeSubsystem.INSTANCE.intake(),
+                                ShooterSubsystem.INSTANCE.shoot(),
                                 FeederSubsystem.INSTANCE.feed()
                         ).schedule()
                 )
                 .setIsDone(() -> false)
-                .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
-                .named("intakeArtifacts");
+                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                .named("shootArtifacts");
     }
 
-    public static Command outtakeArtifacts() {
+    public static Command reverseArtifacts() {
         return new LambdaCommand()
                 .setStart(() -> new ParallelGroup(
-                                IntakeSubsystem.INSTANCE.outtake(),
+                                ShooterSubsystem.INSTANCE.reverse(),
                                 FeederSubsystem.INSTANCE.retract()
                         ).schedule()
                 )
                 .setIsDone(() -> false)
-                .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
-                .named("outtakeArtifacts");
+                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                .named("reverseArtifacts");
     }
 
     public static Command stopAll() {
         return new LambdaCommand()
                 .setStart(() -> new ParallelGroup(
-                                IntakeSubsystem.INSTANCE.stop(),
+                                ShooterSubsystem.INSTANCE.stop(),
                                 FeederSubsystem.INSTANCE.stop()
                         ).schedule()
                 ).setIsDone(() -> true)
-                .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
                 .named("stopAll");
     }
 }
-
