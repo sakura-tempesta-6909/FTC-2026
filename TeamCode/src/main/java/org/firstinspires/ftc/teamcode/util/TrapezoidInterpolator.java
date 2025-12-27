@@ -56,25 +56,44 @@ public class TrapezoidInterpolator implements InterpolatorElement {
         double gx = goal.getPosition();
         double error = gx - x;
 
-        if (Math.abs(error) < 1e-4 && Math.abs(v) < 1e-4) {
+        // 目標に十分近い場合は即座に停止
+        // (位置が近い AND 速度が小さい) OR (位置が非常に近い)
+        if ((Math.abs(error) < 0.01 && Math.abs(v) < 0.1) || Math.abs(error) < 0.001) {
             x = gx;
             v = 0;
             a = 0;
             return;
         }
 
-        double dir = Math.signum(error);
+        double dir = Math.signum(error);  // 目標の方向 (+1 or -1)
+        double velDir = Math.signum(v);   // 現在の速度の方向
 
-        // 今の速度で止まるのに必要な距離
-        double brakingDist = (v * v) / (2.0 * p.maxAccel);
+        double accel;
 
-        // 近いなら減速、遠いなら加速
-        double accel = (Math.abs(error) <= brakingDist)
-                ? -Math.signum(v) * p.maxAccel
-                : dir * p.maxAccel;
+        // ケース1: 速度が目標と逆方向 → 無条件で速度を0に向けて加速
+        if (velDir != 0 && velDir != dir) {
+            // 速度を反転させる方向に最大加速度
+            accel = dir * p.maxAccel;
+        }
+        // ケース2: 速度が目標方向と同じ（または停止中）→ 制動距離で判定
+        else {
+            // 今の速度で止まるのに必要な距離
+            double brakingDist = (v * v) / (2.0 * p.maxAccel);
 
+            if (Math.abs(error) <= brakingDist) {
+                // 制動距離内 → 減速
+                accel = -dir * p.maxAccel;
+            } else {
+                // まだ遠い → 加速
+                accel = dir * p.maxAccel;
+            }
+        }
+
+        // 速度を更新（最大速度でクランプ）
         double newV = clamp(v + accel * dt, -p.maxVel, p.maxVel);
-        double newX = x + newV * dt;
+
+        // 位置を更新（平均速度を使用してより正確に）
+        double newX = x + 0.5 * (v + newV) * dt;
 
         // オーバーシュート防止
         if (dir != 0.0 && Math.signum(gx - newX) != dir) {

@@ -11,7 +11,6 @@ import dev.nextftc.hardware.impl.MotorEx;
 import org.firstinspires.ftc.teamcode.util.TrapezoidInterpolator;
 import org.firstinspires.ftc.teamcode.util.TrapezoidParameters;
 
-
 public class IntakeSubsystem implements Subsystem {
     public static final IntakeSubsystem INSTANCE = new IntakeSubsystem();
 
@@ -24,7 +23,6 @@ public class IntakeSubsystem implements Subsystem {
                     0.05   // maxDt
             ), 0.0);
 
-    private double lastPower = 0.0;
 
     @Override
     public void initialize() {
@@ -39,10 +37,8 @@ public class IntakeSubsystem implements Subsystem {
     public void periodic() {
         double p = Range.clip(ramp.getCurrentReference().getPosition(), -1.0, 1.0);
         motor.setPower(p);
-        lastPower = p;
-        PanelsTelemetry.INSTANCE.getTelemetry().addData("Intake goal", ramp.getGoal().getPosition());
-        PanelsTelemetry.INSTANCE.getTelemetry().addData("Intake power", p);
-        PanelsTelemetry.INSTANCE.getTelemetry().addData("Intake currnt", motor.getPower());
+        PanelsTelemetry.INSTANCE.getTelemetry().addData("goal", ramp.getGoal().getPosition());
+        PanelsTelemetry.INSTANCE.getTelemetry().addData("power", p);
     }
 
     public void setTarget(double power) {
