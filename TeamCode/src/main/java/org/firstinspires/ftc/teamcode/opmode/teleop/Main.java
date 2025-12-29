@@ -11,50 +11,38 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 
 import java.util.List;
 
 @TeleOp(name = "Main")
 public class Main extends NextFTCOpMode {
 
-    private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
-    private final ElapsedTime loopTimer = new ElapsedTime();
-    private int lastSnapshotSize = 0;
-
     public Main() {
         addComponents(
-                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE),
-                BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE
+                new SubsystemComponent(IntakeSubsystem.INSTANCE,ShooterSubsystem.INSTANCE,FeederSubsystem.INSTANCE)
         );
     }
 
     @Override
     public void onStartButtonPressed() {
         Gamepads.gamepad1().x()
-                .whenTrue(ShooterCommand.shootArtifacts())
-                .whenBecomesFalse(ShooterCommand.stopAll());
+                .whenTrue(IntakeCommand.intakeArtifacts())
+                .whenBecomesFalse(IntakeCommand.stopAll());
         Gamepads.gamepad1().y()
-                .whenTrue(ShooterCommand.reverseArtifacts())
-                .whenBecomesFalse(ShooterCommand.stopAll());
+                .whenTrue(IntakeCommand.reverseArtifacts())
+                .whenBecomesFalse(IntakeCommand.stopAll());
     }
 
     @Override
     public void onUpdate() {
-        //実行時間表示
-        double dt = loopTimer.seconds();
-        loopTimer.reset();
 
-        //実行しているコマンドを表示
-        List<String> snapshot = CommandManager.INSTANCE.snapshot();
-        int currentSize = snapshot.size();
-        int fromIndex = Math.min(lastSnapshotSize, currentSize);
-        List<String> running = snapshot.subList(fromIndex, currentSize);
-        lastSnapshotSize = currentSize;
+    }
 
-        panelsTelemetry.getTelemetry().addData("dt", dt);
-        panelsTelemetry.getTelemetry().addData("running", String.join(", ", running));
-        panelsTelemetry.getTelemetry().update(telemetry);
+    @Override
+    public void onStop() {
+        IntakeCommand.stopAll();
     }
 }

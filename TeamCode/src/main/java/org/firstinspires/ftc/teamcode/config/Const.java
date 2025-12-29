@@ -12,6 +12,7 @@ public final class Const {
 
     // ========== モーター名 ==========
     public static final class Motor {
+        public static final String INTAKE = "IntakeMotor";
         public static final String SHOOTER = "ShooterMotor";
         public static final String FEEDER = "FeederMotor";
     }
@@ -31,6 +32,13 @@ public final class Const {
         public static TrapezoidParameters createProfile() {
             return new TrapezoidParameters(MAX_VEL, MAX_ACCEL, MAX_DT, MIN_POWER, MAX_POWER);
         }
+    }
+
+
+    public static final class Intake {
+
+        public static final double INTAKE_POWER = 1.0;
+        public static final double INTAKE_REVERSE_POWER = -1.0;
     }
 
     // ========== フィーダー設定 ==========
