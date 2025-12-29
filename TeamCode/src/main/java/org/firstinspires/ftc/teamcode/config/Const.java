@@ -38,6 +38,7 @@ public final class Const {
     public static final class Intake {
 
         public static final double INTAKE_POWER = 1.0;
+        public static final double INTAKE_STOP = 0.0;
         public static final double INTAKE_REVERSE_POWER = -1.0;
     }
 

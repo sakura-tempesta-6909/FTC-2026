@@ -6,7 +6,6 @@ import dev.nextftc.core.commands.utility.LambdaCommand;
 
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 
 public class IntakeCommand {
@@ -23,7 +22,7 @@ public class IntakeCommand {
 
     }
 
-    public static Command reverseArtifacts() {
+    public static Command intakeReverseArtifacts() {
         return new LambdaCommand()
                 .setStart(() -> new ParallelGroup(
                                 IntakeSubsystem.INSTANCE.outtake(),
@@ -33,7 +32,7 @@ public class IntakeCommand {
                 )
                 .setIsDone(() -> false)
                 .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
-                .named("shootArtifacts");
+                .named("intakeReverseArtifacts");
 
     }
 
