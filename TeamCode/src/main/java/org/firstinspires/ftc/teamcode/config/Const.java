@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.config;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.util.TrapezoidParameters;
 
 /**
@@ -37,5 +39,28 @@ public final class Const {
     public static final class Feeder {
         public static final double FEED_POWER = 0.3;
         public static final double RETRACT_POWER = -0.3;
+    }
+
+    public static final class Drive {
+        public static final class Motor {
+            public static final class Name {
+                public static final String LEFT_FRONT = "leftFront";
+                public static final String LEFT_REAR = "leftRear";
+                public static final String RIGHT_FRONT = "rightFront";
+                public static final String RIGHT_REAR = "rightRear";
+            }
+
+            public static final class Direction {
+                public static final DcMotorSimple.Direction LEFT_FRONT = DcMotorSimple.Direction.FORWARD;
+                public static final DcMotorSimple.Direction LEFT_REAR = DcMotorSimple.Direction.FORWARD;
+                public static final DcMotorSimple.Direction RIGHT_FRONT = DcMotorSimple.Direction.REVERSE;
+                public static final DcMotorSimple.Direction RIGHT_REAR = DcMotorSimple.Direction.REVERSE;
+            }
+        }
+    }
+
+    public static final class Imu {
+        public static final String NAME = "imu";
+        public static final RevHubOrientationOnRobot ORIENTATION = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD, RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD);
     }
 }
