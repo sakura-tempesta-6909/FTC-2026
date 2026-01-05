@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.config;
 
-import org.firstinspires.ftc.teamcode.util.TrapezoidParameters;
-
 /**
  * ロボットの設定値を一元管理するクラス。
  */
 public final class Const {
 
-    private Const() {
-    }
+    private Const() {}
 
     // ========== モーター名 ==========
     public static final class Motor {
@@ -19,19 +16,18 @@ public final class Const {
 
     // ========== シューター設定 ==========
     public static final class Shooter {
-        public static final double SHOOT_POWER = 1.0;
-        public static final double REVERSE_POWER = -1.0;
-
-        // 台形プロファイル
-        public static final double MAX_VEL = 2.0;      // [power/sec]
-        public static final double MAX_ACCEL = 10.0;   // [power/sec^2]
-        public static final double MAX_DT = 0.05;      // [sec]
+        public static final double MAX_FREE_RPM = 6000.0;
+        public static final double TARGET_RPM = 4000.0;
+        public static final double TICKS_PER_REV = 112.0;
+        public static final double RPM_TOLERANCE = 75.0;
+        public static final double kP = 0.0006;
+        public static final double kI = 0.0000;
+        public static final double kD = 0.00008;
+        public static final double kF = 1.0;
+        public static final double I_MAX = 0.20;
         public static final double MIN_POWER = -1.0;
         public static final double MAX_POWER = 1.0;
 
-        public static TrapezoidParameters createProfile() {
-            return new TrapezoidParameters(MAX_VEL, MAX_ACCEL, MAX_DT, MIN_POWER, MAX_POWER);
-        }
     }
 
 
