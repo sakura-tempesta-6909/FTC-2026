@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.config;
 
+import dev.nextftc.control.KineticState;
+
 /**
  * ロボットの設定値を一元管理するクラス。
  */
@@ -16,13 +18,14 @@ public final class Const {
 
     // ========== シューター設定 ==========
     public static final class Shooter {
-        public static final double MAX_FREE_RPM = 6000.0;
-        public static final double TARGET_RPM = 4000.0;
-        public static final double TICKS_PER_REV = 112.0;
-        public static final double RPM_TOLERANCE = 75.0;
-        public static final double kP = 0.0006;
-        public static final double kI = 0.0000;
-        public static final double kD = 0.00008;
+        public static final double TARGET_VELOCITY = 1800;
+        public static final double REVERSE_VELOCITY = -1800;
+        public static final double STOPPED_VELOCITY = 0;
+
+        public static final double kP = 0.00025;
+        public static final double kI = 0.0000004;
+        public static final double kD = 0.0;
+        public static final double SHOOTER_VELOCITY_TOLERANCE = 100;
         public static final double kF = 1.0;
         public static final double I_MAX = 0.20;
         public static final double MIN_POWER = -1.0;
@@ -40,7 +43,7 @@ public final class Const {
 
     // ========== フィーダー設定 ==========
     public static final class Feeder {
-        public static final double FEED_POWER = 0.3;
-        public static final double RETRACT_POWER = -0.3;
+        public static final double FEED_POWER = 1.0;
+        public static final double RETRACT_POWER = -1.0;
     }
 }

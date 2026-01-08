@@ -5,6 +5,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.command.FeederCommand;
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
@@ -49,6 +50,13 @@ public class Main extends NextFTCOpMode {
         Gamepads.gamepad1().b().and(Gamepads.gamepad1().a().not())
                 .whenTrue(ShooterCommand.reverseArtifacts())
                 .whenBecomesFalse(ShooterCommand.stopAll());
+        Gamepads.gamepad1().rightBumper().and(Gamepads.gamepad1().leftBumper().not())
+                .whenTrue(FeederCommand.feedArtifacts())
+                .whenBecomesFalse(FeederCommand.stopAll());
+        Gamepads.gamepad1().leftBumper().and(Gamepads.gamepad1().rightBumper().not())
+                .whenTrue(FeederCommand.feedReverseArtifacts())
+                .whenBecomesFalse(FeederCommand.stopAll());
+
     }
 
     @Override
