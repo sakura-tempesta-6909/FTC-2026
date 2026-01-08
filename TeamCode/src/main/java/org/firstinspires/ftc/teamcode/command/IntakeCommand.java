@@ -6,18 +6,16 @@ import dev.nextftc.core.commands.utility.LambdaCommand;
 
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 
 public class IntakeCommand {
     public static Command intakeArtifacts() {
         return new LambdaCommand()
-                .setStart(() -> new ParallelGroup(
-                                IntakeSubsystem.INSTANCE.intake(),
-                                FeederSubsystem.INSTANCE.feed()
-                        ).schedule()
-                )
+                .setStart(() ->
+                                IntakeSubsystem.INSTANCE.intake().schedule())
                 .setIsDone(() -> false)
-                .requires(IntakeSubsystem.INSTANCE,FeederSubsystem.INSTANCE)
+                .requires(IntakeSubsystem.INSTANCE)
                 .named("intakeArtifacts");
 
     }

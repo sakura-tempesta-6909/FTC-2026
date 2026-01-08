@@ -10,20 +10,21 @@ public class ShooterCommand {
     public static Command shootArtifacts() {
         return new LambdaCommand()
                 .setStart(() -> new ParallelGroup(
-                                ShooterSubsystem.INSTANCE.shoot(),
-                                FeederSubsystem.INSTANCE.feed()
-                        ).schedule()
+                        ShooterSubsystem.INSTANCE.shoot(),
+                        FeederSubsystem.INSTANCE.feed()
+                ).schedule()
                 )
                 .setIsDone(() -> false)
                 .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
-                .named("shootArtifacts");
+                .named("ShootArtifacts");
     }
 
-    public static Command reverseArtifacts() {
+
+    public static Command reverseArtifacts () {
         return new LambdaCommand()
                 .setStart(() -> new ParallelGroup(
-                                ShooterSubsystem.INSTANCE.reverse(),
-                                FeederSubsystem.INSTANCE.retract()
+                        ShooterSubsystem.INSTANCE.reverse(),
+                        FeederSubsystem.INSTANCE.retract()
                         ).schedule()
                 )
                 .setIsDone(() -> false)
@@ -31,11 +32,11 @@ public class ShooterCommand {
                 .named("reverseArtifacts");
     }
 
-    public static Command stopAll() {
+    public static Command stopAll () {
         return new LambdaCommand()
                 .setStart(() -> new ParallelGroup(
-                                ShooterSubsystem.INSTANCE.stop(),
-                                FeederSubsystem.INSTANCE.stop()
+                        ShooterSubsystem.INSTANCE.stop(),
+                        FeederSubsystem.INSTANCE.stop()
                         ).schedule()
                 ).setIsDone(() -> true)
                 .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)

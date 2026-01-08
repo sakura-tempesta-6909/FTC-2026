@@ -20,7 +20,7 @@ public class ShooterSubsystem implements Subsystem {
 
     private MotorEx shooterMotor;
 
-    public static PIDCoefficients pidCoefficients = new PIDCoefficients(0.0000000018, 0.00000000000000036, 0.000413);
+    public static PIDCoefficients pidCoefficients = new PIDCoefficients(Const.Shooter.kP, Const.Shooter.kI, Const.Shooter.kD);
     private ControlSystem controller;
 
     @Override
@@ -40,32 +40,38 @@ public class ShooterSubsystem implements Subsystem {
         PanelsTelemetry.INSTANCE.getTelemetry().addData("goal", controller.getGoal().getVelocity());
         PanelsTelemetry.INSTANCE.getTelemetry().addData("current", shooterMotor.getVelocity());
         PanelsTelemetry.INSTANCE.getTelemetry().addData("power", controller.calculate());
+        PanelsTelemetry.INSTANCE.getTelemetry().addData("isGoalReached", isGoalReached());
     }
+
+
 
     public final Command shoot() {
         return new LambdaCommand()
-                .setStart(() -> controller.setGoal(new KineticState(0.0,2000.0)))
+                .setStart(() -> controller.setGoal(new KineticState(0.0,Const.Shooter.TARGET_VELOCITY)))
                 .setIsDone(() -> false)
-                .setStop(i -> controller.setGoal(new KineticState(0.0,0.0)))
+                .setStop(i -> controller.setGoal(new KineticState(0.0,Const.Shooter.STOPPED_VELOCITY)))
                 .requires(this)
                 .named("shooterShoot");
     }
 
     public final Command reverse() {
         return new LambdaCommand()
-                .setStart(() -> controller.setGoal(new KineticState(0.0,-1000.0)))
+                .setStart(() -> controller.setGoal(new KineticState(0.0,Const.Shooter.REVERSE_VELOCITY)))
                 .setIsDone(() -> false)
-                .setStop(i -> controller.setGoal(new KineticState(0.0,0.0)))
+                .setStop(i -> controller.setGoal(new KineticState(0.0,Const.Shooter.STOPPED_VELOCITY)))
                 .requires(this)
                 .named("shooterReverse");
     }
 
     public final Command stop() {
         return new LambdaCommand()
-                .setStart(() -> controller.setGoal(new KineticState(0.0,0.0)))
+                .setStart(() -> controller.setGoal(new KineticState(0.0,Const.Shooter.STOPPED_VELOCITY)))
                 .setIsDone(() -> true)
                 .requires(this)
                 .named("shooterStop");
+    }
+    public boolean isGoalReached() {
+        return controller.isWithinTolerance(new KineticState(0.0,Const.Shooter.SHOOTER_VELOCITY_TOLERANCE));
     }
 
 }
