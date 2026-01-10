@@ -1,16 +1,25 @@
 package org.firstinspires.ftc.teamcode.opmode.teleop;
 
 import com.bylazar.telemetry.PanelsTelemetry;
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
+import dev.nextftc.extensions.pedro.PedroComponent;
+import dev.nextftc.extensions.pedro.PedroDriverControlled;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
+import dev.nextftc.hardware.driving.DriverControlledCommand;
+
+import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
+import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 import java.util.List;
@@ -24,7 +33,8 @@ public class Main extends NextFTCOpMode {
 
     public Main() {
         addComponents(
-                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE),
+                new PedroComponent(Constants::createFollower),
+                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
@@ -32,12 +42,25 @@ public class Main extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
+        DriverControlledCommand driverControlled = new PedroDriverControlled(
+                Gamepads.gamepad1().leftStickY(),
+                Gamepads.gamepad1().leftStickX(),
+                Gamepads.gamepad1().rightStickX()
+        );
+        driverControlled.schedule();
         Gamepads.gamepad1().x()
                 .whenTrue(ShooterCommand.shootArtifacts())
                 .whenBecomesFalse(ShooterCommand.stopAll());
         Gamepads.gamepad1().y()
                 .whenTrue(ShooterCommand.reverseArtifacts())
                 .whenBecomesFalse(ShooterCommand.stopAll());
+        Gamepads.gamepad1().a()
+                .whenTrue(IntakeCommand.intake())
+                .whenBecomesFalse(IntakeCommand.stopAll());
+        Gamepads.gamepad1().b()
+                .whenTrue(IntakeCommand.outtake())
+                .whenBecomesFalse(IntakeCommand.stopAll());
+
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.Encoder;
 import com.pedropathing.ftc.localization.constants.TwoWheelConstants;
 import com.pedropathing.paths.PathConstraints;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.config.Const;
 
@@ -28,7 +29,7 @@ public class Constants {
             .forwardEncoder_HardwareMapName(Const.Drive.Motor.Name.RIGHT_REAR)
             .strafeEncoder_HardwareMapName(Const.Drive.Motor.Name.LEFT_REAR)
             .IMU_HardwareMapName(Const.Imu.NAME)
-            .IMU_Orientation(Const.Imu.ORIENTATION)
+            .IMU_Orientation(new RevHubOrientationOnRobot(Const.Imu.logoFacingDirection, Const.Imu.usbFacingDirection))
             .strafePodX(20 * 0.393701)
             .forwardPodY(0)
             .strafeEncoderDirection(Encoder.REVERSE)

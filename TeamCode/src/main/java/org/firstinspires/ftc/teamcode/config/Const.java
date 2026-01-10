@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.config;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import org.firstinspires.ftc.teamcode.util.TrapezoidParameters;
 
 /**
@@ -10,12 +11,15 @@ import org.firstinspires.ftc.teamcode.util.TrapezoidParameters;
 public final class Const {
 
     private Const() {
+
     }
 
     // ========== モーター名 ==========
     public static final class Motor {
         public static final String SHOOTER = "ShooterMotor";
         public static final String FEEDER = "FeederMotor";
+
+        public static final String INTAKE = "IntakeMotor";
     }
 
     // ========== シューター設定 ==========
@@ -59,8 +63,15 @@ public final class Const {
         }
     }
 
+    public static final class Intake {
+        public static final double INTAKE_POWER = 1.0;
+
+        public static final double RETRACT_POWER = -1.0;
+    }
+
     public static final class Imu {
         public static final String NAME = "imu";
-        public static final RevHubOrientationOnRobot ORIENTATION = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD, RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD);
+        public static final RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection = RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+        public static final RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection = RevHubOrientationOnRobot.UsbFacingDirection.DOWN;
     }
 }
