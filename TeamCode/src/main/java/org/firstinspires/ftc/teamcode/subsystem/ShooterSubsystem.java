@@ -22,6 +22,7 @@ public class ShooterSubsystem implements Subsystem {
     @Override
     public void initialize() {
         shooterMotor = new MotorEx(Const.Motor.SHOOTER);
+        shooterMotor.reverse();
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         powerProfile.reset();
     }
@@ -60,7 +61,7 @@ public class ShooterSubsystem implements Subsystem {
                 .named("shooterStop");
     }
     public boolean isAtVelocity() {
-        double rpm = shooterMotor.getVelocity();
+        double rpm = Math.abs(shooterMotor.getVelocity());
         return rpm >= Const.Shooter.MIN_SHOOT_RPM;
     }
 

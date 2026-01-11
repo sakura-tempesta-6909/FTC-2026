@@ -9,16 +9,14 @@ import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 public class ShooterCommand {
     public static Command shootArtifacts() {
         return new LambdaCommand()
-                        .setStart(() -> {
-                            ShooterSubsystem.INSTANCE.shoot().schedule();
-                            if (ShooterSubsystem.INSTANCE.isAtVelocity()) {
-                                ShooterSubsystem.INSTANCE.shoot().schedule();
-                                FeederSubsystem.INSTANCE.feed().schedule();
-                            } else {
-                                ShooterSubsystem.INSTANCE.shoot().schedule();
-                                FeederSubsystem.INSTANCE.stop().schedule();
-                            }
-                        })
+                .setStart(() -> ShooterSubsystem.INSTANCE.shoot().schedule())
+                .setUpdate(() -> {
+                    if (ShooterSubsystem.INSTANCE.isAtVelocity()) {
+                        FeederSubsystem.INSTANCE.feed().schedule();
+                    } else {
+                        FeederSubsystem.INSTANCE.stop().schedule();
+                    }
+                })
                         .setStop(i -> FeederSubsystem.INSTANCE.stop().schedule())
                         .setIsDone(() -> false)
                         .requires(FeederSubsystem.INSTANCE)
@@ -46,8 +44,8 @@ public class ShooterCommand {
                                 ShooterSubsystem.INSTANCE.stop(),
                                 FeederSubsystem.INSTANCE.stop()
                         ).schedule()
-                ).setIsDone(() -> true)
-                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                )
+                .setIsDone(() -> true)
                 .named("stopAll");
     }
 }

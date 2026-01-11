@@ -37,8 +37,7 @@ public class IntakeCommand {
                         FeederSubsystem.INSTANCE.stop(),
                         IntakeSubsystem.INSTANCE.stop()
                 ).schedule())
-                .setIsDone(() -> false)
-                .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                .setIsDone(() -> true)
                 .named("stopAll");
     }
 }
