@@ -18,14 +18,13 @@ public final class Const {
     public static final class Motor {
         public static final String SHOOTER = "ShooterMotor";
         public static final String FEEDER = "FeederMotor";
-
         public static final String INTAKE = "IntakeMotor";
     }
 
     // ========== シューター設定 ==========
     public static final class Shooter {
-        public static final double SHOOT_POWER = 1.0;
-        public static final double REVERSE_POWER = -1.0;
+        public static final double SHOOT_POWER = 0.5;
+        public static final double REVERSE_POWER = -0.5;
 
         // 台形プロファイル
         public static final double MAX_VEL = 2.0;      // [power/sec]
@@ -33,6 +32,9 @@ public final class Const {
         public static final double MAX_DT = 0.05;      // [sec]
         public static final double MIN_POWER = -1.0;
         public static final double MAX_POWER = 1.0;
+        // Const.Shooter
+        public static final double MIN_SHOOT_RPM = 1900;
+
 
         public static TrapezoidParameters createProfile() {
             return new TrapezoidParameters(MAX_VEL, MAX_ACCEL, MAX_DT, MIN_POWER, MAX_POWER);

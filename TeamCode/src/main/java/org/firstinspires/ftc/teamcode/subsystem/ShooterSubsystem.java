@@ -57,5 +57,10 @@ public class ShooterSubsystem implements Subsystem {
                 .requires(this)
                 .named("shooterStop");
     }
+    public boolean isAtVelocity() {
+        double rpm = shooterMotor.getVelocity();
+        return rpm >= Const.Shooter.MIN_SHOOT_RPM;
+    }
+
 
 }
