@@ -6,7 +6,9 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
+
 import org.firstinspires.ftc.teamcode.config.Const;
+import org.firstinspires.ftc.teamcode.config.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.TrapezoidInterpolator;
 
 public class ShooterSubsystem implements Subsystem {

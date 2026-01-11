@@ -12,12 +12,11 @@ public class IntakeCommand {
 
     public static Command intake() {
         return new LambdaCommand()
-                .setStart(() -> new ParallelGroup(
-                        FeederSubsystem.INSTANCE.feed(),
-                        IntakeSubsystem.INSTANCE.intake()
-                ).schedule())
+                .setStart(() -> {
+                    IntakeSubsystem.INSTANCE.intake().schedule();
+                })
                 .setIsDone(() -> false)
-                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                .requires(IntakeSubsystem.INSTANCE)
                 .named("intakeArtifacts");
     }
 
@@ -28,7 +27,7 @@ public class IntakeCommand {
                         IntakeSubsystem.INSTANCE.retract()
                 ).schedule())
                 .setIsDone(() -> false)
-                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
                 .named("retractArtifacts");
     }
 
@@ -39,7 +38,7 @@ public class IntakeCommand {
                         IntakeSubsystem.INSTANCE.stop()
                 ).schedule())
                 .setIsDone(() -> false)
-                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
                 .named("stopAll");
     }
 }

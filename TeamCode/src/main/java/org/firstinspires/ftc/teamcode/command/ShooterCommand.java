@@ -7,24 +7,25 @@ import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 public class ShooterCommand {
-
     public static Command shootArtifacts() {
-        return new ParallelGroup(
-                ShooterSubsystem.INSTANCE.shoot(),
-                new LambdaCommand()
+        return new LambdaCommand()
                         .setStart(() -> {
+                            ShooterSubsystem.INSTANCE.shoot().schedule();
                             if (ShooterSubsystem.INSTANCE.isAtVelocity()) {
-                                FeederSubsystem.INSTANCE.feed();
+                                ShooterSubsystem.INSTANCE.shoot().schedule();
+                                FeederSubsystem.INSTANCE.feed().schedule();
                             } else {
-                                FeederSubsystem.INSTANCE.stop();
+                                ShooterSubsystem.INSTANCE.shoot().schedule();
+                                FeederSubsystem.INSTANCE.stop().schedule();
                             }
                         })
-                        .setStop(i -> FeederSubsystem.INSTANCE.stop())
+                        .setStop(i -> FeederSubsystem.INSTANCE.stop().schedule())
                         .setIsDone(() -> false)
                         .requires(FeederSubsystem.INSTANCE)
-        )
                 .named("shootArtifacts");
     }
+
+
 
 
     public static Command reverseArtifacts() {
