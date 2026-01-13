@@ -15,6 +15,7 @@ public class FeederSubsystem implements Subsystem {
     @Override
     public void initialize() {
         feederMotor = new MotorEx(Const.Motor.FEEDER);
+        feederMotor.reverse();
     }
 
     public Command feed() {

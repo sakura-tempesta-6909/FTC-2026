@@ -18,7 +18,6 @@ public class IntakeSubsystem implements Subsystem {
     @Override
     public void initialize() {
         motor = new MotorEx(Const.Motor.INTAKE);
-        motor.reverse();
     }
 
     public Command intake() {

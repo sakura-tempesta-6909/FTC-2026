@@ -29,10 +29,10 @@ public class RobotConfig {
         public static final String LEFT_REAR = "leftRear";
         public static final String RIGHT_REAR = "rightRear";
 
-        public static final DcMotor.Direction LEFT_FRONT_DIR = DcMotor.Direction.REVERSE;
-        public static final DcMotor.Direction RIGHT_FRONT_DIR = DcMotor.Direction.FORWARD;
-        public static final DcMotor.Direction LEFT_REAR_DIR = DcMotor.Direction.REVERSE;
-        public static final DcMotor.Direction RIGHT_REAR_DIR = DcMotor.Direction.FORWARD;
+        public static final DcMotor.Direction LEFT_FRONT_DIR = DcMotor.Direction.FORWARD;
+        public static final DcMotor.Direction RIGHT_FRONT_DIR = DcMotor.Direction.REVERSE;
+        public static final DcMotor.Direction LEFT_REAR_DIR = DcMotor.Direction.FORWARD;
+        public static final DcMotor.Direction RIGHT_REAR_DIR = DcMotor.Direction.REVERSE;
     }
 
     // ===================

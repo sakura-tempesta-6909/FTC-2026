@@ -43,9 +43,9 @@ public class Main extends NextFTCOpMode {
     @Override
     public void onStartButtonPressed() {
         DriverControlledCommand driverControlled = new PedroDriverControlled(
-                Gamepads.gamepad2().leftStickY(),
-                Gamepads.gamepad2().leftStickX(),
-                Gamepads.gamepad2().rightStickX()
+                Gamepads.gamepad1().leftStickY(),
+                Gamepads.gamepad1().leftStickX(),
+                Gamepads.gamepad1().rightStickX()
         );
         driverControlled.schedule();
         Gamepads.gamepad1().x()
