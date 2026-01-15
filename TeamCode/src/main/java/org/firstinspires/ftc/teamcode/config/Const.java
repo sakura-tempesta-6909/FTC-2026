@@ -36,11 +36,16 @@ public final class Const {
         public static final class Motor {
             public static final String NAME = "ShooterMotor";
         }
+        public static final class PID {
+            public static final double KP = 0.00035;
+            public static final double KI = 0.00000035;
+            public static final double KD = 0;
+        }
 
         // --- パワー設定 ---
-        public static final class Power {
-            public static final double SHOOT = 0.8;
-            public static final double REVERSE = -0.8;
+        public static final class Velocity {
+            public static final double TARGET_RPM = 2000;
+            public static final double REVERSE_TARGET_RPM = -2000;
             public static final double MIN = -1.0;
             public static final double MAX = 1.0;
         }
@@ -52,7 +57,7 @@ public final class Const {
             public static final double MAX_DT = 0.05;       // [sec]
 
             public static TrapezoidParameters create() {
-                return new TrapezoidParameters(MAX_VEL, MAX_ACCEL, MAX_DT, Power.MIN, Power.MAX);
+                return new TrapezoidParameters(MAX_VEL, MAX_ACCEL, MAX_DT, Velocity.MIN, Velocity.MAX);
             }
         }
 
