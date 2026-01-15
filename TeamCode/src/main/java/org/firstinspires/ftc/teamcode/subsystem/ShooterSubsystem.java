@@ -15,11 +15,12 @@ public class ShooterSubsystem implements Subsystem {
     private MotorEx shooterMotor;
 
     private final TrapezoidInterpolator powerProfile =
-            new TrapezoidInterpolator(Const.Shooter.createProfile(), 0.0);
+            new TrapezoidInterpolator(Const.Shooter.Profile.create(), 0.0);
 
     @Override
     public void initialize() {
-        shooterMotor = new MotorEx(Const.Motor.SHOOTER);
+        shooterMotor = new MotorEx(Const.Shooter.Motor.NAME);
+        shooterMotor.reverse();
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         powerProfile.reset();
     }
@@ -34,7 +35,7 @@ public class ShooterSubsystem implements Subsystem {
 
     public final Command shoot() {
         return new LambdaCommand()
-                .setStart(() -> powerProfile.setGoal(Const.Shooter.SHOOT_POWER))
+                .setStart(() -> powerProfile.setGoal(Const.Shooter.Power.SHOOT))
                 .setIsDone(() -> false)
                 .setStop(i -> powerProfile.setGoal(0.0))
                 .requires(this)
@@ -43,7 +44,7 @@ public class ShooterSubsystem implements Subsystem {
 
     public final Command reverse() {
         return new LambdaCommand()
-                .setStart(() -> powerProfile.setGoal(Const.Shooter.REVERSE_POWER))
+                .setStart(() -> powerProfile.setGoal(Const.Shooter.Power.REVERSE))
                 .setIsDone(() -> false)
                 .setStop(i -> powerProfile.setGoal(0.0))
                 .requires(this)
@@ -57,5 +58,10 @@ public class ShooterSubsystem implements Subsystem {
                 .requires(this)
                 .named("shooterStop");
     }
+    public boolean isAtVelocity() {
+        double rpm = Math.abs(shooterMotor.getVelocity());
+        return rpm >= Const.Shooter.Control.MIN_SHOOT_RPM;
+    }
+
 
 }
