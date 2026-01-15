@@ -10,7 +10,7 @@ import com.pedropathing.ftc.localization.Encoder;
 import com.pedropathing.ftc.localization.constants.DriveEncoderConstants;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.config.RobotConfig;
+import org.firstinspires.ftc.teamcode.config.Const;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
@@ -23,23 +23,23 @@ public class Constants {
             .centripetalScaling(0.005);
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
-            .rightFrontMotorName(RobotConfig.DriveMotor.RIGHT_FRONT)
-            .rightRearMotorName(RobotConfig.DriveMotor.RIGHT_REAR)
-            .leftRearMotorName(RobotConfig.DriveMotor.LEFT_REAR)
-            .leftFrontMotorName(RobotConfig.DriveMotor.LEFT_FRONT)
-            .leftFrontMotorDirection(RobotConfig.DriveMotor.LEFT_FRONT_DIR)
-            .leftRearMotorDirection(RobotConfig.DriveMotor.LEFT_REAR_DIR)
-            .rightFrontMotorDirection(RobotConfig.DriveMotor.RIGHT_FRONT_DIR)
-            .rightRearMotorDirection(RobotConfig.DriveMotor.RIGHT_REAR_DIR)
+            .rightFrontMotorName(Const.Drive.Motor.RIGHT_FRONT)
+            .rightRearMotorName(Const.Drive.Motor.RIGHT_REAR)
+            .leftRearMotorName(Const.Drive.Motor.LEFT_REAR)
+            .leftFrontMotorName(Const.Drive.Motor.LEFT_FRONT)
+            .leftFrontMotorDirection(Const.Drive.Direction.LEFT_FRONT)
+            .leftRearMotorDirection(Const.Drive.Direction.LEFT_REAR)
+            .rightFrontMotorDirection(Const.Drive.Direction.RIGHT_FRONT)
+            .rightRearMotorDirection(Const.Drive.Direction.RIGHT_REAR)
             .xVelocity(83.495)
             .yVelocity(84.8075)
             ;
 
     public static DriveEncoderConstants localizerConstants = new DriveEncoderConstants()
-            .rightFrontMotorName(RobotConfig.DriveMotor.RIGHT_FRONT)
-            .rightRearMotorName(RobotConfig.DriveMotor.RIGHT_REAR)
-            .leftRearMotorName(RobotConfig.DriveMotor.LEFT_REAR)
-            .leftFrontMotorName(RobotConfig.DriveMotor.LEFT_FRONT)
+            .rightFrontMotorName(Const.Drive.Motor.RIGHT_FRONT)
+            .rightRearMotorName(Const.Drive.Motor.RIGHT_REAR)
+            .leftRearMotorName(Const.Drive.Motor.LEFT_REAR)
+            .leftFrontMotorName(Const.Drive.Motor.LEFT_FRONT)
             .leftFrontEncoderDirection(Encoder.REVERSE)
             .leftRearEncoderDirection(Encoder.REVERSE)
             .rightFrontEncoderDirection(Encoder.FORWARD)

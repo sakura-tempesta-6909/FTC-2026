@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
-import org.firstinspires.ftc.teamcode.config.Const;
-import org.firstinspires.ftc.teamcode.config.RobotConfig;
-
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.hardware.powerable.SetPower;
+import org.firstinspires.ftc.teamcode.config.Const;
 
 public class IntakeSubsystem implements Subsystem {
 
@@ -17,17 +15,16 @@ public class IntakeSubsystem implements Subsystem {
 
     @Override
     public void initialize() {
-        motor = new MotorEx(Const.Motor.INTAKE);
-        motor.reverse();
+        motor = new MotorEx(Const.Intake.Motor.NAME);
     }
 
     public Command intake() {
-        return new SetPower(motor, Const.Intake.INTAKE_POWER).requires(this).named("intake");
+        return new SetPower(motor, Const.Intake.Power.INTAKE).requires(this).named("intake");
 
     }
 
     public Command retract() {
-        return new SetPower(motor, Const.Intake.INTAKE_REVERSE_POWER).requires(this).named("retract");
+        return new SetPower(motor, Const.Intake.Power.REVERSE).requires(this).named("retract");
     }
 
     public Command stop() {
