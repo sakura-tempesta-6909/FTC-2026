@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.config;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.teamcode.util.TrapezoidParameters;
 
 /**
@@ -36,6 +37,7 @@ public final class Const {
         public static final class Motor {
             public static final String NAME = "ShooterMotor";
         }
+
         public static final class PID {
             public static final double KP = 0.00035;
             public static final double KI = 0.00000035;
@@ -44,8 +46,8 @@ public final class Const {
 
         // --- パワー設定 ---
         public static final class Velocity {
-            public static final double TARGET_RPM = 2000;
-            public static final double REVERSE_TARGET_RPM = -2000;
+            public static final double TARGET_RPM = 1800;
+            public static final double REVERSE_TARGET_RPM = -1800;
             public static final double MIN = -1.0;
             public static final double MAX = 1.0;
         }

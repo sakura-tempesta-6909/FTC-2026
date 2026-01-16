@@ -3,15 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode.teleop;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import dev.nextftc.core.commands.CommandManager;
-import dev.nextftc.core.components.BindingsComponent;
-import dev.nextftc.core.components.SubsystemComponent;
-import dev.nextftc.extensions.pedro.PedroComponent;
-import dev.nextftc.extensions.pedro.PedroDriverControlled;
-import dev.nextftc.ftc.Gamepads;
-import dev.nextftc.ftc.NextFTCOpMode;
-import dev.nextftc.ftc.components.BulkReadComponent;
-import dev.nextftc.hardware.driving.DriverControlledCommand;
+
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
@@ -21,10 +13,21 @@ import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 import java.util.List;
 
+import dev.nextftc.core.commands.CommandManager;
+import dev.nextftc.core.components.BindingsComponent;
+import dev.nextftc.core.components.SubsystemComponent;
+import dev.nextftc.extensions.pedro.PedroComponent;
+import dev.nextftc.extensions.pedro.PedroDriverControlled;
+import dev.nextftc.ftc.Gamepads;
+import dev.nextftc.ftc.NextFTCOpMode;
+import dev.nextftc.ftc.components.BulkReadComponent;
+import dev.nextftc.hardware.driving.DriverControlledCommand;
+
 @TeleOp(name = "Main")
 public class Main extends NextFTCOpMode {
 
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
+
     private final ElapsedTime loopTimer = new ElapsedTime();
     private int lastSnapshotSize = 0;
 
@@ -35,6 +38,12 @@ public class Main extends NextFTCOpMode {
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
+    }
+
+    @Override
+    public void onInit() {
+        telemetry = panelsTelemetry.getFtcTelemetry();
+
     }
 
     @Override
@@ -78,6 +87,6 @@ public class Main extends NextFTCOpMode {
 
         panelsTelemetry.getTelemetry().addData("dt", dt);
         panelsTelemetry.getTelemetry().addData("running", String.join(", ", running));
-        panelsTelemetry.getTelemetry().update(telemetry);
+        panelsTelemetry.getTelemetry().update();
     }
 }
