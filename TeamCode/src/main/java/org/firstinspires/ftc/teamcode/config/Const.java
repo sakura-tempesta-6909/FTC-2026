@@ -46,8 +46,8 @@ public final class Const {
 
         // --- パワー設定 ---
         public static final class Velocity {
-            public static final double TARGET_RPM = 1800;
-            public static final double REVERSE_TARGET_RPM = -1800;
+            public static final double TARGET_RPM = 1600;
+            public static final double REVERSE_TARGET_RPM = -1600;
             public static final double MIN = -1.0;
             public static final double MAX = 1.0;
         }

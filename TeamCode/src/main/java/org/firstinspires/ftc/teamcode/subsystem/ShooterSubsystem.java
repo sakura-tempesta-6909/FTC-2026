@@ -5,6 +5,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.config.Const;
+import org.firstinspires.ftc.teamcode.config.PIDTuning;
 
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
@@ -17,7 +18,7 @@ public class ShooterSubsystem implements Subsystem {
     public static final ShooterSubsystem INSTANCE = new ShooterSubsystem();
 
     private MotorEx shooterMotor;
-    public static PIDCoefficients pidCoefficients = new PIDCoefficients(0.0004, 0.0000004, 0);
+    public static PIDCoefficients pidCoefficients = new PIDCoefficients(PIDTuning.KP, PIDTuning.KI, PIDTuning.KD);
     private ControlSystem controller;
 
     @Override
