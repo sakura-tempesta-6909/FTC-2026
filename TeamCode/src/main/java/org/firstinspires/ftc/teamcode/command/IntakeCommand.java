@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.command;
 
+import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
+
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.utility.LambdaCommand;
-import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 
 public class IntakeCommand {
 
@@ -27,7 +28,7 @@ public class IntakeCommand {
                 .named("retractArtifacts");
     }
 
-    public static Command stopAll() {
+    public static Command stopIntake() {
         return new LambdaCommand()
                 .setStart(() -> new ParallelGroup(
                         FeederSubsystem.INSTANCE.stop(),

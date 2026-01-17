@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.command;
 
-import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.commands.utility.LambdaCommand;
-
 import org.firstinspires.ftc.teamcode.config.Const;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
+
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 
 public class ShooterCommand {
     public static Command shootArtifacts() {
@@ -19,12 +19,10 @@ public class ShooterCommand {
                     }
                 })
                 .setStop(i -> FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP))
-                        .setIsDone(() -> false)
-                        .requires(ShooterSubsystem.INSTANCE,FeederSubsystem.INSTANCE)
+                .setIsDone(() -> false)
+                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
                 .named("shootArtifacts");
     }
-
-
 
 
     public static Command reverseArtifacts() {
@@ -38,10 +36,10 @@ public class ShooterCommand {
                 .named("reverseArtifacts");
     }
 
-    public static Command stopAll() {
+    public static Command stopShooter() {
         return new LambdaCommand()
                 .setStart(() -> {
-                    ShooterSubsystem.INSTANCE.stop().schedule();
+                    ShooterSubsystem.INSTANCE.stopShooter();
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
                 })
                 .setIsDone(() -> true)

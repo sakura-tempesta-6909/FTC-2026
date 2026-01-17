@@ -9,8 +9,6 @@ import org.firstinspires.ftc.teamcode.config.Const;
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
 import dev.nextftc.control.feedback.PIDCoefficients;
-import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
 
@@ -51,21 +49,17 @@ public class ShooterSubsystem implements Subsystem {
         controller.setGoal(new KineticState(0.0, rpm));
     }
 
-
-    public final Command shoot() {
-        return new LambdaCommand().setStart(() -> controller.setGoal(new KineticState(0.0, Const.Shooter.Velocity.TARGET_RPM))).setIsDone(() -> false).setStop(i -> controller.setGoal(new KineticState(0.0, 0.0))).requires(this).named("shooterShoot");
+    public void stopShooter() {
+        shooterMotor.setPower(0.0);
     }
 
-    public final Command reverse() {
-        return new LambdaCommand().setStart(() -> controller.setGoal(new KineticState(0.0, Const.Shooter.Velocity.REVERSE_TARGET_RPM))).setIsDone(() -> false).setStop(i -> controller.setGoal(new KineticState(0.0, 0.0))).requires(this).named("shooterReverse");
-    }
-
-    public final Command stop() {
-        return new LambdaCommand().setStart(() -> controller.setGoal(new KineticState(0.0, 0.0))).setIsDone(() -> true).requires(this).named("shooterStop");
-    }
 
     public boolean isAtVelocity() {
-        double rpm = Math.abs(shooterMotor.getVelocity());
-        return rpm >= Const.Shooter.Control.MIN_SHOOT_RPM;
+        double error = Math.abs(
+                controller.getGoal().getVelocity()
+                        - shooterMotor.getVelocity()
+        );
+        return error < 200;
     }
+
 }

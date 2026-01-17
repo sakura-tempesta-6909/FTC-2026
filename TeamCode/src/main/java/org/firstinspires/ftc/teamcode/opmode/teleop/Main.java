@@ -56,19 +56,19 @@ public class Main extends NextFTCOpMode {
         driverControlled.schedule();
         Gamepads.gamepad1().x()
                 .whenTrue(ShooterCommand.shootArtifacts())
-                .whenBecomesFalse(ShooterCommand.stopAll());
+                .whenBecomesFalse(ShooterCommand.stopShooter());
 
         Gamepads.gamepad1().y()
                 .whenTrue(ShooterCommand.reverseArtifacts())
-                .whenBecomesFalse(ShooterCommand.stopAll());
+                .whenBecomesFalse(ShooterCommand.stopShooter());
 
         Gamepads.gamepad1().a()
                 .whenTrue(IntakeCommand.intake())
-                .whenBecomesFalse(IntakeCommand.stopAll());
+                .whenBecomesFalse(IntakeCommand.stopIntake());
 
         Gamepads.gamepad1().b()
                 .whenTrue(IntakeCommand.outtake())
-                .whenBecomesFalse(IntakeCommand.stopAll());
+                .whenBecomesFalse(IntakeCommand.stopIntake());
 
     }
 
