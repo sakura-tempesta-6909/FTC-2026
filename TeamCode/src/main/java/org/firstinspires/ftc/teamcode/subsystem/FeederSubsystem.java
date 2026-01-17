@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
-import dev.nextftc.core.commands.Command;
+import org.firstinspires.ftc.teamcode.config.Const;
+
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
-import dev.nextftc.hardware.powerable.SetPower;
-import org.firstinspires.ftc.teamcode.config.Const;
 
 public class FeederSubsystem implements Subsystem {
     public enum FeederState {
@@ -37,16 +36,5 @@ public class FeederSubsystem implements Subsystem {
         }
     }
 
-    public Command feed() {
-        return new SetPower(feederMotor, Const.Feeder.Power.FEED).requires(this).named("feederFeed");
-    }
-
-    public Command retract() {
-        return new SetPower(feederMotor, Const.Feeder.Power.RETRACT).requires(this).named("feederRetract");
-    }
-
-    public Command stop() {
-        return new SetPower(feederMotor, 0.0).requires(this).named("feederStop");
-    }
 
 }

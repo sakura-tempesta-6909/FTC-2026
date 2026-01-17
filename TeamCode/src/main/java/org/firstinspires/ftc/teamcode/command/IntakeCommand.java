@@ -4,7 +4,6 @@ import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 
 import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 
 public class IntakeCommand {
@@ -19,10 +18,10 @@ public class IntakeCommand {
 
     public static Command outtake() {
         return new LambdaCommand()
-                .setStart(() -> new ParallelGroup(
-                        FeederSubsystem.INSTANCE.retract(),
-                        IntakeSubsystem.INSTANCE.retract()
-                ).schedule())
+                .setStart(() -> {
+                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
+                    IntakeSubsystem.INSTANCE.retract().schedule();
+                })
                 .setIsDone(() -> false)
                 .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
                 .named("retractArtifacts");
@@ -30,10 +29,10 @@ public class IntakeCommand {
 
     public static Command stopIntake() {
         return new LambdaCommand()
-                .setStart(() -> new ParallelGroup(
-                        FeederSubsystem.INSTANCE.stop(),
-                        IntakeSubsystem.INSTANCE.stop()
-                ).schedule())
+                .setStart(() -> {
+                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
+                    IntakeSubsystem.INSTANCE.stop().schedule();
+                })
                 .setIsDone(() -> true)
                 .named("stopAll");
     }

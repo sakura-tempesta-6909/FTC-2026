@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.command;
 
-import org.firstinspires.ftc.teamcode.config.Const;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
@@ -10,7 +9,7 @@ import dev.nextftc.core.commands.utility.LambdaCommand;
 public class ShooterCommand {
     public static Command shootArtifacts() {
         return new LambdaCommand()
-                .setStart(() -> ShooterSubsystem.INSTANCE.setTargetRPM(Const.Shooter.Velocity.TARGET_RPM))
+                .setStart(() -> ShooterSubsystem.INSTANCE.setState(ShooterSubsystem.ShooterState.setTargetRPM))
                 .setUpdate(() -> {
                     if (ShooterSubsystem.INSTANCE.isAtVelocity()) {
                         FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.FEED);
@@ -28,7 +27,7 @@ public class ShooterCommand {
     public static Command reverseArtifacts() {
         return new LambdaCommand()
                 .setStart(() -> {
-                    ShooterSubsystem.INSTANCE.setReverseTargetRPM(Const.Shooter.Velocity.REVERSE_TARGET_RPM);
+                    ShooterSubsystem.INSTANCE.setState(ShooterSubsystem.ShooterState.setReverseTargetRPM);
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
                 })
                 .setIsDone(() -> false)
@@ -39,10 +38,11 @@ public class ShooterCommand {
     public static Command stopShooter() {
         return new LambdaCommand()
                 .setStart(() -> {
-                    ShooterSubsystem.INSTANCE.stopShooter();
+                    ShooterSubsystem.INSTANCE.setState(ShooterSubsystem.ShooterState.stopShooter);
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
                 })
                 .setIsDone(() -> true)
+                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
                 .named("stopAll");
     }
 }

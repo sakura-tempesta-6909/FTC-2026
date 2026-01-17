@@ -15,6 +15,18 @@ import dev.nextftc.hardware.impl.MotorEx;
 
 @Configurable
 public class ShooterSubsystem implements Subsystem {
+    public enum ShooterState {
+        setTargetRPM,
+        setReverseTargetRPM,
+        stopShooter
+    }
+
+    private ShooterState state = ShooterState.stopShooter;
+
+    public void setState(ShooterState state) {
+        this.state = state;
+    }
+
     public static final ShooterSubsystem INSTANCE = new ShooterSubsystem();
 
     private MotorEx shooterMotor;
@@ -33,25 +45,28 @@ public class ShooterSubsystem implements Subsystem {
 
     @Override
     public void periodic() {
-        double power = controller.calculate(new KineticState(shooterMotor.getCurrentPosition(), shooterMotor.getVelocity()));
+        switch (state) {
+            case setTargetRPM ->
+                    controller.setGoal(new KineticState(0.0, Const.Shooter.Velocity.TARGET_RPM));
+
+            case setReverseTargetRPM ->
+                    controller.setGoal(new KineticState(0.0, Const.Shooter.Velocity.REVERSE_TARGET_RPM));
+
+            case stopShooter -> {
+                shooterMotor.setPower(0.0);
+                controller.setGoal(new KineticState(0.0, 0.0));
+                return;
+            }
+        }
+        double power = controller.calculate(
+                new KineticState(0.0, shooterMotor.getVelocity())
+        );
         shooterMotor.setPower(power);
+
         PanelsTelemetry.INSTANCE.getTelemetry().addData("P", pidCoefficients.kP);
         PanelsTelemetry.INSTANCE.getTelemetry().addData("goal", controller.getGoal().getVelocity());
         PanelsTelemetry.INSTANCE.getTelemetry().addData("current", shooterMotor.getVelocity());
-        PanelsTelemetry.INSTANCE.getTelemetry().addData("power", power);
         PanelsTelemetry.INSTANCE.getTelemetry().addData("isAtVelocity", isAtVelocity());
-    }
-
-    public void setTargetRPM(double rpm) {
-        controller.setGoal(new KineticState(0.0, rpm));
-    }
-
-    public void setReverseTargetRPM(double rpm) {
-        controller.setGoal(new KineticState(0.0, rpm));
-    }
-
-    public void stopShooter() {
-        shooterMotor.setPower(0.0);
     }
 
 
