@@ -28,7 +28,6 @@ public class ShooterCommand {
         return new LambdaCommand()
                 .setStart(() -> {
                     ShooterSubsystem.INSTANCE.setState(ShooterSubsystem.ShooterState.setReverseTargetRPM);
-                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
                 })
                 .setIsDone(() -> false)
                 .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)

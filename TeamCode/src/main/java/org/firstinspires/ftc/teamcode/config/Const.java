@@ -44,9 +44,9 @@ public final class Const {
 
         // --- パワー設定 ---
         public static final class Velocity {
-            public static final double TARGET_RPM = 1800;
-            public static final double REVERSE_TARGET_RPM = -1800;
-            public static final double MIN_SHOOT_RPM = 1700;
+            public static final double TARGET_RPM = 1600;
+            public static final double REVERSE_TARGET_RPM = -1400;
+            public static final double MIN_SHOOT_RPM = 1500;
         }
 
         // --- 制御設定 ---
