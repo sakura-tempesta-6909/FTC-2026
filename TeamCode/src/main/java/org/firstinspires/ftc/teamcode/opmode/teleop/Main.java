@@ -51,23 +51,24 @@ public class Main extends NextFTCOpMode {
         DriverControlledCommand driverControlled = new PedroDriverControlled(
                 Gamepads.gamepad2().leftStickY(),
                 Gamepads.gamepad2().leftStickX(),
-                Gamepads.gamepad2().rightStickX()
+                Gamepads.gamepad2().rightStickX(),
+                true
         );
         driverControlled.schedule();
         Gamepads.gamepad1().x().and(Gamepads.gamepad1().y().not())
-                .whenTrue(ShooterCommand.shootArtifacts())
+                .whenBecomesTrue(ShooterCommand.shootArtifacts())
                 .whenBecomesFalse(ShooterCommand.stopShooter());
 
         Gamepads.gamepad1().y().and(Gamepads.gamepad1().x().not())
-                .whenTrue(ShooterCommand.reverseArtifacts())
+                .whenBecomesTrue(ShooterCommand.reverseArtifacts())
                 .whenBecomesFalse(ShooterCommand.stopShooter());
 
         Gamepads.gamepad1().a().and(Gamepads.gamepad1().b().not())
-                .whenTrue(IntakeCommand.intake())
+                .whenBecomesTrue(IntakeCommand.intake())
                 .whenBecomesFalse(IntakeCommand.stopIntake());
 
         Gamepads.gamepad1().b().and(Gamepads.gamepad1().a().not())
-                .whenTrue(IntakeCommand.outtake())
+                .whenBecomesTrue(IntakeCommand.outtake())
                 .whenBecomesFalse(IntakeCommand.stopIntake());
 
     }

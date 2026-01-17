@@ -9,6 +9,7 @@ public class FeederSubsystem implements Subsystem {
     public enum FeederState {
         FEED,
         STOP,
+        WEAKFEED,
         RETRACT
     }
 
@@ -31,6 +32,7 @@ public class FeederSubsystem implements Subsystem {
     public void periodic() {
         switch (state) {
             case FEED -> feederMotor.setPower(Const.Feeder.Power.FEED);
+            case WEAKFEED -> feederMotor.setPower(Const.Feeder.Power.WEAKFEED);
             case RETRACT -> feederMotor.setPower(Const.Feeder.Power.RETRACT);
             case STOP -> feederMotor.setPower(0.0);
         }

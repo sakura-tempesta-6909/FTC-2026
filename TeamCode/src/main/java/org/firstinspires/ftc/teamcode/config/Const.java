@@ -37,16 +37,16 @@ public final class Const {
         }
 
         public static final class PID {
-            public static final double KP = 0.00035;
-            public static final double KI = 0.00000035;
+            public static final double KP = 0.007;
+            public static final double KI = 0.0;
             public static final double KD = 0;
         }
 
         // --- パワー設定 ---
         public static final class Velocity {
-            public static final double TARGET_RPM = 1800;
-            public static final double REVERSE_TARGET_RPM = -1800;
-            public static final double MIN_SHOOT_RPM = 1700;
+            public static final double TARGET_RPM = 1700;
+            public static final double REVERSE_TARGET_RPM = -1400;
+            public static final double MIN_SHOOT_RPM = 1600;
         }
 
         // --- 制御設定 ---
@@ -75,11 +75,13 @@ public final class Const {
         // --- モーター設定 ---
         public static final class Motor {
             public static final String NAME = "FeederMotor";
+            public static final double isAttime = 0.15;
         }
 
         // --- パワー設定 ---
         public static final class Power {
             public static final double FEED = 1.0;
+            public static final double WEAKFEED = 0.3;
             public static final double RETRACT = -1.0;
         }
     }

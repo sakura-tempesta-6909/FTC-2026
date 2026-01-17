@@ -10,7 +10,10 @@ public class IntakeCommand {
 
     public static Command intake() {
         return new LambdaCommand()
-                .setStart(() -> IntakeSubsystem.INSTANCE.intake().schedule())
+                .setStart(() -> {
+                    IntakeSubsystem.INSTANCE.intake().schedule();
+                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.WEAKFEED);
+                })
                 .setIsDone(() -> false)
                 .requires(IntakeSubsystem.INSTANCE)
                 .named("intakeArtifacts");
