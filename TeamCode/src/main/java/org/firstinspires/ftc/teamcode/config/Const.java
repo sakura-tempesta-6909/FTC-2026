@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.config;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.util.TrapezoidParameters;
-
 /**
  * ロボットの設定値を一元管理するクラス。
  * サブシステムごとに階層化された構造。
@@ -46,27 +44,13 @@ public final class Const {
 
         // --- パワー設定 ---
         public static final class Velocity {
-            public static final double TARGET_RPM = 1600;
-            public static final double REVERSE_TARGET_RPM = -1600;
-            public static final double MIN = -1.0;
-            public static final double MAX = 1.0;
-        }
-
-        // --- 台形プロファイル設定 ---
-        public static final class Profile {
-            public static final double MAX_VEL = 2.0;       // [power/sec]
-            public static final double MAX_ACCEL = 10.0;    // [power/sec^2]
-            public static final double MAX_DT = 0.05;       // [sec]
-
-            public static TrapezoidParameters create() {
-                return new TrapezoidParameters(MAX_VEL, MAX_ACCEL, MAX_DT, Velocity.MIN, Velocity.MAX);
-            }
+            public static final double TARGET_RPM = 1800;
+            public static final double REVERSE_TARGET_RPM = -1800;
+            public static final double MIN_SHOOT_RPM = 1700;
         }
 
         // --- 制御設定 ---
-        public static final class Control {
-            public static final double MIN_SHOOT_RPM = 1800;
-        }
+
     }
 
     // ========== インテークサブシステム ==========

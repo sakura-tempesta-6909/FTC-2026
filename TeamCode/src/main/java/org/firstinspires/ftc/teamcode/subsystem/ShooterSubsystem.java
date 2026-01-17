@@ -71,11 +71,8 @@ public class ShooterSubsystem implements Subsystem {
 
 
     public boolean isAtVelocity() {
-        double error = Math.abs(
-                controller.getGoal().getVelocity()
-                        - shooterMotor.getVelocity()
-        );
-        return error < 200;
+        double rpm = Math.abs(shooterMotor.getVelocity());
+        return rpm >= Const.Shooter.Velocity.MIN_SHOOT_RPM;
     }
 
 }
