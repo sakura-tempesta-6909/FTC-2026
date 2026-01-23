@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.config;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.teamcode.util.TrapezoidParameters;
 
 /**
  * ロボットの設定値を一元管理するクラス。
@@ -37,29 +36,21 @@ public final class Const {
             public static final String NAME = "ShooterMotor";
         }
 
-        // --- パワー設定 ---
-        public static final class Power {
-            public static final double SHOOT = 0.8;
-            public static final double REVERSE = -0.8;
-            public static final double MIN = -1.0;
-            public static final double MAX = 1.0;
+        public static final class PID {
+            public static final double KP = 0.0073;
+            public static final double KI = 0.0;
+            public static final double KD = 0;
         }
 
-        // --- 台形プロファイル設定 ---
-        public static final class Profile {
-            public static final double MAX_VEL = 2.0;       // [power/sec]
-            public static final double MAX_ACCEL = 10.0;    // [power/sec^2]
-            public static final double MAX_DT = 0.05;       // [sec]
-
-            public static TrapezoidParameters create() {
-                return new TrapezoidParameters(MAX_VEL, MAX_ACCEL, MAX_DT, Power.MIN, Power.MAX);
-            }
+        // --- パワー設定 ---
+        public static final class Velocity {
+            public static final double TARGET_RPM = 1600;
+            public static final double REVERSE_TARGET_RPM = -1400;
+            public static final double MIN_SHOOT_RPM = 1500;
         }
 
         // --- 制御設定 ---
-        public static final class Control {
-            public static final double MIN_SHOOT_RPM = 1800;
-        }
+
     }
 
     // ========== インテークサブシステム ==========
@@ -84,11 +75,13 @@ public final class Const {
         // --- モーター設定 ---
         public static final class Motor {
             public static final String NAME = "FeederMotor";
+            public static final double isAttime = 0.15;
         }
 
         // --- パワー設定 ---
         public static final class Power {
             public static final double FEED = 1.0;
+            public static final double WEAKFEED = 0.3;
             public static final double RETRACT = -1.0;
         }
     }
