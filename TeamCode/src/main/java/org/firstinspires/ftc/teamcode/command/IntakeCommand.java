@@ -11,7 +11,7 @@ public class IntakeCommand {
     public static Command intake() {
         return new LambdaCommand()
                 .setStart(() -> {
-                    IntakeSubsystem.INSTANCE.intake().schedule();
+                    IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.WEAKFEED);
                 })
                 .setIsDone(() -> false)
@@ -23,7 +23,7 @@ public class IntakeCommand {
         return new LambdaCommand()
                 .setStart(() -> {
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
-                    IntakeSubsystem.INSTANCE.retract().schedule();
+                    IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.REVERSE);
                 })
                 .setIsDone(() -> false)
                 .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
@@ -34,7 +34,7 @@ public class IntakeCommand {
         return new LambdaCommand()
                 .setStart(() -> {
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
-                    IntakeSubsystem.INSTANCE.stop().schedule();
+                    IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.STOP);
                 })
                 .setIsDone(() -> true)
                 .named("stopAll");

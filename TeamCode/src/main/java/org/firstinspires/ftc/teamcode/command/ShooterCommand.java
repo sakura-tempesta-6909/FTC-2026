@@ -24,16 +24,16 @@ public class ShooterCommand {
                 })
                 .setUpdate(() -> {
                     if (indexAlignTimer.seconds() < Const.Feeder.Motor.isAttime) {
-                        IntakeSubsystem.INSTANCE.intake().schedule();
+                        IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
                         FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
                         return;
                     }
 
                     if (ShooterSubsystem.INSTANCE.isAtVelocity()) {
-                        IntakeSubsystem.INSTANCE.intake().schedule();
+                        IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
                         FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.FEED);
                     } else {
-                        IntakeSubsystem.INSTANCE.stop().schedule();
+                        IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.STOP);
                         FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
                     }
                 })

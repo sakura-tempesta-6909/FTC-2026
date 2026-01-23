@@ -37,16 +37,16 @@ public final class Const {
         }
 
         public static final class PID {
-            public static final double KP = 0.007;
+            public static final double KP = 0.0073;
             public static final double KI = 0.0;
             public static final double KD = 0;
         }
 
         // --- パワー設定 ---
         public static final class Velocity {
-            public static final double TARGET_RPM = 1700;
+            public static final double TARGET_RPM = 1600;
             public static final double REVERSE_TARGET_RPM = -1400;
-            public static final double MIN_SHOOT_RPM = 1600;
+            public static final double MIN_SHOOT_RPM = 1500;
         }
 
         // --- 制御設定 ---

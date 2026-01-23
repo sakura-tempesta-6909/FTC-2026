@@ -2,12 +2,22 @@ package org.firstinspires.ftc.teamcode.subsystem;
 
 import org.firstinspires.ftc.teamcode.config.Const;
 
-import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
-import dev.nextftc.hardware.powerable.SetPower;
+
 
 public class IntakeSubsystem implements Subsystem {
+    public enum IntakeState {
+        INTAKE,
+        STOP,
+        REVERSE
+    }
+
+    private IntakeSubsystem.IntakeState state = IntakeSubsystem.IntakeState.STOP;
+
+    public void setState(IntakeSubsystem.IntakeState state) {
+        this.state = state;
+    }
 
     public static final IntakeSubsystem INSTANCE = new IntakeSubsystem();
 
@@ -19,17 +29,13 @@ public class IntakeSubsystem implements Subsystem {
         intakeMotor = new MotorEx(Const.Intake.Motor.NAME);
     }
 
-    public Command intake() {
-        return new SetPower(intakeMotor, Const.Intake.Power.INTAKE).requires(this).named("intake");
-
-    }
-
-    public Command retract() {
-        return new SetPower(intakeMotor, Const.Intake.Power.REVERSE).requires(this).named("retract");
-    }
-
-    public Command stop() {
-        return new SetPower(intakeMotor, 0.0).requires(this).named("stop");
+    @Override
+    public void periodic() {
+        switch (state) {
+            case INTAKE -> intakeMotor.setPower(Const.Intake.Power.INTAKE);
+            case REVERSE -> intakeMotor.setPower(Const.Intake.Power.REVERSE);
+            case STOP -> intakeMotor.setPower(0.0);
+        }
     }
 
 }
