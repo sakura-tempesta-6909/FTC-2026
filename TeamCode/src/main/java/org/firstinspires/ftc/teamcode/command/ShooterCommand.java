@@ -37,16 +37,12 @@ public class ShooterCommand {
                         FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
                     }
                 })
-                .setStop(i ->
-                        FeederSubsystem.INSTANCE.setState(
-                                FeederSubsystem.FeederState.STOP
-                        )
-                )
                 .setIsDone(() -> false)
                 .requires(
                         ShooterSubsystem.INSTANCE,
                         FeederSubsystem.INSTANCE
                 )
+                .setInterruptible(true)
                 .named("shootArtifacts");
     }
 
@@ -57,7 +53,7 @@ public class ShooterCommand {
                     ShooterSubsystem.INSTANCE.setState(ShooterSubsystem.ShooterState.setReverseTargetRPM);
                 })
                 .setIsDone(() -> false)
-                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                .requires(ShooterSubsystem.INSTANCE)
                 .named("reverseArtifacts");
     }
 
@@ -66,9 +62,11 @@ public class ShooterCommand {
                 .setStart(() -> {
                     ShooterSubsystem.INSTANCE.setState(ShooterSubsystem.ShooterState.stopShooter);
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
+                    IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.STOP);
                 })
                 .setIsDone(() -> true)
-                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                .setInterruptible(true)
+                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE)
                 .named("stopAll");
     }
 }

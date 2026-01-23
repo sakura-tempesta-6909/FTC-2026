@@ -15,7 +15,7 @@ public class IntakeCommand {
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.WEAKFEED);
                 })
                 .setIsDone(() -> false)
-                .requires(IntakeSubsystem.INSTANCE)
+                .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
                 .named("intakeArtifacts");
     }
 
@@ -36,7 +36,9 @@ public class IntakeCommand {
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
                     IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.STOP);
                 })
+                .setInterruptible(true)
                 .setIsDone(() -> true)
+                .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
                 .named("stopAll");
     }
 }
