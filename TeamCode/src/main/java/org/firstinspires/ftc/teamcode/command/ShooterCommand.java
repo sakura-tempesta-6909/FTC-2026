@@ -1,51 +1,74 @@
 package org.firstinspires.ftc.teamcode.command;
 
-import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.commands.groups.ParallelGroup;
-import dev.nextftc.core.commands.utility.LambdaCommand;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.config.Const;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
+
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 
 public class ShooterCommand {
     public static Command shootArtifacts() {
+        ElapsedTime indexAlignTimer = new ElapsedTime();
+
+
         return new LambdaCommand()
-                .setStart(() -> ShooterSubsystem.INSTANCE.shoot().schedule())
+                .setStart(() -> {
+                    ShooterSubsystem.INSTANCE.setState(
+                            ShooterSubsystem.ShooterState.setTargetRPM
+                    );
+                    indexAlignTimer.reset();
+                })
                 .setUpdate(() -> {
+                    if (indexAlignTimer.seconds() < Const.Feeder.Motor.isAttime) {
+                        IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
+                        FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
+                        return;
+                    }
+
                     if (ShooterSubsystem.INSTANCE.isAtVelocity()) {
-                        FeederSubsystem.INSTANCE.feed().schedule();
+                        IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
+                        FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.FEED);
                     } else {
-                        FeederSubsystem.INSTANCE.stop().schedule();
+                        IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.STOP);
+                        FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
                     }
                 })
-                        .setStop(i -> FeederSubsystem.INSTANCE.stop().schedule())
-                        .setIsDone(() -> false)
-                        .requires(FeederSubsystem.INSTANCE)
+                .setStop(i ->
+                        FeederSubsystem.INSTANCE.setState(
+                                FeederSubsystem.FeederState.STOP
+                        )
+                )
+                .setIsDone(() -> false)
+                .requires(
+                        ShooterSubsystem.INSTANCE,
+                        FeederSubsystem.INSTANCE
+                )
                 .named("shootArtifacts");
     }
 
 
-
-
     public static Command reverseArtifacts() {
         return new LambdaCommand()
-                .setStart(() -> new ParallelGroup(
-                                ShooterSubsystem.INSTANCE.reverse(),
-                                FeederSubsystem.INSTANCE.retract()
-                        ).schedule()
-                )
+                .setStart(() -> {
+                    ShooterSubsystem.INSTANCE.setState(ShooterSubsystem.ShooterState.setReverseTargetRPM);
+                })
                 .setIsDone(() -> false)
                 .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
                 .named("reverseArtifacts");
     }
 
-    public static Command stopAll() {
+    public static Command stopShooter() {
         return new LambdaCommand()
-                .setStart(() -> new ParallelGroup(
-                                ShooterSubsystem.INSTANCE.stop(),
-                                FeederSubsystem.INSTANCE.stop()
-                        ).schedule()
-                )
+                .setStart(() -> {
+                    ShooterSubsystem.INSTANCE.setState(ShooterSubsystem.ShooterState.stopShooter);
+                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
+                })
                 .setIsDone(() -> true)
+                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
                 .named("stopAll");
     }
 }

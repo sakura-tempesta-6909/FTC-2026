@@ -1,14 +1,26 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
-import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.subsystems.Subsystem;
-import dev.nextftc.hardware.impl.MotorEx;
-import dev.nextftc.hardware.powerable.SetPower;
 import org.firstinspires.ftc.teamcode.config.Const;
 
+import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.hardware.impl.MotorEx;
+
 public class FeederSubsystem implements Subsystem {
+    public enum FeederState {
+        FEED,
+        STOP,
+        WEAKFEED,
+        RETRACT
+    }
+
     public static final FeederSubsystem INSTANCE = new FeederSubsystem();
     private MotorEx feederMotor;
+    private FeederState state = FeederState.STOP;
+
+    public void setState(FeederState state) {
+        this.state = state;
+    }
+
 
     @Override
     public void initialize() {
@@ -16,16 +28,15 @@ public class FeederSubsystem implements Subsystem {
         feederMotor.reverse();
     }
 
-    public Command feed() {
-        return new SetPower(feederMotor, Const.Feeder.Power.FEED).requires(this).named("feederFeed");
+    @Override
+    public void periodic() {
+        switch (state) {
+            case FEED -> feederMotor.setPower(Const.Feeder.Power.FEED);
+            case WEAKFEED -> feederMotor.setPower(Const.Feeder.Power.WEAKFEED);
+            case RETRACT -> feederMotor.setPower(Const.Feeder.Power.RETRACT);
+            case STOP -> feederMotor.setPower(0.0);
+        }
     }
 
-    public Command retract() {
-        return new SetPower(feederMotor, Const.Feeder.Power.RETRACT).requires(this).named("feederRetract");
-    }
-
-    public Command stop() {
-        return new SetPower(feederMotor, 0.0).requires(this).named("feederStop");
-    }
 
 }

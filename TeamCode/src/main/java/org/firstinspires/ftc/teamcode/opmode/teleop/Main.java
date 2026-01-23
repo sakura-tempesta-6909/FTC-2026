@@ -3,15 +3,7 @@ package org.firstinspires.ftc.teamcode.opmode.teleop;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import dev.nextftc.core.commands.CommandManager;
-import dev.nextftc.core.components.BindingsComponent;
-import dev.nextftc.core.components.SubsystemComponent;
-import dev.nextftc.extensions.pedro.PedroComponent;
-import dev.nextftc.extensions.pedro.PedroDriverControlled;
-import dev.nextftc.ftc.Gamepads;
-import dev.nextftc.ftc.NextFTCOpMode;
-import dev.nextftc.ftc.components.BulkReadComponent;
-import dev.nextftc.hardware.driving.DriverControlledCommand;
+
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
@@ -21,10 +13,21 @@ import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 import java.util.List;
 
+import dev.nextftc.core.commands.CommandManager;
+import dev.nextftc.core.components.BindingsComponent;
+import dev.nextftc.core.components.SubsystemComponent;
+import dev.nextftc.extensions.pedro.PedroComponent;
+import dev.nextftc.extensions.pedro.PedroDriverControlled;
+import dev.nextftc.ftc.Gamepads;
+import dev.nextftc.ftc.NextFTCOpMode;
+import dev.nextftc.ftc.components.BulkReadComponent;
+import dev.nextftc.hardware.driving.DriverControlledCommand;
+
 @TeleOp(name = "Main")
 public class Main extends NextFTCOpMode {
 
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
+
     private final ElapsedTime loopTimer = new ElapsedTime();
     private int lastSnapshotSize = 0;
 
@@ -38,28 +41,35 @@ public class Main extends NextFTCOpMode {
     }
 
     @Override
+    public void onInit() {
+        telemetry = panelsTelemetry.getFtcTelemetry();
+
+    }
+
+    @Override
     public void onStartButtonPressed() {
         DriverControlledCommand driverControlled = new PedroDriverControlled(
                 Gamepads.gamepad2().leftStickY(),
                 Gamepads.gamepad2().leftStickX(),
-                Gamepads.gamepad2().rightStickX()
+                Gamepads.gamepad2().rightStickX(),
+                true
         );
         driverControlled.schedule();
-        Gamepads.gamepad1().x()
-                .whenTrue(ShooterCommand.shootArtifacts())
-                .whenBecomesFalse(ShooterCommand.stopAll());
+        Gamepads.gamepad1().x().and(Gamepads.gamepad1().y().not())
+                .whenBecomesTrue(ShooterCommand.shootArtifacts())
+                .whenBecomesFalse(ShooterCommand.stopShooter());
 
-        Gamepads.gamepad1().y()
-                .whenTrue(ShooterCommand.reverseArtifacts())
-                .whenBecomesFalse(ShooterCommand.stopAll());
+        Gamepads.gamepad1().y().and(Gamepads.gamepad1().x().not())
+                .whenBecomesTrue(ShooterCommand.reverseArtifacts())
+                .whenBecomesFalse(ShooterCommand.stopShooter());
 
-        Gamepads.gamepad1().a()
-                .whenTrue(IntakeCommand.intake())
-                .whenBecomesFalse(IntakeCommand.stopAll());
+        Gamepads.gamepad1().a().and(Gamepads.gamepad1().b().not())
+                .whenBecomesTrue(IntakeCommand.intake())
+                .whenBecomesFalse(IntakeCommand.stopIntake());
 
-        Gamepads.gamepad1().b()
-                .whenTrue(IntakeCommand.outtake())
-                .whenBecomesFalse(IntakeCommand.stopAll());
+        Gamepads.gamepad1().b().and(Gamepads.gamepad1().a().not())
+                .whenBecomesTrue(IntakeCommand.outtake())
+                .whenBecomesFalse(IntakeCommand.stopIntake());
 
     }
 
@@ -78,6 +88,6 @@ public class Main extends NextFTCOpMode {
 
         panelsTelemetry.getTelemetry().addData("dt", dt);
         panelsTelemetry.getTelemetry().addData("running", String.join(", ", running));
-        panelsTelemetry.getTelemetry().update(telemetry);
+        panelsTelemetry.getTelemetry().update();
     }
 }
