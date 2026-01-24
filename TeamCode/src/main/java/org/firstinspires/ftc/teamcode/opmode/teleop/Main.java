@@ -3,16 +3,6 @@ package org.firstinspires.ftc.teamcode.opmode.teleop;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.command.IntakeCommand;
-import org.firstinspires.ftc.teamcode.command.ShooterCommand;
-import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
-
-import java.util.List;
-
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -22,6 +12,14 @@ import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 import dev.nextftc.hardware.driving.DriverControlledCommand;
+import org.firstinspires.ftc.teamcode.command.IntakeCommand;
+import org.firstinspires.ftc.teamcode.command.ShooterCommand;
+import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
+
+import java.util.List;
 
 @TeleOp(name = "Main")
 public class Main extends NextFTCOpMode {
@@ -57,11 +55,11 @@ public class Main extends NextFTCOpMode {
         driverControlled.schedule();
         Gamepads.gamepad1().x().and(Gamepads.gamepad1().y().not())
                 .whenBecomesTrue(ShooterCommand.shootArtifacts())
-                .whenBecomesFalse(ShooterCommand.stopShooter());
+                .whenBecomesFalse(ShooterCommand.stopAll());
 
         Gamepads.gamepad1().y().and(Gamepads.gamepad1().x().not())
                 .whenBecomesTrue(ShooterCommand.reverseArtifacts())
-                .whenBecomesFalse(ShooterCommand.stopShooter());
+                .whenBecomesFalse(ShooterCommand.stopAll());
 
         Gamepads.gamepad1().a().and(Gamepads.gamepad1().b().not())
                 .whenBecomesTrue(IntakeCommand.intake())
