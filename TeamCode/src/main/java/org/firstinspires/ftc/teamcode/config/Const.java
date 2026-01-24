@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.config;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
@@ -21,10 +22,10 @@ public final class Const {
 
         // --- モーター方向設定 ---
         public static final class Direction {
-            public static final DcMotor.Direction LEFT_FRONT = DcMotor.Direction.FORWARD;
-            public static final DcMotor.Direction RIGHT_FRONT = DcMotor.Direction.REVERSE;
-            public static final DcMotor.Direction LEFT_REAR = DcMotor.Direction.FORWARD;
-            public static final DcMotor.Direction RIGHT_REAR = DcMotor.Direction.REVERSE;
+            public static final DcMotor.Direction LEFT_FRONT = DcMotor.Direction.REVERSE;
+            public static final DcMotor.Direction RIGHT_FRONT = DcMotor.Direction.FORWARD;
+            public static final DcMotor.Direction LEFT_REAR = DcMotor.Direction.REVERSE;
+            public static final DcMotor.Direction RIGHT_REAR = DcMotor.Direction.FORWARD;
         }
     }
 
@@ -84,5 +85,11 @@ public final class Const {
             public static final double WEAKFEED = 0.3;
             public static final double RETRACT = -1.0;
         }
+    }
+
+    public static final class Imu {
+        public static final String NAME = "imu";
+        public static final RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIRECTION = RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+        public static final RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIRECTION = RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD;
     }
 }
