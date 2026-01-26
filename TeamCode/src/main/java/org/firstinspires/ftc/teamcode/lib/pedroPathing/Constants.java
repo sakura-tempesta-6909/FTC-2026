@@ -17,17 +17,14 @@ import org.firstinspires.ftc.teamcode.config.Const;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(8)
-            .forwardZeroPowerAcceleration(-25.60869319770496)
-            .lateralZeroPowerAcceleration(-49.0453151408264)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0.02, 0))
-            .headingPIDFCoefficients(new PIDFCoefficients(1.5, 0, 0.08, 0.01))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.012, 0, 0.0006, 0.6, 0));
-//            .useSecondaryTranslationalPIDF(true)
-//            .useSecondaryHeadingPIDF(true)
-//            .useSecondaryDrivePIDF(true)
-//            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.2, 0, 0.01, 0))
-//            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1.5, 0, 0.01, 0.03))
-//            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.01, 0, 0, 0.6, 0))
+            .forwardZeroPowerAcceleration(-33.746419509264)
+            .lateralZeroPowerAcceleration(-64.84795146314282)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.085, 0.0002, 0.01, 0.03))
+            .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0.00002, 0.02, 0.015))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.25, 0, 0.008, 0.6, 0.01))
+            .useSecondaryHeadingPIDF(true)
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1.0, 0.00002, 0.02, 0.005))
+            .centripetalScaling(0.0007);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
@@ -39,20 +36,20 @@ public class Constants {
             .leftRearMotorDirection(Const.Drive.Direction.LEFT_REAR)
             .rightFrontMotorDirection(Const.Drive.Direction.RIGHT_FRONT)
             .rightRearMotorDirection(Const.Drive.Direction.RIGHT_REAR)
-            .xVelocity(69.02034)
-            .yVelocity(59.059874746611854);
+            .xVelocity(70.465150986493)
+            .yVelocity(50.63047404925902);
 
     public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
             .forwardEncoder_HardwareMapName(Const.Drive.Motor.RIGHT_FRONT)
             .strafeEncoder_HardwareMapName(Const.Drive.Motor.RIGHT_REAR)
             .forwardPodY(0)
-            .strafePodX(20 * 0.393701)
+            .strafePodX(-17 * 0.393701)
             .forwardTicksToInches(5.48710876667E-4)
             .strafeTicksToInches(5.353212522E-4)
             .IMU_HardwareMapName(Const.Imu.NAME)
             .IMU_Orientation(new RevHubOrientationOnRobot(Const.Imu.LOGO_FACING_DIRECTION, Const.Imu.USB_FACING_DIRECTION));
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1.2, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
@@ -62,4 +59,3 @@ public class Constants {
                 .build();
     }
 }
-

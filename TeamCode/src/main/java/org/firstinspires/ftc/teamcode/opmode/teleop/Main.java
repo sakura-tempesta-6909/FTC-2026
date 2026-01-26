@@ -50,7 +50,7 @@ public class Main extends NextFTCOpMode {
     @Override
     public void onInit() {
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(130.6204556962025, 121.69596202531648, Math.toRadians(36)));
+        PedroComponent.follower().setStartingPose(new Pose(122.815, 124.882, Math.toRadians(36)));
         Drawing.init();
 
     }
