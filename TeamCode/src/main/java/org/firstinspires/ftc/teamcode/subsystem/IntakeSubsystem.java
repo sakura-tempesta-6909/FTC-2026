@@ -27,6 +27,10 @@ public class IntakeSubsystem implements Subsystem {
     @Override
     public void initialize() {
         intakeMotor = new MotorEx(Const.Intake.Motor.NAME);
+        intakeMotor.brakeMode();
+        intakeMotor.reverse();
+        // 状態をリセット
+        state = IntakeState.STOP;
     }
 
     @Override

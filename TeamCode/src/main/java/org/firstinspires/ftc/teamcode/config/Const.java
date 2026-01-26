@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.config;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * ロボットの設定値を一元管理するクラス。
  * サブシステムごとに階層化された構造。
  */
+@Configurable
 public final class Const {
 
     // ========== ドライブサブシステム ==========
@@ -45,9 +47,9 @@ public final class Const {
 
         // --- パワー設定 ---
         public static final class Velocity {
-            public static final double TARGET_RPM = 1600;
+            public static final double TARGET_RPM = 1300;
             public static final double REVERSE_TARGET_RPM = -1400;
-            public static final double MIN_SHOOT_RPM = 1500;
+            public static final double TOLERANCE = 100;
         }
 
         // --- 制御設定 ---

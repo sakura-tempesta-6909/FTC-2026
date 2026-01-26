@@ -25,21 +25,21 @@ public class ShooterSubsystem implements Subsystem {
     public void initialize() {
         shooterMotor = new MotorEx(Const.Shooter.Motor.NAME);
         shooterMotor.reverse();
+        shooterMotor.brakeMode();
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         controller = ControlSystem.builder().velPid(pidCoefficients).build();
+
+        // 状態をリセット
+        targetVelocity = 0.0;
         controller.setGoal(new KineticState(0.0, 0.0));
     }
 
     @Override
     public void periodic() {
-        if (targetVelocity == 0.0) {
-            shooterMotor.setPower(0.0);
-        } else {
-            double power = controller.calculate(
-                    new KineticState(0.0, shooterMotor.getVelocity())
-            );
-            shooterMotor.setPower(power);
-        }
+        double power = controller.calculate(
+                new KineticState(0.0, shooterMotor.getVelocity())
+        );
+        shooterMotor.setPower(power);
 
         PanelsTelemetry.INSTANCE.getTelemetry().addData("P", pidCoefficients.kP);
         PanelsTelemetry.INSTANCE.getTelemetry().addData("goal", controller.getGoal().getVelocity());
@@ -64,12 +64,8 @@ public class ShooterSubsystem implements Subsystem {
         setTargetVelocity(0.0);
     }
 
-    public double getVelocity() {
-        return shooterMotor.getVelocity();
-    }
 
     public boolean isAtVelocity() {
-        double rpm = Math.abs(shooterMotor.getVelocity());
-        return rpm >= Const.Shooter.Velocity.MIN_SHOOT_RPM;
+        return Math.abs(shooterMotor.getVelocity() - controller.getGoal().getVelocity()) <= Const.Shooter.Velocity.TOLERANCE;
     }
 }

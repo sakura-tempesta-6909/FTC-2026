@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 public class ShooterCommand {
 
     /**
-     * シューターを目標RPMまでスピンアップする
-     * 完了条件: 目標回転数に達する
+     * Spin up the shooter to target RPM.
+     * Completion: when target velocity is reached.
      */
     public static Command spinUp() {
         return new LambdaCommand()
@@ -24,8 +24,8 @@ public class ShooterCommand {
     }
 
     /**
-     * シューターを逆回転でスピンアップする
-     * 完了条件: 目標回転数に達する
+     * Spin up the shooter in reverse direction.
+     * Completion: when target velocity is reached.
      */
     public static Command spinUpReverse() {
         return new LambdaCommand()
@@ -37,8 +37,8 @@ public class ShooterCommand {
     }
 
     /**
-     * シューターを停止する
-     * 完了条件: 即座に完了
+     * Stop the shooter.
+     * Completion: immediate.
      */
     public static Command stop() {
         return new LambdaCommand()
@@ -50,8 +50,8 @@ public class ShooterCommand {
     }
 
     /**
-     * Feederを1秒間巻き取る
-     * 完了条件: 1秒経過
+     * Retract feeder for 1 second.
+     * Completion: after 1 second.
      */
     public static Command retractFeeder() {
         ElapsedTime timer = new ElapsedTime();
@@ -60,48 +60,66 @@ public class ShooterCommand {
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
                     timer.reset();
                 })
-                .setIsDone(() -> timer.seconds() >= 1.0)
+                .setIsDone(() -> timer.seconds() >= 0.5)
                 .setInterruptible(true)
                 .requires(FeederSubsystem.INSTANCE)
                 .named("retractFeeder");
     }
 
     /**
-     * 発射シーケンス全体
-     * 1. Feederを1秒間巻き取る
-     * 2. Shooterをスピンアップ（目標速度まで待機）
-     * 3. FeederとIntakeを回転させる
+     * Full shooting sequence.
+     * 1. Retract feeder for 1 second
+     * 2. Spin up shooter (wait until target velocity)
+     * 3. Run feeder and intake
      */
-    public static Command shootArtifacts() {
-        return new SequentialGroup(
-                // 1. Feederを1秒間巻き取る
-                retractFeeder(),
+    public static Command shootArtifacts(boolean isRetract) {
+        SequentialGroup sequentialGroup;
+        if (isRetract) {
+            sequentialGroup = new SequentialGroup(
+                    // 1. Retract feeder for 1 second
+                    retractFeeder(),
 
-                // 2. Shooterをスピンアップ（目標速度に達するまで待機）
-                spinUp(),
+                    // 2. Spin up shooter (wait until target velocity is reached)
+                    spinUp(),
 
-                // 3. FeederとIntakeを回転（継続コマンド）
-                new LambdaCommand()
-                        .setStart(() -> {
-                            IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
-                            FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.FEED);
-                        })
-                        .setIsDone(() -> false)
-                        .setInterruptible(true)
-                        .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
-                        .named("feedAndIntake")
-        ).named("shootArtifacts");
+                    // 3. Run feeder and intake (continuous)
+                    new LambdaCommand()
+                            .setStart(() -> {
+                                IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
+                                FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.FEED);
+                            })
+                            .setIsDone(() -> true)
+                            .setInterruptible(true)
+                            .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+                            .named("feedAndIntake"));
+        } else {
+            sequentialGroup = new SequentialGroup(
+                    spinUp(),
+
+                    // 3. Run feeder and intake (continuous)
+                    new LambdaCommand()
+                            .setStart(() -> {
+                                IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
+                                FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.FEED);
+                            })
+                            .setIsDone(() -> true)
+                            .setInterruptible(true)
+                            .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
+
+                            .named("feedAndIntake"));
+        }
+        return sequentialGroup.named("shootArtifacts");
     }
 
     /**
-     * 逆回転シーケンス
+     * Reverse rotation sequence.
      */
     public static Command reverseArtifacts() {
         return spinUpReverse();
     }
 
     /**
-     * 全停止
+     * Stop all subsystems.
      */
     public static Command stopAll() {
         return new LambdaCommand()
