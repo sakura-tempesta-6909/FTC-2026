@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.command;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.groups.SequentialGroup;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 public class ShooterCommand {
+    private double rpm;
 
     /**
      * Spin up the shooter to target RPM.
@@ -60,7 +62,18 @@ public class ShooterCommand {
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
                     timer.reset();
                 })
-                .setIsDone(() -> timer.seconds() >= 0.5)
+                .setIsDone(() -> timer.seconds() >= 0.2)
+                .setInterruptible(true)
+                .requires(FeederSubsystem.INSTANCE)
+                .named("retractFeeder");
+    }
+
+    public static Command stopFeeder() {
+        return new LambdaCommand()
+                .setStart(() -> {
+                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
+                })
+                .setIsDone(() -> true)
                 .setInterruptible(true)
                 .requires(FeederSubsystem.INSTANCE)
                 .named("retractFeeder");
@@ -78,7 +91,7 @@ public class ShooterCommand {
             sequentialGroup = new SequentialGroup(
                     // 1. Retract feeder for 1 second
                     retractFeeder(),
-
+                    stopFeeder(),
                     // 2. Spin up shooter (wait until target velocity is reached)
                     spinUp(),
 
@@ -108,7 +121,9 @@ public class ShooterCommand {
 
                             .named("feedAndIntake"));
         }
-        return sequentialGroup.named("shootArtifacts");
+        return sequentialGroup.
+                setInterruptible(true)
+                .named("shootArtifacts");
     }
 
     /**
