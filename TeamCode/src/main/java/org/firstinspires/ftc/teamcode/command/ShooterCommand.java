@@ -60,7 +60,18 @@ public class ShooterCommand {
                     FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
                     timer.reset();
                 })
-                .setIsDone(() -> timer.seconds() >= 0.5)
+                .setIsDone(() -> timer.seconds() >= 0.2)
+                .setInterruptible(true)
+                .requires(FeederSubsystem.INSTANCE)
+                .named("retractFeeder");
+    }
+
+    public static Command stopFeeder() {
+        return new LambdaCommand()
+                .setStart(() -> {
+                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
+                })
+                .setIsDone(() -> true)
                 .setInterruptible(true)
                 .requires(FeederSubsystem.INSTANCE)
                 .named("retractFeeder");
@@ -78,7 +89,7 @@ public class ShooterCommand {
             sequentialGroup = new SequentialGroup(
                     // 1. Retract feeder for 1 second
                     retractFeeder(),
-
+                    stopFeeder(),
                     // 2. Spin up shooter (wait until target velocity is reached)
                     spinUp(),
 
@@ -108,7 +119,9 @@ public class ShooterCommand {
 
                             .named("feedAndIntake"));
         }
-        return sequentialGroup.named("shootArtifacts");
+        return sequentialGroup.
+                setInterruptible(true)
+                .named("shootArtifacts");
     }
 
     /**

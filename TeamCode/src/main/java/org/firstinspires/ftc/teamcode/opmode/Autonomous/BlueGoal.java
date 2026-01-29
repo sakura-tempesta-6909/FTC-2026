@@ -51,7 +51,7 @@ public class BlueGoal extends NextFTCOpMode {
         PedroComponent.follower().setStartingPose(new Pose(25.94, 130.323, Math.toRadians(140)));
         testPath = new TestPath(PedroComponent.follower());
         ShooterCommand.stopAll();
-        IntakeCommand.stopAll();
+        IntakeCommand.stopIntake();
         Drawing.init();
         Drawing.drawDebug(PedroComponent.follower());
     }
@@ -66,17 +66,17 @@ public class BlueGoal extends NextFTCOpMode {
         return new SequentialGroup(
                 new FollowPath(testPath.Path1, true, 0.3),
                 new ParallelGroup(
-                        ShooterCommand.shootArtifacts(),
+                        ShooterCommand.shootArtifacts(false),
                         new Delay(3)
                 ),
                 ShooterCommand.stopAll(),
                 new FollowPath(testPath.Path2),
                 IntakeCommand.intake(),
                 new FollowPath(testPath.Path3, false, 0.3),
-                IntakeCommand.stopAll(),
+                IntakeCommand.stopIntake(),
                 new FollowPath(testPath.Path4),
                 new ParallelGroup(
-                        ShooterCommand.shootArtifacts(),
+                        ShooterCommand.shootArtifacts(true),
                         new Delay(3)
                 ),
                 ShooterCommand.stopAll(),
