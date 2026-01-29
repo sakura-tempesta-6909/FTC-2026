@@ -5,10 +5,10 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 
-public class BlueGoal {
+public class BlueGoalPath {
     public PathChain Path1, Path2, Path3, Path4,Path5;
 
-    public BlueGoal(Follower follower) {
+    public BlueGoalPath(Follower follower) {
 
         // Path 1
         Path1 = follower.pathBuilder()
