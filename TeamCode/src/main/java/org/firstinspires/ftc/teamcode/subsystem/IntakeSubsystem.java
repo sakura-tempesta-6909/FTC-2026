@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.bylazar.telemetry.PanelsTelemetry;
-
-import org.firstinspires.ftc.teamcode.config.Const;
-
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
+import org.firstinspires.ftc.teamcode.config.Const;
 
 
 public class IntakeSubsystem implements Subsystem {
@@ -29,6 +27,10 @@ public class IntakeSubsystem implements Subsystem {
     @Override
     public void initialize() {
         intakeMotor = new MotorEx(Const.Intake.Motor.NAME);
+        intakeMotor.brakeMode();
+        intakeMotor.reverse();
+        // 状態をリセット
+        state = IntakeState.STOP;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class IntakeSubsystem implements Subsystem {
             case REVERSE -> intakeMotor.setPower(Const.Intake.Power.REVERSE);
             case STOP -> intakeMotor.setPower(0.0);
         }
-        PanelsTelemetry.INSTANCE.getTelemetry().addData("IntakeState", state);
+        PanelsTelemetry.INSTANCE.getTelemetry().addData("Intake State", state.toString());
     }
 
 }

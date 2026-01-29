@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
-import org.firstinspires.ftc.teamcode.config.Const;
-
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
+import org.firstinspires.ftc.teamcode.config.Const;
 
 public class FeederSubsystem implements Subsystem {
     public enum FeederState {
@@ -26,6 +25,10 @@ public class FeederSubsystem implements Subsystem {
     public void initialize() {
         feederMotor = new MotorEx(Const.Feeder.Motor.NAME);
         feederMotor.reverse();
+        feederMotor.brakeMode();
+
+        // 状態をリセット
+        state = FeederState.STOP;
     }
 
     @Override

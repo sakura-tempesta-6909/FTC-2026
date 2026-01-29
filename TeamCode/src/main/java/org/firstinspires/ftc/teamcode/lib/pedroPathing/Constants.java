@@ -1,26 +1,31 @@
 package org.firstinspires.ftc.teamcode.lib.pedroPathing;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.control.FilteredPIDFCoefficients;
 import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
-import com.pedropathing.ftc.localization.Encoder;
-import com.pedropathing.ftc.localization.constants.DriveEncoderConstants;
+import com.pedropathing.ftc.localization.constants.TwoWheelConstants;
 import com.pedropathing.paths.PathConstraints;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.config.Const;
 
+@Configurable
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(2)
-            .forwardZeroPowerAcceleration(-90.278)
-            .lateralZeroPowerAcceleration(-203.5)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0.0,0.01,0.03))
-            .headingPIDFCoefficients(new PIDFCoefficients(8 , 0, 0.01, 0.02))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.03,0.0,0.00001,0.6,0.01))
-            .centripetalScaling(0.005);
+            .mass(8)
+            .forwardZeroPowerAcceleration(-33.746419509264)
+            .lateralZeroPowerAcceleration(-64.84795146314282)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.085, 0.0002, 0.01, 0.03))
+            .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0.00002, 0.02, 0.015))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.25, 0, 0.008, 0.6, 0.01))
+            .useSecondaryHeadingPIDF(true)
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1.0, 0.00002, 0.02, 0.005))
+            .centripetalScaling(0.0007);
+
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
             .rightFrontMotorName(Const.Drive.Motor.RIGHT_FRONT)
@@ -31,47 +36,26 @@ public class Constants {
             .leftRearMotorDirection(Const.Drive.Direction.LEFT_REAR)
             .rightFrontMotorDirection(Const.Drive.Direction.RIGHT_FRONT)
             .rightRearMotorDirection(Const.Drive.Direction.RIGHT_REAR)
-            .xVelocity(83.495)
-            .yVelocity(84.8075)
-            ;
+            .xVelocity(70.465150986493)
+            .yVelocity(50.63047404925902);
 
-    public static DriveEncoderConstants localizerConstants = new DriveEncoderConstants()
-            .rightFrontMotorName(Const.Drive.Motor.RIGHT_FRONT)
-            .rightRearMotorName(Const.Drive.Motor.RIGHT_REAR)
-            .leftRearMotorName(Const.Drive.Motor.LEFT_REAR)
-            .leftFrontMotorName(Const.Drive.Motor.LEFT_FRONT)
-            .leftFrontEncoderDirection(Encoder.REVERSE)
-            .leftRearEncoderDirection(Encoder.REVERSE)
-            .rightFrontEncoderDirection(Encoder.FORWARD)
-            .rightRearEncoderDirection(Encoder.FORWARD)
-            .robotWidth(26*0.393701)
-            .robotLength(32*0.393701)
-            .forwardTicksToInches(0.00794)
-            .strafeTicksToInches(0.00875)
-            .turnTicksToInches(0.0152)
-            ;
+    public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
+            .forwardEncoder_HardwareMapName(Const.Drive.Motor.RIGHT_FRONT)
+            .strafeEncoder_HardwareMapName(Const.Drive.Motor.RIGHT_REAR)
+            .forwardPodY(0)
+            .strafePodX(-17 * 0.393701)
+            .forwardTicksToInches(5.48710876667E-4)
+            .strafeTicksToInches(5.353212522E-4)
+            .IMU_HardwareMapName(Const.Imu.NAME)
+            .IMU_Orientation(new RevHubOrientationOnRobot(Const.Imu.LOGO_FACING_DIRECTION, Const.Imu.USB_FACING_DIRECTION));
 
-//    public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
-//            .forwardEncoder_HardwareMapName(RobotConfig.DriveMotor.RIGHT_REAR)
-//            .strafeEncoder_HardwareMapName(RobotConfig.DriveMotor.RIGHT_FRONT)
-//            .IMU_HardwareMapName(RobotConfig.Imu.NAME)
-//            .IMU_Orientation(RobotConfig.Imu.ORIENTATION)
-//            .strafePodX(-17 * 0.393701)
-//            .forwardPodY(0)
-//            .strafeEncoderDirection(Encoder.FORWARD)
-//            .forwardEncoderDirection(Encoder.REVERSE)
-//            .forwardTicksToInches(5.205)
-//            .strafeTicksToInches(40/155)
-//            ;
-
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1.2, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
-                .driveEncoderLocalizer(localizerConstants)
-//                .twoWheelLocalizer(localizerConstants)
-                .pathConstraints(pathConstraints)
+                .twoWheelLocalizer(localizerConstants)
                 .mecanumDrivetrain(driveConstants)
+                .pathConstraints(pathConstraints)
                 .build();
     }
 }

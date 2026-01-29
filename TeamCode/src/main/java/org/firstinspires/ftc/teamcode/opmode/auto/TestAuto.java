@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.opmode.teleop;
+package org.firstinspires.ftc.teamcode.opmode.auto;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.field.FieldManager;
 import com.bylazar.field.PanelsField;
 import com.bylazar.field.Style;
@@ -10,36 +11,36 @@ import com.pedropathing.math.Vector;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.PoseHistory;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import dev.nextftc.core.commands.CommandManager;
-import dev.nextftc.core.commands.utility.InstantCommand;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.ParallelGroup;
+import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
+import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
-import dev.nextftc.extensions.pedro.PedroDriverControlled;
-import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
-import dev.nextftc.hardware.driving.DriverControlledCommand;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.path.TestPath;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
-import java.util.List;
-
-@TeleOp(name = "Main")
-public class Main extends NextFTCOpMode {
-
+@Autonomous(name = "NextFTC Autonomous Program Java")
+@Configurable
+public class TestAuto extends NextFTCOpMode {
+    private TestPath testPath;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
+    private Limelight3A camera;
 
-    private final ElapsedTime loopTimer = new ElapsedTime();
-    private int lastSnapshotSize = 0;
-
-    public Main() {
+    public TestAuto() {
         addComponents(
                 new PedroComponent(Constants::createFollower),
                 new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE),
@@ -51,58 +52,74 @@ public class Main extends NextFTCOpMode {
     @Override
     public void onInit() {
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(122.815, 124.882, Math.toRadians(36)));
+        camera = hardwareMap.get(Limelight3A.class, "limelight");
+        camera.pipelineSwitch(0);
+        camera.start();
+        PedroComponent.follower().setStartingPose(new Pose(122.815, 126.156, Math.toRadians(36)));
+        PedroComponent.follower().setMaxPower(0.8);
+        testPath = new TestPath(PedroComponent.follower());
+        ShooterCommand.stopAll();
+        IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.STOP);
         Drawing.init();
-
+        Drawing.drawDebug(PedroComponent.follower());
     }
+
 
     @Override
     public void onStartButtonPressed() {
-        DriverControlledCommand driverControlled = new PedroDriverControlled(
-                Gamepads.gamepad2().leftStickY().negate(),
-                Gamepads.gamepad2().leftStickX().negate(),
-                Gamepads.gamepad2().rightStickX().negate(),
-                false
+        autonomousRoutine().schedule();
+    }
+
+    public Command autonomousRoutine() {
+        return new SequentialGroup(
+                new FollowPath(testPath.Path1),
+                new ParallelGroup(
+                        ShooterCommand.shootArtifacts(false),
+                        new Delay(3)
+                ),
+                ShooterCommand.stopAll(),
+                new FollowPath(testPath.Path2),
+                IntakeCommand.intake(),
+                new FollowPath(testPath.Path3, false, 0.5),
+                IntakeCommand.stopIntake(),
+                new FollowPath(testPath.Path4),
+                new ParallelGroup(
+                        ShooterCommand.shootArtifacts(true),
+                        new Delay(3)
+                ),
+                ShooterCommand.stopAll(),
+                new FollowPath(testPath.Path5),
+                IntakeCommand.intake(),
+                new FollowPath(testPath.Path6, false, 0.5),
+                IntakeCommand.stopIntake(),
+                new FollowPath(testPath.Path7),
+                new ParallelGroup(
+                        ShooterCommand.shootArtifacts(true),
+                        new Delay(3)
+                ),
+                ShooterCommand.stopAll()
         );
-        driverControlled.schedule();
-        Gamepads.gamepad1().x().and(Gamepads.gamepad1().y().not())
-                .whenBecomesTrue(ShooterCommand.shootArtifacts(true))
-                .whenBecomesFalse(ShooterCommand.stopAll());
-
-        Gamepads.gamepad1().y().and(Gamepads.gamepad1().x().not())
-                .whenBecomesTrue(ShooterCommand.reverseArtifacts())
-                .whenBecomesFalse(ShooterCommand.stopAll());
-
-        Gamepads.gamepad1().a().and(Gamepads.gamepad1().b().not())
-                .whenBecomesTrue(IntakeCommand.intake())
-                .whenBecomesFalse(IntakeCommand.stopIntake());
-
-        Gamepads.gamepad1().b().and(Gamepads.gamepad1().a().not())
-                .whenBecomesTrue(IntakeCommand.outtake())
-                .whenBecomesFalse(IntakeCommand.stopIntake());
-
-        Gamepads.gamepad2().options()
-                .whenBecomesTrue(new InstantCommand(() -> PedroComponent.follower().setPose(new Pose(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), Math.toRadians(0)))));
     }
 
     @Override
     public void onUpdate() {
-        //実行時間表示
-        double dt = loopTimer.seconds();
-        loopTimer.reset();
+        Drawing.drawDebug(PedroComponent.follower(), getRobotPoseFromCamera());
+    }
 
-        //実行しているコマンドを表示
-        List<String> snapshot = CommandManager.INSTANCE.snapshot();
-        int currentSize = snapshot.size();
-        int fromIndex = Math.min(lastSnapshotSize, currentSize);
-        List<String> running = snapshot.subList(fromIndex, currentSize);
-        lastSnapshotSize = currentSize;
-
-        panelsTelemetry.getTelemetry().addData("dt", dt);
-        panelsTelemetry.getTelemetry().addData("running", String.join(", ", running));
-        panelsTelemetry.getTelemetry().update();
-
-        Drawing.drawDebug(PedroComponent.follower());
+    private Pose getRobotPoseFromCamera() {
+        LLResult result = camera.getLatestResult();
+        if (result != null && result.isValid()) {
+            Pose3D botpose = result.getBotpose();
+            if (botpose != null) {
+                // Limelightの座標（メートル、フィールド中心原点）をPedro座標系（インチ、フィールド角原点）に変換
+                // メートル→インチ変換 + フィールド中心→フィールド角のオフセット(+72インチ)
+                double xPedro = botpose.getPosition().x * 39.3701 + 72;
+                double yPedro = botpose.getPosition().y * 39.3701 + 72;
+                double heading = Math.toRadians(botpose.getOrientation().getYaw());
+                return new Pose(xPedro, yPedro, heading);
+            }
+        }
+        return null;
     }
 }
 
@@ -115,6 +132,9 @@ class Drawing {
     );
     private static final Style historyLook = new Style(
             "", "#4CAF50", 0.75
+    );
+    private static final Style limelightLook = new Style(
+            "", "#97699d", 0.75
     );
 
     /**
@@ -139,6 +159,18 @@ class Drawing {
         drawPoseHistory(follower.getPoseHistory(), historyLook);
         drawRobot(follower.getPose(), historyLook);
 
+        sendPacket();
+    }
+
+    public static void drawDebug(Follower follower, Pose limelightPose) {
+        if (follower.getCurrentPath() != null) {
+            drawPath(follower.getCurrentPath(), robotLook);
+            Pose closestPoint = follower.getPointFromPath(follower.getCurrentPath().getClosestPointTValue());
+            drawRobot(new Pose(closestPoint.getX(), closestPoint.getY(), follower.getCurrentPath().getHeadingGoal(follower.getCurrentPath().getClosestPointTValue())), robotLook);
+        }
+        drawPoseHistory(follower.getPoseHistory(), historyLook);
+        drawRobot(follower.getPose(), historyLook);
+        drawRobot(limelightPose, limelightLook);
         sendPacket();
     }
 

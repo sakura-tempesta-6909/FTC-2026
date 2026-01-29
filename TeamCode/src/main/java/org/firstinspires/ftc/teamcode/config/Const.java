@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.config;
 
+import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
  * ロボットの設定値を一元管理するクラス。
  * サブシステムごとに階層化された構造。
  */
+@Configurable
 public final class Const {
 
     // ========== ドライブサブシステム ==========
@@ -21,10 +24,10 @@ public final class Const {
 
         // --- モーター方向設定 ---
         public static final class Direction {
-            public static final DcMotor.Direction LEFT_FRONT = DcMotor.Direction.FORWARD;
-            public static final DcMotor.Direction RIGHT_FRONT = DcMotor.Direction.REVERSE;
-            public static final DcMotor.Direction LEFT_REAR = DcMotor.Direction.FORWARD;
-            public static final DcMotor.Direction RIGHT_REAR = DcMotor.Direction.REVERSE;
+            public static final DcMotor.Direction LEFT_FRONT = DcMotor.Direction.REVERSE;
+            public static final DcMotor.Direction RIGHT_FRONT = DcMotor.Direction.FORWARD;
+            public static final DcMotor.Direction LEFT_REAR = DcMotor.Direction.REVERSE;
+            public static final DcMotor.Direction RIGHT_REAR = DcMotor.Direction.FORWARD;
         }
     }
 
@@ -44,9 +47,9 @@ public final class Const {
 
         // --- パワー設定 ---
         public static final class Velocity {
-            public static final double TARGET_RPM = 1600;
+            public static final double TARGET_RPM = 1300;
             public static final double REVERSE_TARGET_RPM = -1400;
-            public static final double MIN_SHOOT_RPM = 1500;
+            public static final double TOLERANCE = 100;
         }
 
         // --- 制御設定 ---
@@ -84,5 +87,11 @@ public final class Const {
             public static final double WEAKFEED = 0.3;
             public static final double RETRACT = -1.0;
         }
+    }
+
+    public static final class Imu {
+        public static final String NAME = "imu";
+        public static final RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIRECTION = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+        public static final RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIRECTION = RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
     }
 }
