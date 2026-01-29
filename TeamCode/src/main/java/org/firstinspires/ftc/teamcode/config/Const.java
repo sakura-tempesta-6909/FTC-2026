@@ -34,6 +34,19 @@ public final class Const {
     // ========== シューターサブシステム ==========
     public static final class Shooter {
 
+        public static double rpmFromDistance(double distance) {
+            if (distance < 50) {
+                    return Const.Shooter.Velocity.LOWEST_RPM;
+            } else if (distance < 80) {
+                    return Const.Shooter.Velocity.NORMAL_RPM;
+            } else if (distance < 110) {
+                    return Const.Shooter.Velocity.MEDIUM_HIGH_RPM;
+            } else {
+                    return Const.Shooter.Velocity.HIGHEST_RPM;
+            }
+        }
+
+
         // --- モーター設定 ---
         public static final class Motor {
             public static final String NAME = "ShooterMotor";
@@ -47,7 +60,10 @@ public final class Const {
 
         // --- パワー設定 ---
         public static final class Velocity {
-            public static final double TARGET_RPM = 1300;
+            public static final double HIGHEST_RPM = 1700;
+            public static final double MEDIUM_HIGH_RPM = 1500;
+            public static final double NORMAL_RPM = 1300;
+            public static final double LOWEST_RPM = 1100;
             public static final double REVERSE_TARGET_RPM = -1400;
             public static final double TOLERANCE = 100;
         }

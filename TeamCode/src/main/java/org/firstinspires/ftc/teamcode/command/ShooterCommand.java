@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.command;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.groups.SequentialGroup;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 public class ShooterCommand {
+    private double rpm;
 
     /**
      * Spin up the shooter to target RPM.
