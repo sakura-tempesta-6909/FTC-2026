@@ -13,6 +13,7 @@ import com.pedropathing.util.PoseHistory;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import dev.nextftc.core.commands.CommandManager;
+import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.PedroComponent;
@@ -80,6 +81,8 @@ public class Main extends NextFTCOpMode {
                 .whenBecomesTrue(IntakeCommand.outtake())
                 .whenBecomesFalse(IntakeCommand.stopIntake());
 
+        Gamepads.gamepad2().options()
+                .whenBecomesTrue(new InstantCommand(() -> PedroComponent.follower().setPose(new Pose(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), Math.toRadians(0)))));
     }
 
     @Override
