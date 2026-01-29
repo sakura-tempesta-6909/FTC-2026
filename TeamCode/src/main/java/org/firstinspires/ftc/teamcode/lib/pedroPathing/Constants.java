@@ -7,10 +7,13 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
+import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.pedropathing.ftc.localization.constants.TwoWheelConstants;
 import com.pedropathing.paths.PathConstraints;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.config.Const;
 
 @Configurable
@@ -49,11 +52,21 @@ public class Constants {
             .IMU_HardwareMapName(Const.Imu.NAME)
             .IMU_Orientation(new RevHubOrientationOnRobot(Const.Imu.LOGO_FACING_DIRECTION, Const.Imu.USB_FACING_DIRECTION));
 
+    public static PinpointConstants pinPointLocalizerConstants = new PinpointConstants()
+            .forwardPodY(-3)
+            .strafePodX(-12.5)
+            .distanceUnit(DistanceUnit.CM)
+            .hardwareMapName("pinpoint")
+            .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+            .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
+            .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
+
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1.2, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
-                .twoWheelLocalizer(localizerConstants)
+//                .twoWheelLocalizer(localizerConstants)
+                .pinpointLocalizer(pinPointLocalizerConstants)
                 .mecanumDrivetrain(driveConstants)
                 .pathConstraints(pathConstraints)
                 .build();

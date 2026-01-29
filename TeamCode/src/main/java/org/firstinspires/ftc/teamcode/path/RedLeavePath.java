@@ -9,13 +9,14 @@ public class RedLeavePath {
     public PathChain Path1;
 
     public RedLeavePath(Follower follower) {
-        Path1 = follower.pathBuilder()
-                .addPath(new BezierLine(
-                        new Pose(25.9390051, 130.326392),
-                        new Pose(42.9567016, 115.4570586)
-                ))
-                .setConstantHeadingInterpolation(Math.toRadians(140))
-                .build();
+        Path1 = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(86.000, 8.000),
 
+                                new Pose(86.000, 36.000)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(90))
+
+                .build();
     }
 }

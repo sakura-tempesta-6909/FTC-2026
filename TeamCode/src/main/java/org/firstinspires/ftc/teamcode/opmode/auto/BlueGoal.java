@@ -40,7 +40,7 @@ public class BlueGoal extends NextFTCOpMode {
     @Override
     public void onInit() {
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(25.94, 130.323, Math.toRadians(140)));
+        PedroComponent.follower().setStartingPose(new Pose(25.939, 130.326, Math.toRadians(140)));
         blueGoalPath = new BlueGoalPath(PedroComponent.follower());
         ShooterCommand.stopAll();
         IntakeCommand.stopIntake();

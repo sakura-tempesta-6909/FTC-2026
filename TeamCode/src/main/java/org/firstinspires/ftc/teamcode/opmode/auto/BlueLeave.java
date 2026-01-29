@@ -38,7 +38,7 @@ public class BlueLeave extends NextFTCOpMode {
     @Override
     public void onInit() {
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(25.94, 130.323, Math.toRadians(140)));
+        PedroComponent.follower().setStartingPose(new Pose(56.000, 8.000, Math.toRadians(90)));
         blueLeavePath = new BlueLeavePath(PedroComponent.follower());
         ShooterCommand.stopAll();
         IntakeCommand.stopIntake();

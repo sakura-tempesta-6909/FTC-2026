@@ -40,7 +40,7 @@ public class RedGoal extends NextFTCOpMode {
     @Override
     public void onInit() {
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(25.94, 130.323, Math.toRadians(140)));
+        PedroComponent.follower().setStartingPose(new Pose(116.995, 128.637, Math.toRadians(40)));
         redGoalPath = new RedGoalPath(PedroComponent.follower());
         ShooterCommand.stopAll();
         IntakeCommand.stopIntake();

@@ -15,8 +15,6 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.commands.delays.Delay;
-import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -56,7 +54,7 @@ public class TestAuto extends NextFTCOpMode {
         camera.pipelineSwitch(0);
         camera.start();
         PedroComponent.follower().setStartingPose(new Pose(122.815, 126.156, Math.toRadians(36)));
-        PedroComponent.follower().setMaxPower(0.8);
+        PedroComponent.follower().setMaxPower(0.4);
         testPath = new TestPath(PedroComponent.follower());
         ShooterCommand.stopAll();
         IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.STOP);
@@ -73,30 +71,30 @@ public class TestAuto extends NextFTCOpMode {
     public Command autonomousRoutine() {
         return new SequentialGroup(
                 new FollowPath(testPath.Path1),
-                new ParallelGroup(
-                        ShooterCommand.shootArtifacts(false),
-                        new Delay(3)
-                ),
-                ShooterCommand.stopAll(),
+//                new ParallelGroup(
+//                        ShooterCommand.shootArtifacts(false),
+//                        new Delay(3)
+//                ),
+//                ShooterCommand.stopAll(),
                 new FollowPath(testPath.Path2),
                 IntakeCommand.intake(),
                 new FollowPath(testPath.Path3, false, 0.5),
                 IntakeCommand.stopIntake(),
                 new FollowPath(testPath.Path4),
-                new ParallelGroup(
-                        ShooterCommand.shootArtifacts(true),
-                        new Delay(3)
-                ),
+//                new ParallelGroup(
+//                        ShooterCommand.shootArtifacts(true),
+//                        new Delay(3)
+//                ),
                 ShooterCommand.stopAll(),
                 new FollowPath(testPath.Path5),
                 IntakeCommand.intake(),
                 new FollowPath(testPath.Path6, false, 0.5),
                 IntakeCommand.stopIntake(),
                 new FollowPath(testPath.Path7),
-                new ParallelGroup(
-                        ShooterCommand.shootArtifacts(true),
-                        new Delay(3)
-                ),
+//                new ParallelGroup(
+//                        ShooterCommand.shootArtifacts(true),
+//                        new Delay(3)
+//                ),
                 ShooterCommand.stopAll()
         );
     }
