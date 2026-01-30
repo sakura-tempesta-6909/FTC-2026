@@ -23,17 +23,17 @@ public class BlueGoalPath {
                         new BezierLine(
                                 new Pose(40.704, 112.829),
 
-                                new Pose(43.284, 90.114)
+                                new Pose(43.936, 90.505)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                ).setLinearHeadingInterpolation(Math.toRadians(155), Math.toRadians(180))
 
                 .build();
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(43.284, 90.114),
+                                new Pose(43.936, 90.505),
 
-                                new Pose(12.114, 89.644)
+                                new Pose(12.375, 90.818)
                         )
                 ).setConstantHeadingInterpolation(Math.toRadians(180))
 
@@ -41,11 +41,11 @@ public class BlueGoalPath {
 
         Path4 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(12.114, 89.644),
+                                new Pose(12.375, 90.818),
 
                                 new Pose(40.798, 113.141)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(155))
 
                 .build();
 
@@ -53,17 +53,17 @@ public class BlueGoalPath {
                         new BezierLine(
                                 new Pose(40.798, 113.141),
 
-                                new Pose(43.955, 65.944)
+                                new Pose(44.085, 67.509)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                ).setLinearHeadingInterpolation(Math.toRadians(155), Math.toRadians(180))
 
                 .build();
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(43.955, 65.944),
+                                new Pose(44.085, 67.509),
 
-                                new Pose(12.196, 66.924)
+                                new Pose(11.935, 68.750)
                         )
                 ).setTangentHeadingInterpolation()
 
@@ -71,11 +71,11 @@ public class BlueGoalPath {
 
         Path7 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(12.196, 66.924),
+                                new Pose(11.935, 68.750),
 
                                 new Pose(40.688, 112.387)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(155))
 
                 .build();
 
@@ -83,17 +83,17 @@ public class BlueGoalPath {
                         new BezierLine(
                                 new Pose(40.688, 112.387),
 
-                                new Pose(43.381, 43.067)
+                                new Pose(42.468, 45.545)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                ).setLinearHeadingInterpolation(Math.toRadians(155), Math.toRadians(180))
 
                 .build();
 
         Path9 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(43.381, 43.067),
+                                new Pose(42.468, 45.545),
 
-                                new Pose(11.224, 43.513)
+                                new Pose(11.094, 45.209)
                         )
                 ).setTangentHeadingInterpolation()
 
@@ -101,11 +101,11 @@ public class BlueGoalPath {
 
         Path10 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(11.224, 43.513),
+                                new Pose(11.094, 45.209),
 
                                 new Pose(40.579, 112.722)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(160))
 
                 .build();
 
@@ -113,7 +113,7 @@ public class BlueGoalPath {
                         new BezierLine(
                                 new Pose(40.579, 112.722),
 
-                                new Pose(44.063, 67.614)
+                                new Pose(40.150, 80.918)
                         )
                 ).setTangentHeadingInterpolation()
 
