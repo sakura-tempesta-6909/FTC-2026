@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.ParallelGroup;
@@ -14,6 +15,7 @@ import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
+
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
@@ -40,7 +42,7 @@ public class RedGoal extends NextFTCOpMode {
     @Override
     public void onInit() {
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(116.995, 128.637, Math.toRadians(40)));
+        PedroComponent.follower().setStartingPose(new Pose(117.386, 130.854, Math.toRadians(40)));
         redGoalPath = new RedGoalPath(PedroComponent.follower());
         ShooterCommand.stopAll();
         IntakeCommand.stopIntake();
@@ -72,16 +74,17 @@ public class RedGoal extends NextFTCOpMode {
                         new Delay(3)
                 ),
                 ShooterCommand.stopAll(),
-                new FollowPath(redGoalPath.Path5)
-//                IntakeCommand.intake(),
-//                new FollowPath(testPath.Path6),
-//                IntakeCommand.stopIntake(),
-//                new FollowPath(testPath.Path7),
-//                new ParallelGroup(
-//                        ShooterCommand.shootArtifacts(true),
-//                        new Delay(3)
-//                ),
-//                ShooterCommand.stopAll()
+                new FollowPath(redGoalPath.Path5),
+                IntakeCommand.intake(),
+                new FollowPath(redGoalPath.Path6,false, 0.3),
+                IntakeCommand.stopIntake(),
+                new FollowPath(redGoalPath.Path7),
+                new ParallelGroup(
+                        ShooterCommand.shootArtifacts(true),
+                        new Delay(3)
+                ),
+                ShooterCommand.stopAll(),
+                new FollowPath(redGoalPath.Path8)
         );
     }
 

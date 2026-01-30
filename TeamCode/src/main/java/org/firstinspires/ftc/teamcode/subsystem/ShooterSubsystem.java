@@ -75,6 +75,8 @@ public class ShooterSubsystem implements Subsystem {
             telemetry.addData("Tx", llResult.getTx());
             telemetry.addData("Ty", llResult.getTy());
             telemetry.addData("Ta", llResult.getTa());
+        }else{
+            distance = 0;
         }
         PanelsTelemetry.INSTANCE.getTelemetry().addData("P", pidCoefficients.kP);
         PanelsTelemetry.INSTANCE.getTelemetry().addData("goal", controller.getGoal().getVelocity());
@@ -89,14 +91,16 @@ public class ShooterSubsystem implements Subsystem {
     }
 
     public void setTargetRPM() {
-        if (distance < 50) {
+        if (distance != 0 && distance < 50) {
             setTargetVelocity(Const.Shooter.Velocity.LOWEST_RPM);
-        } else if (distance < 80) {
+        } else if (distance >= 50 && distance < 80) {
             setTargetVelocity(Const.Shooter.Velocity.NORMAL_RPM);
-        } else if (distance < 110) {
+        } else if (distance >= 80 && distance < 110) {
             setTargetVelocity(Const.Shooter.Velocity.MEDIUM_HIGH_RPM);
-        } else {
+        } else if(distance >= 110){
             setTargetVelocity(Const.Shooter.Velocity.HIGHEST_RPM);
+        }else{
+            setTargetVelocity(Const.Shooter.Velocity.NORMAL_RPM);
         }
     }
 

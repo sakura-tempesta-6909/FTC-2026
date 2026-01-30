@@ -60,12 +60,12 @@ public final class Const {
 
         // --- パワー設定 ---
         public static final class Velocity {
-            public static final double HIGHEST_RPM = 1700;
-            public static final double MEDIUM_HIGH_RPM = 1500;
-            public static final double NORMAL_RPM = 1300;
-            public static final double LOWEST_RPM = 1100;
-            public static final double REVERSE_TARGET_RPM = -1400;
-            public static final double TOLERANCE = 100;
+            public static double HIGHEST_RPM = 1600;
+            public static double MEDIUM_HIGH_RPM = 1350;
+            public static double NORMAL_RPM = 1300;
+            public static double LOWEST_RPM = 1000;
+            public static double REVERSE_TARGET_RPM = -1400;
+            public static double TOLERANCE = 100;
         }
 
         // --- 制御設定 ---
