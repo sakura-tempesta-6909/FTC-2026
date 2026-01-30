@@ -64,6 +64,10 @@ public class Main extends NextFTCOpMode {
                 Gamepads.gamepad2().rightStickX().negate(),
                 false
         );
+        Gamepads.gamepad2().rightBumper()
+                        .whenTrue(() -> driverControlled.setScalar(0.2))
+                        .whenFalse(() -> driverControlled.setScalar(1.0));
+
         driverControlled.schedule();
         Gamepads.gamepad1().x().and(Gamepads.gamepad1().y().not())
                 .whenBecomesTrue(ShooterCommand.shootArtifacts(true))
