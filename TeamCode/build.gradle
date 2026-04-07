@@ -32,4 +32,11 @@ dependencies {
     implementation 'dev.nextftc.extensions:pedro:1.0.0'
     implementation 'dev.nextftc:hardware:1.0.1'
     implementation 'dev.nextftc:control:1.0.0'
+
+    // ===== Unit testing =====
+    // JUnit 4 (FTC SDK は JUnit 4 系がトラブルが少ない)
+    testImplementation 'junit:junit:4.13.2'
+    // Mockito core + inline (final class / コンストラクタモック対応)
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
 }

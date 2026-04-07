@@ -1,151 +1,70 @@
 package org.firstinspires.ftc.teamcode.command;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.LambdaCommand;
-import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
+/**
+ * {@link ShooterSubsystem} だけを操作する単一責務コマンド集。
+ * <p>
+ * 「目標到達まで待つ」タイプ ({@link #spinUp()}, {@link #spinUpReverse()}) と、
+ * 「目標到達後に維持し続ける」永続タイプ ({@link #holdRpm()}) に分かれる。
+ * Routine ではこれらを SequentialGroup と ParallelGroup で組み合わせて使う。
+ */
 public class ShooterCommand {
-    private double rpm;
+
+    private ShooterCommand() {}
 
     /**
-     * Spin up the shooter to target RPM.
-     * Completion: when target velocity is reached.
+     * 直近の Limelight 距離から目標 RPM を決め、目標速度に到達するまで待つ。
+     * 自然完了 (= 到達) では何もせず、外部から中断された場合のみ Shooter を停止する。
+     * Routine 内では、この後 {@link #holdRpm()} を ParallelGroup で並べることで
+     * 連射中もキャンセル安全な状態を保つ想定。
      */
     public static Command spinUp() {
         return new LambdaCommand()
                 .setStart(ShooterSubsystem.INSTANCE::setTargetRPM)
                 .setIsDone(ShooterSubsystem.INSTANCE::isAtVelocity)
+                .setStop(interrupted -> {
+                    if (interrupted) ShooterSubsystem.INSTANCE.stop();
+                })
                 .setInterruptible(true)
                 .requires(ShooterSubsystem.INSTANCE)
                 .named("spinUp");
     }
 
     /**
-     * Spin up the shooter in reverse direction.
-     * Completion: when target velocity is reached.
+     * 逆回転方向の目標速度をセットし、目標速度に到達するまで待つ。
+     * 詰まり解除など。中断時のみ Shooter を停止する。
      */
     public static Command spinUpReverse() {
         return new LambdaCommand()
                 .setStart(ShooterSubsystem.INSTANCE::setReverseTargetRPM)
                 .setIsDone(ShooterSubsystem.INSTANCE::isAtVelocity)
+                .setStop(interrupted -> {
+                    if (interrupted) ShooterSubsystem.INSTANCE.stop();
+                })
                 .setInterruptible(true)
                 .requires(ShooterSubsystem.INSTANCE)
                 .named("spinUpReverse");
     }
 
     /**
-     * Stop the shooter.
-     * Completion: immediate.
+     * Shooter の running owner として永続的に動く「維持コマンド」。
+     * <p>
+     * {@link #spinUp()} は目標到達後に自然完了して deque から消えるため、
+     * その後の連射フェーズで Shooter を管理する Command が空白になる問題がある。
+     * このコマンドを ParallelGroup の中で並列実行することで、Routine の
+     * キャンセル時に必ず {@code setStop} が呼ばれて Shooter が停止する。
+     * <p>
+     * 自身では target velocity を変更しない (spinUp が設定した値をそのまま維持する)。
      */
-    public static Command stop() {
+    public static Command holdRpm() {
         return new LambdaCommand()
-                .setStart(ShooterSubsystem.INSTANCE::stop)
-                .setIsDone(() -> true)
+                .setIsDone(() -> false)
+                .setStop(interrupted -> ShooterSubsystem.INSTANCE.stop())
                 .setInterruptible(true)
                 .requires(ShooterSubsystem.INSTANCE)
-                .named("stopShooter");
-    }
-
-    /**
-     * Retract feeder for 1 second.
-     * Completion: after 1 second.
-     */
-    public static Command retractFeeder() {
-        ElapsedTime timer = new ElapsedTime();
-        return new LambdaCommand()
-                .setStart(() -> {
-                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
-                    timer.reset();
-                })
-                .setIsDone(() -> timer.seconds() >= 0.2)
-                .setInterruptible(true)
-                .requires(FeederSubsystem.INSTANCE)
-                .named("retractFeeder");
-    }
-
-    public static Command stopFeeder() {
-        return new LambdaCommand()
-                .setStart(() -> {
-                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
-                })
-                .setIsDone(() -> true)
-                .setInterruptible(true)
-                .requires(FeederSubsystem.INSTANCE)
-                .named("retractFeeder");
-    }
-
-    /**
-     * Full shooting sequence.
-     * 1. Retract feeder for 1 second
-     * 2. Spin up shooter (wait until target velocity)
-     * 3. Run feeder and intake
-     */
-    public static Command shootArtifacts(boolean isRetract) {
-        SequentialGroup sequentialGroup;
-        if (isRetract) {
-            sequentialGroup = new SequentialGroup(
-                    // 1. Retract feeder for 1 second
-                    retractFeeder(),
-                    stopFeeder(),
-                    // 2. Spin up shooter (wait until target velocity is reached)
-                    spinUp(),
-
-                    // 3. Run feeder and intake (continuous)
-                    new LambdaCommand()
-                            .setStart(() -> {
-                                IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
-                                FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.FEED);
-                            })
-                            .setIsDone(() -> true)
-                            .setInterruptible(true)
-                            .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
-                            .named("feedAndIntake"));
-        } else {
-            sequentialGroup = new SequentialGroup(
-                    spinUp(),
-
-                    // 3. Run feeder and intake (continuous)
-                    new LambdaCommand()
-                            .setStart(() -> {
-                                IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
-                                FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.FEED);
-                            })
-                            .setIsDone(() -> true)
-                            .setInterruptible(true)
-                            .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
-
-                            .named("feedAndIntake"));
-        }
-        return sequentialGroup.
-                setInterruptible(true)
-                .named("shootArtifacts");
-    }
-
-    /**
-     * Reverse rotation sequence.
-     */
-    public static Command reverseArtifacts() {
-        return spinUpReverse();
-    }
-
-    /**
-     * Stop all subsystems.
-     */
-    public static Command stopAll() {
-        return new LambdaCommand()
-                .setStart(() -> {
-                    ShooterSubsystem.INSTANCE.stop();
-                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
-                    IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.STOP);
-                })
-                .setIsDone(() -> true)
-                .setInterruptible(true)
-                .requires(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE)
-                .named("stopAll");
+                .named("holdRpm");
     }
 }
