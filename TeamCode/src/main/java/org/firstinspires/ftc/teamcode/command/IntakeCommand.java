@@ -22,7 +22,7 @@ public class IntakeCommand {
                 .setIsDone(() -> false)
                 .setStop(interrupted -> IntakeSubsystem.INSTANCE.stop())
                 .setInterruptible(true)
-                .requires(IntakeSubsystem.INSTANCE)
+                .addRequirements(IntakeSubsystem.INSTANCE)
                 .named("intake");
     }
 
@@ -33,7 +33,7 @@ public class IntakeCommand {
                 .setIsDone(() -> false)
                 .setStop(interrupted -> IntakeSubsystem.INSTANCE.stop())
                 .setInterruptible(true)
-                .requires(IntakeSubsystem.INSTANCE)
+                .addRequirements(IntakeSubsystem.INSTANCE)
                 .named("outtake");
     }
 }

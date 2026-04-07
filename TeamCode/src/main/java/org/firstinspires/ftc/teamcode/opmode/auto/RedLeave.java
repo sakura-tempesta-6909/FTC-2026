@@ -12,8 +12,6 @@ import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
-import org.firstinspires.ftc.teamcode.command.IntakeCommand;
-import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.path.RedLeavePath;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
@@ -40,8 +38,6 @@ public class RedLeave extends NextFTCOpMode {
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(new Pose(86.000, 8.000, Math.toRadians(90)));
         redLeavePath = new RedLeavePath(PedroComponent.follower());
-        ShooterCommand.stopAll();
-        IntakeCommand.stopIntake();
         Drawing.init();
         Drawing.drawDebug(PedroComponent.follower());
     }

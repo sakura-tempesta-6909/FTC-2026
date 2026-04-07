@@ -7,9 +7,7 @@ import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.testutil.SubsystemTestBase;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 
@@ -29,8 +27,8 @@ public class FeederCommandTest extends SubsystemTestBase {
 
     @Test
     public void feed_isPerpetual() {
+        // start() を呼ばずに isDone だけ確認 (Supplier<Boolean>{false} なので)
         Command cmd = FeederCommand.feed();
-        cmd.start();
         assertFalse(cmd.isDone());
     }
 

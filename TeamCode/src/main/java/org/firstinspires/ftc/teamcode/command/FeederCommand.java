@@ -24,7 +24,7 @@ public class FeederCommand {
                 .setIsDone(() -> false)
                 .setStop(interrupted -> FeederSubsystem.INSTANCE.stop())
                 .setInterruptible(true)
-                .requires(FeederSubsystem.INSTANCE)
+                .addRequirements(FeederSubsystem.INSTANCE)
                 .named("feed");
     }
 
@@ -37,7 +37,7 @@ public class FeederCommand {
                 .setIsDone(() -> false)
                 .setStop(interrupted -> FeederSubsystem.INSTANCE.stop())
                 .setInterruptible(true)
-                .requires(FeederSubsystem.INSTANCE)
+                .addRequirements(FeederSubsystem.INSTANCE)
                 .named("weakFeed");
     }
 
@@ -50,7 +50,7 @@ public class FeederCommand {
                 .setIsDone(() -> false)
                 .setStop(interrupted -> FeederSubsystem.INSTANCE.stop())
                 .setInterruptible(true)
-                .requires(FeederSubsystem.INSTANCE)
+                .addRequirements(FeederSubsystem.INSTANCE)
                 .named("retract");
     }
 }

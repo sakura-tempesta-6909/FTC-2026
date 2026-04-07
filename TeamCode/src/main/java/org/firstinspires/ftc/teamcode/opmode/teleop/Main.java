@@ -12,6 +12,7 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.PoseHistory;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
@@ -22,9 +23,10 @@ import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 import dev.nextftc.hardware.driving.DriverControlledCommand;
-import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
+import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
@@ -69,21 +71,30 @@ public class Main extends NextFTCOpMode {
                         .whenFalse(() -> driverControlled.setScalar(1.0));
 
         driverControlled.schedule();
+
+        // ===== ホールド系バインディング =====
+        // ボタンごとに 1 つの Command をローカルで生成し、押下で schedule、
+        // 離下で cancel する。lambda がローカル変数をキャプチャして保持する。
+
+        Command shootCmd = ShootingRoutine.shootWithRetract();
         Gamepads.gamepad1().x().and(Gamepads.gamepad1().y().not())
-                .whenBecomesTrue(() -> ShooterCommand.shootArtifacts(true).schedule())
-                .whenBecomesFalse(() -> ShooterCommand.stopAll().schedule());
+                .whenBecomesTrue(shootCmd::schedule)
+                .whenBecomesFalse(shootCmd::cancel);
 
+        Command reverseCmd = ShooterCommand.spinUpReverse();
         Gamepads.gamepad1().y().and(Gamepads.gamepad1().x().not())
-                .whenBecomesTrue(() -> ShooterCommand.reverseArtifacts().schedule())
-                .whenBecomesFalse(() -> ShooterCommand.stopAll().schedule());
+                .whenBecomesTrue(reverseCmd::schedule)
+                .whenBecomesFalse(reverseCmd::cancel);
 
+        Command intakeCmd = IntakeRoutine.intakeWithWeakFeed();
         Gamepads.gamepad1().a().and(Gamepads.gamepad1().b().not())
-                .whenBecomesTrue(IntakeCommand.intake())
-                .whenBecomesFalse(IntakeCommand.stopIntake());
+                .whenBecomesTrue(intakeCmd::schedule)
+                .whenBecomesFalse(intakeCmd::cancel);
 
+        Command outtakeCmd = IntakeRoutine.outtakeWithRetract();
         Gamepads.gamepad1().b().and(Gamepads.gamepad1().a().not())
-                .whenBecomesTrue(IntakeCommand.outtake())
-                .whenBecomesFalse(IntakeCommand.stopIntake());
+                .whenBecomesTrue(outtakeCmd::schedule)
+                .whenBecomesFalse(outtakeCmd::cancel);
 
         Gamepads.gamepad2().options()
                 .whenBecomesTrue(new InstantCommand(() -> PedroComponent.follower().setPose(new Pose(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), Math.toRadians(0)))));

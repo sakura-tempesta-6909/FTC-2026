@@ -4,10 +4,8 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
 import dev.nextftc.core.commands.Command;
-import dev.nextftc.core.commands.delays.Delay;
-import dev.nextftc.core.commands.groups.ParallelGroup;
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -15,11 +13,10 @@ import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
-
-import org.firstinspires.ftc.teamcode.command.IntakeCommand;
-import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.path.BlueGoalPath;
+import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
+import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
@@ -44,8 +41,6 @@ public class BlueGoal extends NextFTCOpMode {
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(new Pose(20.494, 130.139, Math.toRadians(140)));
         blueGoalPath = new BlueGoalPath(PedroComponent.follower());
-        ShooterCommand.stopAll();
-        IntakeCommand.stopIntake();
         Drawing.init();
         Drawing.drawDebug(PedroComponent.follower());
     }
@@ -59,34 +54,26 @@ public class BlueGoal extends NextFTCOpMode {
     public Command autonomousRoutine() {
         return new SequentialGroup(
                 new FollowPath(blueGoalPath.Path1, true, 0.3),
-                new ParallelGroup(
-                        ShooterCommand.shootArtifacts(false),
-                        new Delay(3)
-                ),
-                ShooterCommand.stopAll(),
+                ShootingRoutine.shootContinuous().endAfter(SHOOT_DURATION_SECONDS),
                 new FollowPath(blueGoalPath.Path2),
-                IntakeCommand.intake(),
-                new FollowPath(blueGoalPath.Path3, false, 0.3),
-                IntakeCommand.stopIntake(),
+                new ParallelDeadlineGroup(
+                        new FollowPath(blueGoalPath.Path3, false, 0.3),
+                        IntakeRoutine.intakeWithWeakFeed()
+                ),
                 new FollowPath(blueGoalPath.Path4),
-                new ParallelGroup(
-                        ShooterCommand.shootArtifacts(true),
-                        new Delay(3)
-                ),
-                ShooterCommand.stopAll(),
+                ShootingRoutine.shootWithRetract().endAfter(SHOOT_DURATION_SECONDS),
                 new FollowPath(blueGoalPath.Path5),
-                IntakeCommand.intake(),
-                new FollowPath(blueGoalPath.Path6,false, 0.3),
-                IntakeCommand.stopIntake(),
-                new FollowPath(blueGoalPath.Path7),
-                new ParallelGroup(
-                        ShooterCommand.shootArtifacts(true),
-                        new Delay(3)
+                new ParallelDeadlineGroup(
+                        new FollowPath(blueGoalPath.Path6, false, 0.3),
+                        IntakeRoutine.intakeWithWeakFeed()
                 ),
-                ShooterCommand.stopAll(),
+                new FollowPath(blueGoalPath.Path7),
+                ShootingRoutine.shootWithRetract().endAfter(SHOOT_DURATION_SECONDS),
                 new FollowPath(blueGoalPath.Path8)
         );
     }
+
+    private static final double SHOOT_DURATION_SECONDS = 3.0;
 
     @Override
     public void onUpdate() {

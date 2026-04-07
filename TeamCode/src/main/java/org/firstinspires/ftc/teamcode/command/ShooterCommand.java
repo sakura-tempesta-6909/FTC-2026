@@ -29,7 +29,7 @@ public class ShooterCommand {
                     if (interrupted) ShooterSubsystem.INSTANCE.stop();
                 })
                 .setInterruptible(true)
-                .requires(ShooterSubsystem.INSTANCE)
+                .addRequirements(ShooterSubsystem.INSTANCE)
                 .named("spinUp");
     }
 
@@ -45,7 +45,7 @@ public class ShooterCommand {
                     if (interrupted) ShooterSubsystem.INSTANCE.stop();
                 })
                 .setInterruptible(true)
-                .requires(ShooterSubsystem.INSTANCE)
+                .addRequirements(ShooterSubsystem.INSTANCE)
                 .named("spinUpReverse");
     }
 
@@ -64,7 +64,7 @@ public class ShooterCommand {
                 .setIsDone(() -> false)
                 .setStop(interrupted -> ShooterSubsystem.INSTANCE.stop())
                 .setInterruptible(true)
-                .requires(ShooterSubsystem.INSTANCE)
+                .addRequirements(ShooterSubsystem.INSTANCE)
                 .named("holdRpm");
     }
 }

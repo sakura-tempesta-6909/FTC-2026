@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 720"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
+        </marker>
+        <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#d32f2f"/>
+        </marker>
+    </defs>
+
+    <!-- Title -->
+    <text x="500" y="32" font-size="22" font-weight="700" text-anchor="middle" fill="#222">
+        "Press &amp; Hold" with a multi-phase Command in NextFTC
+    </text>
+    <text x="500" y="56" font-size="14" text-anchor="middle" fill="#666">
+        Goal: hold button → sequence runs → release button → clean stop
+    </text>
+
+    <!-- ============ Panel 1: Original ============ -->
+    <g transform="translate(20, 90)">
+        <rect x="0" y="0" width="460" height="280" rx="10" fill="#fff" stroke="#d32f2f" stroke-width="2"/>
+        <text x="230" y="26" font-size="16" font-weight="700" text-anchor="middle" fill="#d32f2f">
+            ① Original: single big Command
+        </text>
+
+        <!-- Single command body -->
+        <rect x="30" y="50" width="400" height="170" rx="6" fill="#ffebee" stroke="#d32f2f" stroke-width="1.5"/>
+        <text x="230" y="72" font-size="13" font-weight="600" text-anchor="middle" fill="#444">SequentialGroup (one
+            Command)
+        </text>
+
+        <rect x="50" y="86" width="360" height="28" rx="4" fill="#fff" stroke="#888"/>
+        <text x="230" y="105" font-size="12" text-anchor="middle" fill="#222">retractFeeder (0.2s timer)</text>
+
+        <line x1="230" y1="118" x2="230" y2="128" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="50" y="130" width="360" height="28" rx="4" fill="#fff" stroke="#888"/>
+        <text x="230" y="149" font-size="12" text-anchor="middle" fill="#222">spinUp (wait until at velocity)</text>
+
+        <line x1="230" y1="162" x2="230" y2="172" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="50" y="174" width="360" height="28" rx="4" fill="#fff" stroke="#888"/>
+        <text x="230" y="193" font-size="12" text-anchor="middle" fill="#222">feedAndIntake (set state &amp; "done")
+        </text>
+
+        <text x="230" y="246" font-size="13" text-anchor="middle" fill="#d32f2f" font-weight="600">
+            ❌ Cancel mid-sequence: state stuck, race conditions
+        </text>
+        <text x="230" y="263" font-size="11" text-anchor="middle" fill="#888">
+            (subsystem state machines + instant-finish sub-commands = fragile)
+        </text>
+    </g>
+
+    <!-- ============ Panel 2: Refactored ============ -->
+    <g transform="translate(520, 90)">
+        <rect x="0" y="0" width="460" height="280" rx="10" fill="#fff" stroke="#388e3c" stroke-width="2"/>
+        <text x="230" y="26" font-size="16" font-weight="700" text-anchor="middle" fill="#388e3c">
+            ② Refactored: composed Routine
+        </text>
+
+        <rect x="30" y="50" width="400" height="170" rx="6" fill="#e8f5e9" stroke="#388e3c" stroke-width="1.5"/>
+        <text x="230" y="72" font-size="13" font-weight="600" text-anchor="middle" fill="#444">SequentialGroup of
+            single-Subsystem Commands
+        </text>
+
+        <rect x="50" y="86" width="360" height="28" rx="4" fill="#fff" stroke="#888"/>
+        <text x="230" y="105" font-size="12" text-anchor="middle" fill="#222">FeederCommand.retract().endAfter(0.2)
+        </text>
+
+        <line x1="230" y1="118" x2="230" y2="128" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="50" y="130" width="360" height="28" rx="4" fill="#fff" stroke="#888"/>
+        <text x="230" y="149" font-size="12" text-anchor="middle" fill="#222">ShooterCommand.spinUp()</text>
+
+        <line x1="230" y1="162" x2="230" y2="172" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="50" y="174" width="360" height="28" rx="4" fill="#fff" stroke="#888"/>
+        <text x="155" y="193" font-size="11" text-anchor="middle" fill="#222">ParallelGroup(</text>
+        <text x="245" y="193" font-size="11" text-anchor="middle" fill="#5d4037">holdRpm, intake, feed</text>
+        <text x="345" y="193" font-size="11" text-anchor="middle" fill="#222">)</text>
+
+        <text x="230" y="246" font-size="13" text-anchor="middle" fill="#388e3c" font-weight="600">
+            ✅ Cancellation works (each leaf has setStop)
+        </text>
+        <text x="230" y="263" font-size="11" text-anchor="middle" fill="#888">
+            perpetual leafs + ParallelGroup propagates stop(true)
+        </text>
+    </g>
+
+    <!-- Big arrow from 1 to 2 -->
+    <line x1="480" y1="230" x2="520" y2="230" stroke="#444" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="500" y="220" font-size="11" text-anchor="middle" fill="#444">refactor</text>
+
+    <!-- ============ Panel 3: TeleOp question ============ -->
+    <g transform="translate(20, 400)">
+        <rect x="0" y="0" width="960" height="295" rx="10" fill="#fff" stroke="#1976d2" stroke-width="2"/>
+        <text x="480" y="28" font-size="16" font-weight="700" text-anchor="middle" fill="#1976d2">
+            ③ But how do I bind it to a hold-button in TeleOp?
+        </text>
+
+        <!-- Code box -->
+        <rect x="30" y="50" width="900" height="160" rx="6" fill="#f5f5f5" stroke="#bbb"/>
+        <text x="50" y="74" font-size="13" font-family="monospace" fill="#222">
+            // NextBindings only takes Runnable, not Command-aware "whileTrue"
+        </text>
+        <text x="50" y="94" font-size="13" font-family="monospace" fill="#222">
+            Gamepads.gamepad1().x()
+        </text>
+        <text x="50" y="114" font-size="13" font-family="monospace" fill="#222">
+            <tspan>.whenBecomesTrue(</tspan>
+            <tspan fill="#d32f2f" font-weight="700">???</tspan>
+            <tspan>) // Routine factory? Stored instance? Inline raceWith?</tspan>
+        </text>
+        <text x="50" y="134" font-size="13" font-family="monospace" fill="#222">
+            <tspan>.whenBecomesFalse(</tspan>
+            <tspan fill="#d32f2f" font-weight="700">???</tspan>
+            <tspan>); // How to cancel the same instance cleanly?</tspan>
+        </text>
+
+        <text x="50" y="170" font-size="12" font-family="monospace" fill="#666">
+            // Tried: HeldCommand helper, Bindings.whileHeld static helper,
+        </text>
+        <text x="50" y="188" font-size="12" font-family="monospace" fill="#666">
+            // local var + ::schedule/::cancel, noop placeholder field, raceWith inline...
+        </text>
+
+        <!-- Question marks -->
+        <text x="480" y="245" font-size="14" text-anchor="middle" fill="#1976d2" font-weight="600">
+            Q1. Is the "split into single-subsystem Commands + compose into Routine" approach correct?
+        </text>
+        <text x="480" y="268" font-size="14" text-anchor="middle" fill="#1976d2" font-weight="600">
+            Q2. What's the idiomatic NextFTC pattern for binding a multi-Subsystem routine to a hold button?
+        </text>
+        <text x="480" y="285" font-size="11" text-anchor="middle" fill="#888">
+            (Lift/Claw examples use self-terminating Commands — none of them illustrate "while held")
+        </text>
+    </g>
+</svg>

@@ -7,9 +7,7 @@ import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.testutil.SubsystemTestBase;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 
@@ -32,8 +30,9 @@ public class IntakeCommandTest extends SubsystemTestBase {
 
     @Test
     public void intake_isPerpetual() {
+        // isDone は Supplier<Boolean>{ false } なので start() を呼ばずに検証可能。
+        // start() を呼ぶと Subsystem の motor 参照が要るので、ここでは触れない。
         Command cmd = IntakeCommand.intake();
-        cmd.start();
         assertFalse("intake() は永続コマンド (isDone == false)", cmd.isDone());
     }
 
