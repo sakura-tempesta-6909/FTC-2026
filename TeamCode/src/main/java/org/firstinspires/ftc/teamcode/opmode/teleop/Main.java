@@ -7,48 +7,30 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.commands.utility.InstantCommand;
-import dev.nextftc.core.components.BindingsComponent;
-import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.extensions.pedro.PedroDriverControlled;
 import dev.nextftc.ftc.Gamepads;
-import dev.nextftc.ftc.NextFTCOpMode;
-import dev.nextftc.ftc.components.BulkReadComponent;
 import dev.nextftc.hardware.driving.DriverControlledCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
-import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
-import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 @TeleOp(name = "Main")
-public class Main extends NextFTCOpMode {
+public class Main extends FTCBaseOpMode {
 
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
-
     private final ElapsedTime loopTimer = new ElapsedTime();
 
-    // TeleOp 開始時のロボット初期位置 (フィールド座標系)
     private static final Pose STARTING_POSE = new Pose(122.815, 124.882, Math.toRadians(36));
-
-    public Main() {
-        addComponents(
-                new PedroComponent(Constants::createFollower),
-                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE, LimelightSubsystem.INSTANCE),
-                BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE
-        );
-    }
 
     @Override
     public void onInit() {
+        super.onInit();
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(STARTING_POSE);
-        Drawing.init();
     }
 
     @Override
@@ -86,7 +68,6 @@ public class Main extends NextFTCOpMode {
                 .whenBecomesTrue(outtakeCmd::schedule)
                 .whenBecomesFalse(outtakeCmd::cancel);
 
-        // Heading リセット (現在位置を維持したまま向きだけ 0 に)
         Gamepads.gamepad2().options()
                 .whenBecomesTrue(new InstantCommand(() -> {
                     Pose current = PedroComponent.follower().getPose();
@@ -105,7 +86,6 @@ public class Main extends NextFTCOpMode {
                 String.join(", ", CommandManager.INSTANCE.snapshot()));
         panelsTelemetry.getTelemetry().update();
 
-        // Pedro 位置 + Limelight 推定位置を描画
         Drawing.drawDebug(PedroComponent.follower(), LimelightSubsystem.INSTANCE.getLimelightPose());
     }
 }

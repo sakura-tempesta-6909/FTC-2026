@@ -8,44 +8,26 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
-import dev.nextftc.core.components.BindingsComponent;
-import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
-import dev.nextftc.ftc.NextFTCOpMode;
-import dev.nextftc.ftc.components.BulkReadComponent;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
-import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.path.BlueGoalPath;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
-import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 @Autonomous(name = "Blue Goal")
 @Configurable
-public class BlueGoal extends NextFTCOpMode {
+public class BlueGoal extends FTCBaseOpMode {
     private BlueGoalPath blueGoalPath;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
 
-    public BlueGoal() {
-        addComponents(
-                new PedroComponent(Constants::createFollower),
-                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE, LimelightSubsystem.INSTANCE),
-                BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE
-        );
-    }
-
     @Override
     public void onInit() {
+        super.onInit();
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(new Pose(20.494, 130.139, Math.toRadians(140)));
         blueGoalPath = new BlueGoalPath(PedroComponent.follower());
-        Drawing.init();
-        Drawing.drawDebug(PedroComponent.follower());
     }
 
 

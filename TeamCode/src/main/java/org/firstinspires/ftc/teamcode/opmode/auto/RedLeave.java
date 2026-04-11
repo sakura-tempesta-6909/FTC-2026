@@ -6,42 +6,24 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.groups.SequentialGroup;
-import dev.nextftc.core.components.BindingsComponent;
-import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
-import dev.nextftc.ftc.NextFTCOpMode;
-import dev.nextftc.ftc.components.BulkReadComponent;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
-import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.path.RedLeavePath;
-import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 @Autonomous(name = "Red Leave")
 @Configurable
-public class RedLeave extends NextFTCOpMode {
+public class RedLeave extends FTCBaseOpMode {
     private RedLeavePath redLeavePath;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
 
-    public RedLeave() {
-        addComponents(
-                new PedroComponent(Constants::createFollower),
-                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE, LimelightSubsystem.INSTANCE),
-                BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE
-        );
-    }
-
     @Override
     public void onInit() {
+        super.onInit();
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(new Pose(86.000, 8.000, Math.toRadians(90)));
         redLeavePath = new RedLeavePath(PedroComponent.follower());
-        Drawing.init();
-        Drawing.drawDebug(PedroComponent.follower());
     }
 
 

@@ -7,44 +7,27 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
-import dev.nextftc.core.components.BindingsComponent;
-import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
-import dev.nextftc.ftc.NextFTCOpMode;
-import dev.nextftc.ftc.components.BulkReadComponent;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
-import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.path.TestPath;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
-import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 @Autonomous(name = "NextFTC Autonomous Program Java")
 @Configurable
-public class TestAuto extends NextFTCOpMode {
+public class TestAuto extends FTCBaseOpMode {
     private TestPath testPath;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
 
-    public TestAuto() {
-        addComponents(
-                new PedroComponent(Constants::createFollower),
-                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE, LimelightSubsystem.INSTANCE),
-                BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE
-        );
-    }
-
     @Override
     public void onInit() {
+        super.onInit();
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(new Pose(122.815, 126.156, Math.toRadians(36)));
         PedroComponent.follower().setMaxPower(0.4);
         testPath = new TestPath(PedroComponent.follower());
-        Drawing.init();
-        Drawing.drawDebug(PedroComponent.follower());
     }
 
 

@@ -9,7 +9,6 @@ import dev.nextftc.control.feedback.PIDCoefficients;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.impl.MotorEx;
 import org.firstinspires.ftc.teamcode.config.Const;
-import org.firstinspires.ftc.teamcode.config.PIDTuning;
 
 /**
  * フライホイール式シューターを制御するサブシステム。
@@ -23,7 +22,7 @@ public class ShooterSubsystem implements Subsystem {
     public static final ShooterSubsystem INSTANCE = new ShooterSubsystem();
 
     public static PIDCoefficients pidCoefficients =
-            new PIDCoefficients(PIDTuning.KP, PIDTuning.KI, PIDTuning.KD);
+            new PIDCoefficients(Const.Shooter.PID.KP, Const.Shooter.PID.KI, Const.Shooter.PID.KD);
 
     private MotorEx shooterMotor;
     private ControlSystem controller;
