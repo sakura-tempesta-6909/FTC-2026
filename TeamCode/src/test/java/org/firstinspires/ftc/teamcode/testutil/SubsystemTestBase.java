@@ -76,9 +76,6 @@ public abstract class SubsystemTestBase {
         resetField(FeederSubsystem.INSTANCE, "feederMotor");
         resetField(ShooterSubsystem.INSTANCE, "shooterMotor");
         resetField(ShooterSubsystem.INSTANCE, "controller");
-        resetField(ShooterSubsystem.INSTANCE, "limelight");
-        resetField(ShooterSubsystem.INSTANCE, "imu");
-        resetField(ShooterSubsystem.INSTANCE, "distance");
 
         // CommandManager の running も clear
         CommandManager.INSTANCE.cancelAll();

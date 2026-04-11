@@ -82,29 +82,6 @@ public final class Const {
             public static double LONG = 110;
         }
 
-        /**
-         * Limelight Ta (タグ占有面積%) から AprilTag までの距離を計算するための較正定数。
-         * <pre>
-         *   distanceToTag = SCALE * Ta^EXPONENT       (cm)
-         *   distance      = sqrt(distanceToTag^2 - HEIGHT_OFFSET_SQUARED)
-         * </pre>
-         */
-        public static final class DistanceCalibration {
-            public static double SCALE = 196.1;
-            public static double EXPONENT = -0.8030557;
-            /** カメラとタグの高さ差の二乗 (cm^2)。Pythagorean 補正用。 */
-            public static double HEIGHT_OFFSET_SQUARED = 4225;
-        }
-
-        /**
-         * Limelight botpose (メートル, フィールド中心原点) → Pedro 座標系 (インチ, フィールド角原点) への変換定数。
-         */
-        public static final class CoordinateConversion {
-            /** メートル → インチ。 */
-            public static final double METERS_TO_INCHES = 39.3701;
-            /** フィールド中心 → フィールド角 のオフセット (インチ)。 */
-            public static final double FIELD_OFFSET_INCHES = 72;
-        }
     }
 
     // ========== インテークサブシステム ==========
@@ -144,6 +121,32 @@ public final class Const {
     public static final class ShootingRoutine {
         /** 射出前にフィーダーを引き戻す時間 (秒)。 */
         public static double RETRACT_DURATION_SECONDS = 0.2;
+    }
+
+    // ========== Limelight ==========
+    public static final class Limelight {
+        public static final String DEVICE_NAME = "limelight";
+        public static final int PIPELINE = 0;
+
+        /**
+         * Ta (タグ占有面積%) → 距離の較正定数。
+         * <pre>
+         *   distanceToTag = SCALE * Ta^EXPONENT       (cm)
+         *   distance      = sqrt(distanceToTag^2 - HEIGHT_OFFSET_SQUARED)
+         * </pre>
+         */
+        public static final class DistanceCalibration {
+            public static double SCALE = 196.1;
+            public static double EXPONENT = -0.8030557;
+            /** カメラとタグの高さ差の二乗 (cm^2)。 */
+            public static double HEIGHT_OFFSET_SQUARED = 4225;
+        }
+
+        /** Limelight botpose (メートル, フィールド中心) → Pedro 座標系 (インチ, フィールド角) への変換。 */
+        public static final class CoordinateConversion {
+            public static final double METERS_TO_INCHES = 39.3701;
+            public static final double FIELD_OFFSET_INCHES = 72;
+        }
     }
 
     // ========== IMU 設定 ==========

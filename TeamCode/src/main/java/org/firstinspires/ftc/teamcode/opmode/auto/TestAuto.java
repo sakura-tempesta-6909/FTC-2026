@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.path.TestPath;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 @Autonomous(name = "NextFTC Autonomous Program Java")
@@ -30,7 +31,7 @@ public class TestAuto extends NextFTCOpMode {
     public TestAuto() {
         addComponents(
                 new PedroComponent(Constants::createFollower),
-                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE),
+                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE, LimelightSubsystem.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
@@ -72,7 +73,7 @@ public class TestAuto extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
-        Drawing.drawDebug(PedroComponent.follower(), ShooterSubsystem.INSTANCE.getLimelightPose());
+        Drawing.drawDebug(PedroComponent.follower(), LimelightSubsystem.INSTANCE.getLimelightPose());
     }
 
 }
