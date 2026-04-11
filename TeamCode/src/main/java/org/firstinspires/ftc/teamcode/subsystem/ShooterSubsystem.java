@@ -13,6 +13,8 @@ import dev.nextftc.control.feedback.PIDCoefficients;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
 import dev.nextftc.hardware.impl.MotorEx;
+import com.pedropathing.geometry.Pose;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.config.Const;
 import org.firstinspires.ftc.teamcode.config.PIDTuning;
@@ -42,6 +44,8 @@ public class ShooterSubsystem implements Subsystem {
 
     /** 直近フレームで計算された AprilTag までの地表面距離 (cm)。タグが見えない場合は 0。 */
     private double distance;
+    /** 直近の Limelight botpose から変換した Pedro 座標系の位置。タグ未検出なら null。 */
+    private Pose limelightPose;
 
     private ShooterSubsystem() {}
 
@@ -82,9 +86,11 @@ public class ShooterSubsystem implements Subsystem {
         if (llResult != null && llResult.isValid()) {
             distanceToTag = computeDistanceToTag(llResult.getTa());
             distance = computeGroundDistance(distanceToTag);
+            limelightPose = computeLimelightPose(llResult);
         } else {
             distanceToTag = 0;
             distance = 0;
+            limelightPose = null;
         }
 
         // (3) テレメトリ (update() は Main.onUpdate で一括送信)
@@ -123,24 +129,35 @@ public class ShooterSubsystem implements Subsystem {
                 <= Const.Shooter.Velocity.TOLERANCE;
     }
 
-    // --- 距離計算ヘルパ ---
+    /** 直近の Limelight botpose を Pedro 座標系に変換した位置。タグ未検出なら null。 */
+    public Pose getLimelightPose() {
+        return limelightPose;
+    }
 
-    /**
-     * Limelight の Ta (タグ占有面積%) から AprilTag までの斜距離を算出する。
-     * 較正定数は {@link Const.Shooter.DistanceCalibration} を参照。
-     */
+    // --- 計算ヘルパ ---
+
     private static double computeDistanceToTag(double ta) {
         return Const.Shooter.DistanceCalibration.SCALE
                 * Math.pow(ta, Const.Shooter.DistanceCalibration.EXPONENT);
     }
 
-    /**
-     * 斜距離からカメラ高さ補正をかけた地表面距離を算出する。
-     * Pythagorean: distance = sqrt(distanceToTag^2 - HEIGHT_OFFSET^2)
-     */
     private static double computeGroundDistance(double distanceToTag) {
         double squared = Math.pow(distanceToTag, 2)
                 - Const.Shooter.DistanceCalibration.HEIGHT_OFFSET_SQUARED;
         return squared > 0 ? Math.sqrt(squared) : 0;
+    }
+
+    /**
+     * Limelight の botpose (メートル, フィールド中心原点) を Pedro 座標系 (インチ, フィールド角原点) に変換する。
+     */
+    private static Pose computeLimelightPose(LLResult result) {
+        Pose3D botpose = result.getBotpose_MT2();
+        if (botpose == null) return null;
+        double x = botpose.getPosition().x * Const.Shooter.CoordinateConversion.METERS_TO_INCHES
+                + Const.Shooter.CoordinateConversion.FIELD_OFFSET_INCHES;
+        double y = botpose.getPosition().y * Const.Shooter.CoordinateConversion.METERS_TO_INCHES
+                + Const.Shooter.CoordinateConversion.FIELD_OFFSET_INCHES;
+        double heading = Math.toRadians(botpose.getOrientation().getYaw());
+        return new Pose(x, y, heading);
     }
 }

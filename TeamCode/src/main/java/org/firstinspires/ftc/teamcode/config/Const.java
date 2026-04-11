@@ -95,6 +95,16 @@ public final class Const {
             /** カメラとタグの高さ差の二乗 (cm^2)。Pythagorean 補正用。 */
             public static double HEIGHT_OFFSET_SQUARED = 4225;
         }
+
+        /**
+         * Limelight botpose (メートル, フィールド中心原点) → Pedro 座標系 (インチ, フィールド角原点) への変換定数。
+         */
+        public static final class CoordinateConversion {
+            /** メートル → インチ。 */
+            public static final double METERS_TO_INCHES = 39.3701;
+            /** フィールド中心 → フィールド角 のオフセット (インチ)。 */
+            public static final double FIELD_OFFSET_INCHES = 72;
+        }
     }
 
     // ========== インテークサブシステム ==========
