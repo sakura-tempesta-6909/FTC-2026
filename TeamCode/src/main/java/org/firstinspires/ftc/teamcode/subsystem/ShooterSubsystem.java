@@ -62,7 +62,20 @@ public class ShooterSubsystem implements Subsystem {
     /** {@link LimelightSubsystem} の距離から段階的に目標 RPM を決めてセットする。 */
     public void setTargetRPM() {
         double distance = LimelightSubsystem.INSTANCE.getDistance();
-        setTargetVelocity(Const.Shooter.rpmFromDistance(distance));
+        setTargetVelocity(rpmFromDistance(distance));
+    }
+
+    /** 距離 (cm) に応じた目標 RPM を返す。段階的に切り替える。 */
+    private static double rpmFromDistance(double distance) {
+        if (distance < Const.Shooter.DistanceThreshold.SHORT) {
+            return Const.Shooter.Velocity.LOWEST_RPM;
+        } else if (distance < Const.Shooter.DistanceThreshold.MEDIUM) {
+            return Const.Shooter.Velocity.NORMAL_RPM;
+        } else if (distance < Const.Shooter.DistanceThreshold.LONG) {
+            return Const.Shooter.Velocity.MEDIUM_HIGH_RPM;
+        } else {
+            return Const.Shooter.Velocity.HIGHEST_RPM;
+        }
     }
 
     public void setReverseTargetRPM() {

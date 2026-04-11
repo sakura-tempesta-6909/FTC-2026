@@ -36,22 +36,6 @@ public final class Const {
     // ========== シューターサブシステム ==========
     public static final class Shooter {
 
-        /**
-         * AprilTag までの距離 (cm) から目標 RPM を返す。
-         * 距離レンジごとに段階的に切り替える。
-         */
-        public static double rpmFromDistance(double distance) {
-            if (distance < DistanceThreshold.SHORT) {
-                return Velocity.LOWEST_RPM;
-            } else if (distance < DistanceThreshold.MEDIUM) {
-                return Velocity.NORMAL_RPM;
-            } else if (distance < DistanceThreshold.LONG) {
-                return Velocity.MEDIUM_HIGH_RPM;
-            } else {
-                return Velocity.HIGHEST_RPM;
-            }
-        }
-
         // --- モーター設定 ---
         public static final class Motor {
             public static final String NAME = "ShooterMotor";
