@@ -21,6 +21,16 @@ android {
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
+
+    testOptions {
+        unitTests {
+            // Android スタブ JAR に含まれない API 呼び出し
+            // (android.opengl.Matrix.setIdentityM など) が「not mocked」例外を投げる代わりに
+            // デフォルト値 (0 / null / empty) を返すようにする。
+            // ShooterSubsystem の RevHubOrientationOnRobot 初期化で必要。
+            returnDefaultValues = true
+        }
+    }
 }
 
 dependencies {
@@ -32,4 +42,11 @@ dependencies {
     implementation 'dev.nextftc.extensions:pedro:1.0.0'
     implementation 'dev.nextftc:hardware:1.0.1'
     implementation 'dev.nextftc:control:1.0.0'
+
+    // ===== Unit testing =====
+    // JUnit 4 (FTC SDK は JUnit 4 系がトラブルが少ない)
+    testImplementation 'junit:junit:4.13.2'
+    // Mockito 5.x: mockito-core が inline mock maker をデフォルトで提供。
+    // mockito-inline パッケージは 5.2.0 で廃止されたため使わない。
+    testImplementation 'org.mockito:mockito-core:5.14.2'
 }

@@ -2,40 +2,42 @@ package org.firstinspires.ftc.teamcode.command;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
-import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
+import org.firstinspires.ftc.teamcode.config.Const;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 
+/**
+ * {@link IntakeSubsystem} のみを操作するコマンド集。
+ * 全コマンドが永続 + setStop パターン。
+ */
 public class IntakeCommand {
 
+    private IntakeCommand() {}
+
+    /**
+     * 取り込み方向にローラーを回し続ける。
+     * <p>終了: 永続 (cancel のみ) / 中断時: Intake 停止 / requires: Intake
+     */
     public static Command intake() {
         return new LambdaCommand()
-                .setStart(() -> {
-                    IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.INTAKE);
-                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.WEAKFEED);
-                })
-                .setIsDone(() -> true)
-                .requires(IntakeSubsystem.INSTANCE)
-                .named("intakeArtifacts");
+                .setStart(() -> IntakeSubsystem.INSTANCE.setPower(Const.Intake.Power.INTAKE))
+                .setIsDone(() -> false)
+                .setStop(interrupted -> IntakeSubsystem.INSTANCE.stop())
+                .setInterruptible(true)
+                .addRequirements(IntakeSubsystem.INSTANCE)
+                .named("intake");
     }
 
+    /**
+     * 排出方向にローラーを逆転し続ける。
+     * <p>終了: 永続 (cancel のみ) / 中断時: Intake 停止 / requires: Intake
+     */
     public static Command outtake() {
         return new LambdaCommand()
-                .setStart(() -> {
-                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.RETRACT);
-                    IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.REVERSE);
-                })
-                .setIsDone(() -> true)
-                .requires(IntakeSubsystem.INSTANCE, FeederSubsystem.INSTANCE)
-                .named("retractArtifacts");
-    }
-
-    public static Command stopIntake() {
-        return new LambdaCommand()
-                .setStart(() -> {
-                    FeederSubsystem.INSTANCE.setState(FeederSubsystem.FeederState.STOP);
-                    IntakeSubsystem.INSTANCE.setState(IntakeSubsystem.IntakeState.STOP);
-                })
-                .setIsDone(() -> true)
-                .named("stopAll");
+                .setStart(() -> IntakeSubsystem.INSTANCE.setPower(Const.Intake.Power.REVERSE))
+                .setIsDone(() -> false)
+                .setStop(interrupted -> IntakeSubsystem.INSTANCE.stop())
+                .setInterruptible(true)
+                .addRequirements(IntakeSubsystem.INSTANCE)
+                .named("outtake");
     }
 }
