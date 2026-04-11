@@ -44,7 +44,7 @@ public class IntakeRoutineTest extends SubsystemTestBase {
         clearInvocations(intake, feeder);
         routine.start();
         verify(intake).setPower(Const.Intake.Power.INTAKE);
-        verify(feeder).setPower(Const.Feeder.Power.WEAKFEED);
+        verify(feeder).setPower(Const.Feeder.Power.WEAK_FEED);
 
         clearInvocations(intake, feeder);
         routine.stop(true);

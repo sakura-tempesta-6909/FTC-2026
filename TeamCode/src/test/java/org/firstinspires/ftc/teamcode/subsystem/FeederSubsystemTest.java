@@ -40,7 +40,7 @@ public class FeederSubsystemTest extends SubsystemTestBase {
         clearInvocations(motor);
 
         FeederSubsystem.INSTANCE.weakFeed();
-        verify(motor).setPower(Const.Feeder.Power.WEAKFEED);
+        verify(motor).setPower(Const.Feeder.Power.WEAK_FEED);
     }
 
     @Test

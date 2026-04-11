@@ -95,7 +95,7 @@ public class ShooterSubsystem implements Subsystem {
         PanelsTelemetry.INSTANCE.getTelemetry().addData("DistanceToTag", distanceToTag);
     }
 
-    // ==================== 目標速度 API ====================
+    // --- 目標速度 API ---
 
     /** 任意の目標速度を直接セットする (RPM ではなくコントローラ単位)。 */
     public void setTargetVelocity(double velocity) {
@@ -123,7 +123,7 @@ public class ShooterSubsystem implements Subsystem {
                 <= Const.Shooter.Velocity.TOLERANCE;
     }
 
-    // ==================== 距離計算ヘルパ (純粋関数) ====================
+    // --- 距離計算ヘルパ ---
 
     /**
      * Limelight の Ta (タグ占有面積%) から AprilTag までの斜距離を算出する。

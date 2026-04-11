@@ -5,21 +5,28 @@ import dev.nextftc.core.commands.utility.LambdaCommand;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 /**
- * {@link ShooterSubsystem} だけを操作する単一責務コマンド集。
- * <p>
- * 「目標到達まで待つ」タイプ ({@link #spinUp()}, {@link #spinUpReverse()}) と、
- * 「目標到達後に維持し続ける」永続タイプ ({@link #holdRpm()}) に分かれる。
- * Routine ではこれらを SequentialGroup と ParallelGroup で組み合わせて使う。
+ * {@link ShooterSubsystem} のみを操作するコマンド集。
+ *
+ * <ul>
+ *   <li>条件完了型 ({@link #spinUp})
+ *       — 目標速度に到達したら自然完了。中断時のみ Shooter を停止する。</li>
+ *   <li>永続型 ({@link #spinUpReverse}, {@link #holdRpm})
+ *       — 外部 cancel でのみ終了。停止は setStop に任せる。</li>
+ * </ul>
+ *
+ * Routine 内では {@code spinUp → holdRpm} を SequentialGroup + ParallelGroup で
+ * 繋ぐことで、「加速待ち → 連射維持」のフローを実現する。
  */
 public class ShooterCommand {
 
     private ShooterCommand() {}
 
     /**
-     * 直近の Limelight 距離から目標 RPM を決め、目標速度に到達するまで待つ。
-     * 自然完了 (= 到達) では何もせず、外部から中断された場合のみ Shooter を停止する。
-     * Routine 内では、この後 {@link #holdRpm()} を ParallelGroup で並べることで
-     * 連射中もキャンセル安全な状態を保つ想定。
+     * Limelight 距離から目標 RPM を自動決定し、到達するまで待つ。
+     * <p>終了: isAtVelocity() == true / 中断時: Shooter 停止 / 自然完了時: 何もしない
+     * <p>requires: Shooter
+     * <p>自然完了後は Shooter のオーナーが空白になるため、
+     * Routine では後段に {@link #holdRpm()} を置く必要がある。
      */
     public static Command spinUp() {
         return new LambdaCommand()
@@ -34,8 +41,8 @@ public class ShooterCommand {
     }
 
     /**
-     * 逆回転方向の目標速度をセットし、永続的に維持する。
-     * 詰まり解除など。中断 (ボタン離下) で Shooter を停止する。
+     * 逆回転の目標速度をセットし、維持し続ける (詰まり解除等)。
+     * <p>終了: 永続 (cancel のみ) / 中断時: Shooter 停止 / requires: Shooter
      */
     public static Command spinUpReverse() {
         return new LambdaCommand()
@@ -48,14 +55,9 @@ public class ShooterCommand {
     }
 
     /**
-     * Shooter の running owner として永続的に動く「維持コマンド」。
-     * <p>
-     * {@link #spinUp()} は目標到達後に自然完了して deque から消えるため、
-     * その後の連射フェーズで Shooter を管理する Command が空白になる問題がある。
-     * このコマンドを ParallelGroup の中で並列実行することで、Routine の
-     * キャンセル時に必ず {@code setStop} が呼ばれて Shooter が停止する。
-     * <p>
-     * 自身では target velocity を変更しない (spinUp が設定した値をそのまま維持する)。
+     * spinUp 完了後に Shooter のオーナーとして居続ける維持コマンド。
+     * target velocity は変更せず、spinUp が設定した値をそのまま維持する。
+     * <p>終了: 永続 (cancel のみ) / 中断時: Shooter 停止 / requires: Shooter
      */
     public static Command holdRpm() {
         return new LambdaCommand()

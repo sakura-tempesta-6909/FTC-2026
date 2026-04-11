@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.config.Const;
  * フィーダー (ボールをシューターに送り込む機構) を制御するサブシステム。
  * <p>
  * 状態を内部に持たず、Command 側からパワーを直接指定する薄いラッパー。
- * 主要なパワーレベル (FEED / WEAKFEED / RETRACT / STOP) ごとに
+ * 主要なパワーレベル (FEED / WEAK_FEED / RETRACT / STOP) ごとに
  * 便利メソッドを提供している。
  */
 public class FeederSubsystem implements Subsystem {
@@ -39,7 +39,7 @@ public class FeederSubsystem implements Subsystem {
 
     /** 弱い送り込み速度で前進 (インテーク中の待機時など)。 */
     public void weakFeed() {
-        feederMotor.setPower(Const.Feeder.Power.WEAKFEED);
+        feederMotor.setPower(Const.Feeder.Power.WEAK_FEED);
     }
 
     /** 引き戻し方向に逆転させる。 */

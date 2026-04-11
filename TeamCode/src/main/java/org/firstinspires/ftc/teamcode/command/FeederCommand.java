@@ -6,18 +6,22 @@ import dev.nextftc.core.commands.utility.LambdaCommand;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 
 /**
- * {@link FeederSubsystem} だけを操作する単一責務コマンド集。
- * <p>
- * 全コマンドは「永続実行 + setStop で停止」パターン。中断時に必ず Feeder が
- * STOP に戻るため、競合検出ベースの自動キャンセルだけで安全に止まる。
+ * {@link FeederSubsystem} のみを操作するコマンド集。
+ *
+ * <ul>
+ *   <li>永続コマンド ({@link #feed}, {@link #weakFeed}, {@link #retract})
+ *       — 外部からの cancel / 競合検出でのみ終了し、setStop で Feeder を停止する。</li>
+ *   <li>時限コマンド ({@link #retractFor})
+ *       — 指定秒数で自動終了。endAfter の代替 (NextFTC ParallelRaceGroup バグ回避)。</li>
+ * </ul>
  */
 public class FeederCommand {
 
-    private FeederCommand() {
-    }
+    private FeederCommand() {}
 
     /**
-     * 通常の送り込み速度で前進し続ける。中断で停止。
+     * 通常速度で送り込みを続ける。
+     * <p>終了: 永続 (cancel のみ) / 中断時: Feeder 停止 / requires: Feeder
      */
     public static Command feed() {
         return new LambdaCommand()
@@ -30,7 +34,8 @@ public class FeederCommand {
     }
 
     /**
-     * 弱い送り込み速度で前進し続ける (インテーク中の待機など)。中断で停止。
+     * 弱い速度で送り込みを続ける (インテーク中の詰まり防止用)。
+     * <p>終了: 永続 (cancel のみ) / 中断時: Feeder 停止 / requires: Feeder
      */
     public static Command weakFeed() {
         return new LambdaCommand()
@@ -43,7 +48,8 @@ public class FeederCommand {
     }
 
     /**
-     * 引き戻し方向に逆転し続ける。中断で停止。
+     * 引き戻し方向に逆転し続ける。
+     * <p>終了: 永続 (cancel のみ) / 中断時: Feeder 停止 / requires: Feeder
      */
     public static Command retract() {
         return new LambdaCommand()
@@ -57,9 +63,9 @@ public class FeederCommand {
 
     /**
      * 指定秒数だけ引き戻して自動停止する。
-     * <p>
-     * {@code retract().endAfter(seconds)} は NextFTC の ParallelRaceGroup に
-     * バグがあり正しく動作しないため、自前でタイマーを管理する。
+     * <p>終了: 経過時間 ≥ seconds / 中断時: Feeder 停止 / requires: Feeder
+     * <p>注: {@code retract().endAfter()} は NextFTC の ParallelRaceGroup バグで
+     * 永続コマンドに効かないため、自前タイマーで代替している。
      *
      * @param seconds 引き戻し時間 (秒)
      */

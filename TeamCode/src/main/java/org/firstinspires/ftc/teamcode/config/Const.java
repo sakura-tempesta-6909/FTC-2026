@@ -124,7 +124,7 @@ public final class Const {
         // --- パワー設定 ---
         public static final class Power {
             public static final double FEED = 1.0;
-            public static final double WEAKFEED = 0.3;
+            public static final double WEAK_FEED = 0.3;
             public static final double RETRACT = -1.0;
             public static final double STOP = 0.0;
         }

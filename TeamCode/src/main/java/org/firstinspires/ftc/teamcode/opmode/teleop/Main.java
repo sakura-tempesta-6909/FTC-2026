@@ -49,12 +49,14 @@ public class Main extends NextFTCOpMode {
         );
     }
 
+    // TeleOp 開始時のロボット初期位置 (フィールド座標系)
+    private static final Pose STARTING_POSE = new Pose(122.815, 124.882, Math.toRadians(36));
+
     @Override
     public void onInit() {
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(122.815, 124.882, Math.toRadians(36)));
+        PedroComponent.follower().setStartingPose(STARTING_POSE);
         Drawing.init();
-
     }
 
     @Override
@@ -95,8 +97,13 @@ public class Main extends NextFTCOpMode {
                 .whenBecomesTrue(outtakeCmd::schedule)
                 .whenBecomesFalse(outtakeCmd::cancel);
 
+        // Heading リセット (現在位置を維持したまま向きだけ 0 に)
         Gamepads.gamepad2().options()
-                .whenBecomesTrue(new InstantCommand(() -> PedroComponent.follower().setPose(new Pose(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), Math.toRadians(0)))));
+                .whenBecomesTrue(new InstantCommand(() -> {
+                    Pose current = PedroComponent.follower().getPose();
+                    PedroComponent.follower().setPose(
+                            new Pose(current.getX(), current.getY(), Math.toRadians(0)));
+                }));
     }
 
     @Override
@@ -115,15 +122,12 @@ public class Main extends NextFTCOpMode {
 }
 
 class Drawing {
-    public static final double ROBOT_RADIUS = 9; // woah
+    /** ロボットの描画半径 (インチ)。 */
+    public static final double ROBOT_RADIUS = 9;
     private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
 
-    private static final Style robotLook = new Style(
-            "", "#3F51B5", 0.75
-    );
-    private static final Style historyLook = new Style(
-            "", "#4CAF50", 0.75
-    );
+    private static final Style robotLook = new Style("", "#3F51B5", 0.75);
+    private static final Style historyLook = new Style("", "#4CAF50", 0.75);
 
     /**
      * This prepares Panels Field for using Pedro Offsets
@@ -134,7 +138,7 @@ class Drawing {
 
     /**
      * This draws everything that will be used in the Follower's telemetryDebug() method. This takes
-     * a Follower as an input, so an instance of the DashbaordDrawingHandler class is not needed.
+     * a Follower as an input, so an instance of the DashboardDrawingHandler class is not needed.
      *
      * @param follower Pedro Follower instance.
      */

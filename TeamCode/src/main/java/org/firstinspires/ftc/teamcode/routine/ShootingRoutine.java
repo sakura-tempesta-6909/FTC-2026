@@ -9,28 +9,25 @@ import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.config.Const;
 
 /**
- * 複数 Subsystem を組み合わせた「射出ルーチン」。
- * <p>
- * 各単一責務 Command (ShooterCommand / FeederCommand / IntakeCommand) を
- * SequentialGroup と ParallelGroup で組み立てるだけの宣言的レイヤ。
- * <p>
- * 設計のキモは <strong>連射フェーズを ParallelGroup で組む</strong> こと。
- * Shooter を {@link ShooterCommand#holdRpm()} で永続管理しているため、
- * Routine がいつキャンセルされても ParallelGroup が中の全 leaf の
- * {@code setStop} を呼んで Shooter / Feeder / Intake を全て停止する。
+ * Shooter + Feeder + Intake を組み合わせた射出ルーチン。
+ *
+ * <p>連射フェーズを {@link ParallelGroup} で組み、各 leaf が永続コマンドであるため、
+ * Routine をいつキャンセルしても全 Subsystem が setStop で停止する。
+ *
+ * <p>requires (自動集約): Shooter, Feeder, Intake
  */
 public class ShootingRoutine {
 
-    private ShootingRoutine() {
-    }
+    private ShootingRoutine() {}
 
     /**
-     * 引き戻し付き射出ルーチン。
+     * 引き戻し → スピンアップ → 連射。
      * <ol>
-     *   <li>フィーダーを {@link Const.ShootingRoutine#RETRACT_DURATION_SECONDS} 秒だけ引き戻す</li>
-     *   <li>シューターを目標 RPM まで加速 (距離ベースで自動決定)</li>
-     *   <li>連射: holdRpm + intake + feed を並列で永続実行</li>
+     *   <li>retractFor — Feeder を {RETRACT_DURATION_SECONDS} 秒だけ引き戻して自動停止</li>
+     *   <li>spinUp — Shooter が目標 RPM に達するまで待機 (条件完了)</li>
+     *   <li>ParallelGroup(holdRpm, intake, feed) — 全永続、cancel で全停止</li>
      * </ol>
+     * <p>終了: 永続 (最終フェーズの ParallelGroup が終わらない) / 中断時: 全 Subsystem 停止
      */
     public static Command shootWithRetract() {
         return new SequentialGroup(
@@ -45,11 +42,12 @@ public class ShootingRoutine {
     }
 
     /**
-     * 引き戻しなしの射出ルーチン。
+     * スピンアップ → 連射 (引き戻しなし)。
      * <ol>
-     *   <li>シューターを目標 RPM まで加速</li>
-     *   <li>連射: holdRpm + intake + feed を並列で永続実行</li>
+     *   <li>spinUp — Shooter が目標 RPM に達するまで待機</li>
+     *   <li>ParallelGroup(holdRpm, intake, feed) — 全永続、cancel で全停止</li>
      * </ol>
+     * <p>終了: 永続 / 中断時: 全 Subsystem 停止
      */
     public static Command shootContinuous() {
         return new SequentialGroup(

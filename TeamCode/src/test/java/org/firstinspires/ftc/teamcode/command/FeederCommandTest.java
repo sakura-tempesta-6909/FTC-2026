@@ -55,7 +55,7 @@ public class FeederCommandTest extends SubsystemTestBase {
 
         clearInvocations(motor);
         cmd.start();
-        verify(motor).setPower(Const.Feeder.Power.WEAKFEED);
+        verify(motor).setPower(Const.Feeder.Power.WEAK_FEED);
 
         clearInvocations(motor);
         cmd.stop(true);

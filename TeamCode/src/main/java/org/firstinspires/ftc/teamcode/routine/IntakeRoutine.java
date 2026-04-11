@@ -6,19 +6,18 @@ import org.firstinspires.ftc.teamcode.command.FeederCommand;
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 
 /**
- * インテーク系の組み合わせルーチン。
- * <p>
- * インテーク中に弾の詰まりを防ぐためフィーダーを弱く回す、などの
- * 「Intake と Feeder を同時に扱いたい」用途を ParallelGroup で表現する。
+ * Intake + Feeder を同時に扱うルーチン。
+ * 詰まり防止のため、インテーク中にフィーダーを弱く回す等の組み合わせを表現する。
+ *
+ * <p>requires (自動集約): Intake, Feeder
  */
 public class IntakeRoutine {
 
-    private IntakeRoutine() {
-    }
+    private IntakeRoutine() {}
 
     /**
-     * 取り込み中フィーダーも弱く前進させる。
-     * 中断時は ParallelGroup が中の両 leaf の setStop を呼び、両方とも停止する。
+     * 取り込み + フィーダー弱送り を並列で実行。
+     * <p>終了: 永続 (cancel のみ) / 中断時: Intake, Feeder 両方停止
      */
     public static Command intakeWithWeakFeed() {
         return new ParallelGroup(
@@ -28,7 +27,8 @@ public class IntakeRoutine {
     }
 
     /**
-     * 排出 (逆転) 中フィーダーも引き戻し方向に逆転させる。
+     * 排出 + フィーダー引き戻し を並列で実行。
+     * <p>終了: 永続 (cancel のみ) / 中断時: Intake, Feeder 両方停止
      */
     public static Command outtakeWithRetract() {
         return new ParallelGroup(
