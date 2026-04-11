@@ -87,13 +87,12 @@ public class ShooterSubsystem implements Subsystem {
             distance = 0;
         }
 
-        // (3) テレメトリ
+        // (3) テレメトリ (update() は Main.onUpdate で一括送信)
         PanelsTelemetry.INSTANCE.getTelemetry().addData("Shooter target", controller.getGoal().getVelocity());
         PanelsTelemetry.INSTANCE.getTelemetry().addData("Shooter current", shooterMotor.getVelocity());
         PanelsTelemetry.INSTANCE.getTelemetry().addData("Shooter atVelocity", isAtVelocity());
         PanelsTelemetry.INSTANCE.getTelemetry().addData("Distance", distance);
         PanelsTelemetry.INSTANCE.getTelemetry().addData("DistanceToTag", distanceToTag);
-        PanelsTelemetry.INSTANCE.getTelemetry().update();
     }
 
     // ==================== 目標速度 API ====================

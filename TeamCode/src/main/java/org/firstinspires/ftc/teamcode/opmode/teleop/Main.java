@@ -39,7 +39,6 @@ public class Main extends NextFTCOpMode {
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
 
     private final ElapsedTime loopTimer = new ElapsedTime();
-    private int lastSnapshotSize = 0;
 
     public Main() {
         addComponents(
@@ -102,19 +101,13 @@ public class Main extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
-        //実行時間表示
         double dt = loopTimer.seconds();
         loopTimer.reset();
 
-        //実行しているコマンドを表示
-        List<String> snapshot = CommandManager.INSTANCE.snapshot();
-        int currentSize = snapshot.size();
-        int fromIndex = Math.min(lastSnapshotSize, currentSize);
-        List<String> running = snapshot.subList(fromIndex, currentSize);
-        lastSnapshotSize = currentSize;
-
+        // 現在実行中の全コマンド名を表示
         panelsTelemetry.getTelemetry().addData("dt", dt);
-        panelsTelemetry.getTelemetry().addData("running", String.join(", ", running));
+        panelsTelemetry.getTelemetry().addData("running",
+                String.join(", ", CommandManager.INSTANCE.snapshot()));
         panelsTelemetry.getTelemetry().update();
 
         Drawing.drawDebug(PedroComponent.follower());

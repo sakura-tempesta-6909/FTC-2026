@@ -34,16 +34,14 @@ public class ShooterCommand {
     }
 
     /**
-     * 逆回転方向の目標速度をセットし、目標速度に到達するまで待つ。
-     * 詰まり解除など。中断時のみ Shooter を停止する。
+     * 逆回転方向の目標速度をセットし、永続的に維持する。
+     * 詰まり解除など。中断 (ボタン離下) で Shooter を停止する。
      */
     public static Command spinUpReverse() {
         return new LambdaCommand()
                 .setStart(ShooterSubsystem.INSTANCE::setReverseTargetRPM)
-                .setIsDone(ShooterSubsystem.INSTANCE::isAtVelocity)
-                .setStop(interrupted -> {
-                    if (interrupted) ShooterSubsystem.INSTANCE.stop();
-                })
+                .setIsDone(() -> false)
+                .setStop(interrupted -> ShooterSubsystem.INSTANCE.stop())
                 .setInterruptible(true)
                 .addRequirements(ShooterSubsystem.INSTANCE)
                 .named("spinUpReverse");

@@ -34,7 +34,7 @@ public class ShootingRoutine {
      */
     public static Command shootWithRetract() {
         return new SequentialGroup(
-                FeederCommand.retract().endAfter(Const.ShootingRoutine.RETRACT_DURATION_SECONDS),
+                FeederCommand.retractFor(Const.ShootingRoutine.RETRACT_DURATION_SECONDS),
                 ShooterCommand.spinUp(),
                 new ParallelGroup(
                         ShooterCommand.holdRpm(),

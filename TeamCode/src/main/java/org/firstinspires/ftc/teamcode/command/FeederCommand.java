@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.command;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
@@ -52,5 +53,27 @@ public class FeederCommand {
                 .setInterruptible(true)
                 .addRequirements(FeederSubsystem.INSTANCE)
                 .named("retract");
+    }
+
+    /**
+     * 指定秒数だけ引き戻して自動停止する。
+     * <p>
+     * {@code retract().endAfter(seconds)} は NextFTC の ParallelRaceGroup に
+     * バグがあり正しく動作しないため、自前でタイマーを管理する。
+     *
+     * @param seconds 引き戻し時間 (秒)
+     */
+    public static Command retractFor(double seconds) {
+        ElapsedTime timer = new ElapsedTime();
+        return new LambdaCommand()
+                .setStart(() -> {
+                    FeederSubsystem.INSTANCE.retract();
+                    timer.reset();
+                })
+                .setIsDone(() -> timer.seconds() >= seconds)
+                .setStop(interrupted -> FeederSubsystem.INSTANCE.stop())
+                .setInterruptible(true)
+                .addRequirements(FeederSubsystem.INSTANCE)
+                .named("retractFor");
     }
 }

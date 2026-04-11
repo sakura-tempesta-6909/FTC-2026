@@ -5,6 +5,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.components.BindingsComponent;
@@ -54,22 +55,32 @@ public class RedGoal extends NextFTCOpMode {
     public Command autonomousRoutine() {
         return new SequentialGroup(
                 new FollowPath(redGoalPath.Path1, true, 0.3),
-                ShootingRoutine.shootContinuous().endAfter(SHOOT_DURATION_SECONDS),
+                // endAfter は ParallelRaceGroup のバグで永続コマンドに効かないため
+                // ParallelDeadlineGroup(Delay, routine) を使う
+                new ParallelDeadlineGroup(
+                        new Delay(SHOOT_DURATION_SECONDS),
+                        ShootingRoutine.shootContinuous()
+                ),
                 new FollowPath(redGoalPath.Path2),
-                // インテークしながら Path3 を走り、Path3 完了でインテークも自動停止
                 new ParallelDeadlineGroup(
                         new FollowPath(redGoalPath.Path3, false, 0.3),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new FollowPath(redGoalPath.Path4),
-                ShootingRoutine.shootWithRetract().endAfter(SHOOT_DURATION_SECONDS),
+                new ParallelDeadlineGroup(
+                        new Delay(SHOOT_DURATION_SECONDS),
+                        ShootingRoutine.shootWithRetract()
+                ),
                 new FollowPath(redGoalPath.Path5),
                 new ParallelDeadlineGroup(
                         new FollowPath(redGoalPath.Path6, false, 0.3),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new FollowPath(redGoalPath.Path7),
-                ShootingRoutine.shootWithRetract().endAfter(SHOOT_DURATION_SECONDS),
+                new ParallelDeadlineGroup(
+                        new Delay(SHOOT_DURATION_SECONDS),
+                        ShootingRoutine.shootWithRetract()
+                ),
                 new FollowPath(redGoalPath.Path8)
         );
     }
