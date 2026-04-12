@@ -10,6 +10,7 @@ import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
+import org.firstinspires.ftc.teamcode.command.CorrectionCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
 import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.path.BlueGoalPath;
@@ -39,6 +40,7 @@ public class BlueGoal extends FTCBaseOpMode {
     public Command autonomousRoutine() {
         return new SequentialGroup(
                 new FollowPath(blueGoalPath.Path1, true, 0.3),
+                CorrectionCommand.correct(), // Limelight で位置補正
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
                         ShootingRoutine.shootContinuous()

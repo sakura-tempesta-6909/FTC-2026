@@ -38,34 +38,32 @@ public class RedGoal extends FTCBaseOpMode {
 
     public Command autonomousRoutine() {
         return new SequentialGroup(
-                new FollowPath(redGoalPath.Path1, true, 0.3),
-                // endAfter は ParallelRaceGroup のバグで永続コマンドに効かないため
-                // ParallelDeadlineGroup(Delay, routine) を使う
+                new FollowPath(redGoalPath.Path1, true, 0.6),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
                         ShootingRoutine.shootContinuous()
                 ),
                 new FollowPath(redGoalPath.Path2),
                 new ParallelDeadlineGroup(
-                        new FollowPath(redGoalPath.Path3, false, 0.3),
+                        new FollowPath(redGoalPath.Path3, false, 0.6),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new FollowPath(redGoalPath.Path4),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
                         ShootingRoutine.shootWithRetract()
-                ),
-                new FollowPath(redGoalPath.Path5),
-                new ParallelDeadlineGroup(
-                        new FollowPath(redGoalPath.Path6, false, 0.3),
-                        IntakeRoutine.intakeWithWeakFeed()
-                ),
-                new FollowPath(redGoalPath.Path7),
-                new ParallelDeadlineGroup(
-                        new Delay(SHOOT_DURATION_SECONDS),
-                        ShootingRoutine.shootWithRetract()
-                ),
-                new FollowPath(redGoalPath.Path8)
+                )
+//                new FollowPath(redGoalPath.Path5),
+//                new ParallelDeadlineGroup(
+//                        new FollowPath(redGoalPath.Path6, false, 0.3),
+//                        IntakeRoutine.intakeWithWeakFeed()
+//                ),
+//                new FollowPath(redGoalPath.Path7),
+//                new ParallelDeadlineGroup(
+//                        new Delay(SHOOT_DURATION_SECONDS),
+//                        ShootingRoutine.shootWithRetract()
+//                ),
+//                new FollowPath(redGoalPath.Path8)
         );
     }
 
