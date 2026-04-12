@@ -42,8 +42,8 @@ public class Main extends FTCBaseOpMode {
                 false
         );
         Gamepads.gamepad2().rightBumper()
-                        .whenTrue(() -> driverControlled.setScalar(0.2))
-                        .whenFalse(() -> driverControlled.setScalar(1.0));
+                .whenTrue(() -> driverControlled.setScalar(0.2))
+                .whenFalse(() -> driverControlled.setScalar(1.0));
 
         driverControlled.schedule();
 
@@ -81,10 +81,15 @@ public class Main extends FTCBaseOpMode {
         double dt = loopTimer.seconds();
         loopTimer.reset();
 
-        panelsTelemetry.getTelemetry().addData("dt", dt);
-        panelsTelemetry.getTelemetry().addData("running",
+        // Panels テレメトリ
+        var panelsTelemetry = this.panelsTelemetry.getTelemetry();
+        panelsTelemetry.addData("[システム] ループ", String.format("%.1fms", dt * 1000));
+        panelsTelemetry.addData("[システム] 実行中",
                 String.join(", ", CommandManager.INSTANCE.snapshot()));
-        panelsTelemetry.getTelemetry().update();
+        panelsTelemetry.update();
+
+        // Driver Hub テレメトリ (元の FTC SDK テレメトリに書き込む)
+        updateDriverHubTelemetry(driverStationTelemetry);
 
         Drawing.drawDebug(PedroComponent.follower(), LimelightSubsystem.INSTANCE.getLimelightPose());
     }

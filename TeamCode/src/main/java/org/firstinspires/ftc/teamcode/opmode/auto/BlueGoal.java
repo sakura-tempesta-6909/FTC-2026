@@ -71,6 +71,7 @@ public class BlueGoal extends FTCBaseOpMode {
 
     @Override
     public void onUpdate() {
+        updateDriverHubTelemetry(driverStationTelemetry);
         Drawing.drawDebug(PedroComponent.follower());
     }
 }

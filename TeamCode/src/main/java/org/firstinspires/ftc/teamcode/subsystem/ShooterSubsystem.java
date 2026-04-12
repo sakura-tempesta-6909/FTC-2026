@@ -47,9 +47,9 @@ public class ShooterSubsystem implements Subsystem {
         shooterMotor.setPower(power);
 
         // テレメトリ (update() は Main.onUpdate で一括送信)
-        PanelsTelemetry.INSTANCE.getTelemetry().addData("Shooter target", controller.getGoal().getVelocity());
-        PanelsTelemetry.INSTANCE.getTelemetry().addData("Shooter current", shooterMotor.getVelocity());
-        PanelsTelemetry.INSTANCE.getTelemetry().addData("Shooter atVelocity", isAtVelocity());
+        var telemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+        telemetry.addData("[射出] 状態", getStatusText());
+        telemetry.addData("[射出] RPM", String.format("%.0f / %.0f", getCurrentVelocity(), getTargetVelocity()));
     }
 
     // --- 目標速度 API ---
@@ -88,5 +88,26 @@ public class ShooterSubsystem implements Subsystem {
     public boolean isAtVelocity() {
         return Math.abs(shooterMotor.getVelocity() - controller.getGoal().getVelocity())
                 <= Const.Shooter.Velocity.TOLERANCE;
+    }
+
+    /** 目標 RPM。停止中は 0。 */
+    public double getTargetVelocity() {
+        return controller.getGoal().getVelocity();
+    }
+
+    /** 現在の実 RPM。 */
+    public double getCurrentVelocity() {
+        return shooterMotor.getVelocity();
+    }
+
+    /**
+     * Driver Hub 向けの状態テキストを返す。
+     * "停止" / "加速中 (85%)" / "準備完了"
+     */
+    public String getStatusText() {
+        double target = getTargetVelocity();
+        if (target == 0) return "停止";
+        if (isAtVelocity()) return "準備完了";
+        return String.format("加速中 (%.0f%%)", Math.min(getCurrentVelocity() / target * 100, 100));
     }
 }

@@ -56,6 +56,7 @@ public class TestAuto extends FTCBaseOpMode {
 
     @Override
     public void onUpdate() {
+        updateDriverHubTelemetry(driverStationTelemetry);
         Drawing.drawDebug(PedroComponent.follower(), LimelightSubsystem.INSTANCE.getLimelightPose());
     }
 

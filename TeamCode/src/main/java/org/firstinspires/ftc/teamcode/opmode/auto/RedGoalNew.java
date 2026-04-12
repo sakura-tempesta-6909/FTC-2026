@@ -19,7 +19,9 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
+import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.path.RedGoalPathNew;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
@@ -34,6 +36,7 @@ import org.firstinspires.ftc.teamcode.path.RedGoalPathNew;
 public class RedGoalNew extends NextFTCOpMode {
     private RedGoalPathNew redGoalPathNew;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
+    private Telemetry driverStationTelemetry;
 
     public RedGoalNew() {
         addComponents(
@@ -46,6 +49,7 @@ public class RedGoalNew extends NextFTCOpMode {
 
     @Override
     public void onInit() {
+        driverStationTelemetry = telemetry;
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(new Pose(118.889, 122.465, Math.toRadians(40)));
         redGoalPathNew = new RedGoalPathNew(PedroComponent.follower());
@@ -91,6 +95,7 @@ public class RedGoalNew extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
+        FTCBaseOpMode.updateDriverHubTelemetry(driverStationTelemetry);
         Drawing.drawDebug(PedroComponent.follower());
     }
 }

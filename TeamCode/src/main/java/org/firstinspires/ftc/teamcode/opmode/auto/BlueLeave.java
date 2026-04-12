@@ -40,6 +40,7 @@ public class BlueLeave extends FTCBaseOpMode {
 
     @Override
     public void onUpdate() {
+        updateDriverHubTelemetry(driverStationTelemetry);
         Drawing.drawDebug(PedroComponent.follower());
     }
 }

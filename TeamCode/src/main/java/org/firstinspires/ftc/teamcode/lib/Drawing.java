@@ -25,6 +25,7 @@ public final class Drawing {
     private static final Style ROBOT_STYLE = new Style("", "#3F51B5", 0.75);
     private static final Style HISTORY_STYLE = new Style("", "#4CAF50", 0.75);
     private static final Style LIMELIGHT_STYLE = new Style("", "#97699d", 0.75);
+    private static final Style DEVIATION_LINE_STYLE = new Style("", "#FFEB3B", 0.4);
 
     private Drawing() {}
 
@@ -61,8 +62,14 @@ public final class Drawing {
         drawPoseHistory(follower.getPoseHistory(), HISTORY_STYLE);
         drawRobot(follower.getPose(), HISTORY_STYLE);
 
-        if (limelightPose != null) {
+        // Limelight 推定位置 + オドメトリとのずれを可視化
+        if (limelightPose != null && isOnField(limelightPose)) {
             drawRobot(limelightPose, LIMELIGHT_STYLE);
+
+            // オドメトリ位置と Limelight 推定位置を結ぶ線 (ずれが大きいほど線が長い)
+            panelsField.setStyle(DEVIATION_LINE_STYLE);
+            panelsField.moveCursor(follower.getPose().getX(), follower.getPose().getY());
+            panelsField.line(limelightPose.getX(), limelightPose.getY());
         }
 
         sendPacket();
@@ -127,6 +134,13 @@ public final class Drawing {
                     poseTracker.getXPositionsArray()[i + 1],
                     poseTracker.getYPositionsArray()[i + 1]);
         }
+    }
+
+    /** 位置がフィールド内 (0〜144 インチ) に収まっているか判定する。 */
+    private static boolean isOnField(Pose pose) {
+        double margin = 10; // フィールド外でも少しの余裕を持たせる
+        return pose.getX() >= -margin && pose.getX() <= 144 + margin
+                && pose.getY() >= -margin && pose.getY() <= 144 + margin;
     }
 
     /** 描画パケットを Panels に送信する。 */
