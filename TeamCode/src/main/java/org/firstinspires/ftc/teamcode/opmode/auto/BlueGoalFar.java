@@ -18,6 +18,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
+import org.firstinspires.ftc.teamcode.lib.Drawing;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.path.BlueGoalPathFar;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
@@ -44,8 +45,6 @@ public class BlueGoalFar extends NextFTCOpMode {
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(new Pose(56.202, 8.000, Math.toRadians(90)));
         blueGoalPath = new BlueGoalPathFar(PedroComponent.follower());
-        ShooterCommand.stopAll();
-        IntakeCommand.stopIntake();
         Drawing.init();
         Drawing.drawDebug(PedroComponent.follower());
     }
@@ -58,43 +57,11 @@ public class BlueGoalFar extends NextFTCOpMode {
 
     public Command autonomousRoutine() {
         return new SequentialGroup(
-                new FollowPath(blueGoalPath.Path1, true, 0.5),
-                new ParallelGroup(
-                        ShooterCommand.shootArtifacts(false),
-                        new Delay(3)
-                ),
-                ShooterCommand.stopAll(),
-                new FollowPath(blueGoalPath.Path2,false,0.5),
-                IntakeCommand.intake(),
-                new FollowPath(blueGoalPath.Path3, false, 0.5),
-                IntakeCommand.stopIntake(),
-                new FollowPath(blueGoalPath.Path4,false,0.5),
-                new ParallelGroup(
-                        ShooterCommand.shootArtifacts(false),
-                        new Delay(3)
-                ),
-                ShooterCommand.stopAll(),
-                IntakeCommand.intake(),
-                new FollowPath(blueGoalPath.Path5,false,0.5),
-                IntakeCommand.stopIntake(),
-                new FollowPath(blueGoalPath.Path6,false,0.5),
-                new ParallelGroup(
-                        ShooterCommand.shootArtifacts(false),
-                        new Delay(3)
-                ),
-                ShooterCommand.stopAll(),
-                IntakeCommand.intake(),
-                new FollowPath(blueGoalPath.Path7,false,0.5),
-                IntakeCommand.stopIntake(),
-                new FollowPath(blueGoalPath.Path8,false,0.5),
-                new ParallelGroup(
-                        ShooterCommand.shootArtifacts(false),
-                        new Delay(3)
-                ),
-                ShooterCommand.stopAll(),
-                new FollowPath(blueGoalPath.Path9,false,0.5)
+
         );
     }
+
+    private static final double SHOOT_DURATION_SECONDS = 3.0;
 
     @Override
     public void onUpdate() {

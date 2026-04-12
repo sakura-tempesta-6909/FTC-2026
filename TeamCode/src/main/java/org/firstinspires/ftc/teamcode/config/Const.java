@@ -94,7 +94,7 @@ public final class Const {
 
         // --- パワー設定 ---
         public static final class Power {
-            public static final double FEED = 1.0;
+            public static final double FEED = 0.7;
             public static final double WEAK_FEED = 0.3;
             public static final double RETRACT = -1.0;
             public static final double STOP = 0.0;
@@ -104,7 +104,7 @@ public final class Const {
     // ========== 射出ルーチン共通設定 ==========
     public static final class ShootingRoutine {
         /** 射出前にフィーダーを引き戻す時間 (秒)。 */
-        public static double RETRACT_DURATION_SECONDS = 0.2;
+        public static double RETRACT_DURATION_SECONDS = 0.1;
     }
 
     // ========== Limelight ==========
@@ -123,7 +123,7 @@ public final class Const {
             public static double SCALE = 196.1;
             public static double EXPONENT = -0.8030557;
             /** カメラとタグの高さ差の二乗 (cm^2)。 */
-            public static double HEIGHT_OFFSET_SQUARED = 4225;
+            public static double HEIGHT_OFFSET_SQUARED = 1980.25;
         }
 
         /** Limelight botpose (メートル, フィールド中心) → Pedro 座標系 (インチ, フィールド角) への変換。 */

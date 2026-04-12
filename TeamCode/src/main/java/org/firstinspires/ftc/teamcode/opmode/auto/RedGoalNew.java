@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.components.BindingsComponent;
@@ -20,18 +21,21 @@ import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.path.BlueGoalPathFar;
+import org.firstinspires.ftc.teamcode.path.RedGoalPathNew;
+import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
+import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.path.RedGoalPathNew;
 
-@Autonomous(name = "Blue Goal")
+@Autonomous(name = "Red Goal")
 @Configurable
-public class RedGoalFar extends NextFTCOpMode {
-    private BlueGoalPathFar blueGoalPath;
+public class RedGoalNew extends NextFTCOpMode {
+    private RedGoalPathNew redGoalPathNew;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
 
-    public RedGoalFar() {
+    public RedGoalNew() {
         addComponents(
                 new PedroComponent(Constants::createFollower),
                 new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE),
@@ -43,8 +47,8 @@ public class RedGoalFar extends NextFTCOpMode {
     @Override
     public void onInit() {
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(85.849, 9.210, Math.toRadians(90)));
-        blueGoalPath = new BlueGoalPathFar(PedroComponent.follower());
+        PedroComponent.follower().setStartingPose(new Pose(118.889, 122.465, Math.toRadians(40)));
+        redGoalPathNew = new RedGoalPathNew(PedroComponent.follower());
         Drawing.init();
         Drawing.drawDebug(PedroComponent.follower());
     }
@@ -57,9 +61,32 @@ public class RedGoalFar extends NextFTCOpMode {
 
     public Command autonomousRoutine() {
         return new SequentialGroup(
-
+                new ParallelDeadlineGroup(
+                        new FollowPath(redGoalPathNew.Path1,false,0.5),
+                        ShootingRoutine.shootContinuous()
+                ),
+                new ParallelDeadlineGroup(
+                        new FollowPath(redGoalPathNew.Path2,false,0.5),
+                        IntakeRoutine.intakeWithWeakFeed()
+                ),
+                new FollowPath(redGoalPathNew.Path3,true,0.5),
+                new ParallelDeadlineGroup(
+                        new Delay(SHOOT_DURATION_SECONDS),
+                        ShootingRoutine.shootWithRetract()
+                ),
+                new FollowPath(redGoalPathNew.Path4,false,0.5),
+                new ParallelDeadlineGroup(
+                        new FollowPath(redGoalPathNew.Path5,false,0.5),
+                        IntakeRoutine.intakeWithWeakFeed()
+                ),
+                new FollowPath(redGoalPathNew.Path6,true,0.5),
+                new ParallelDeadlineGroup(
+                        new Delay(SHOOT_DURATION_SECONDS),
+                        ShootingRoutine.shootWithRetract()
+                )
         );
     }
+
     private static final double SHOOT_DURATION_SECONDS = 2.0;
 
     @Override
