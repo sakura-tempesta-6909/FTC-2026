@@ -15,6 +15,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.command.FollowPathWithTimeout;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
 import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 @Autonomous(name = "Red Goal New")
@@ -36,7 +38,7 @@ public class RedGoalNew extends NextFTCOpMode {
     public RedGoalNew() {
         addComponents(
                 new PedroComponent(Constants::createFollower),
-                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE),
+                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE, LimelightSubsystem.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
@@ -52,6 +54,11 @@ public class RedGoalNew extends NextFTCOpMode {
         Drawing.drawDebug(PedroComponent.follower());
     }
 
+
+    @Override
+    public void onWaitForStart() {
+        FTCBaseOpMode.showInitTelemetry(hardwareMap, driverStationTelemetry);
+    }
 
     @Override
     public void onStartButtonPressed() {
@@ -76,9 +83,9 @@ public class RedGoalNew extends NextFTCOpMode {
                         IntakeRoutine.intakeWithWeakFeed(),
                         ShooterCommand.holdRpm()
                 ),
+                // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        new Delay(PATH3_TIMEOUT_SECONDS), // 壁に挟まっても次に進む
-                        new FollowPath(redGoalPathNew.Path3, false, 0.8),
+                        FollowPathWithTimeout.create(redGoalPathNew.Path3, false, 0.3, PATH3_TIMEOUT_SECONDS),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new ParallelDeadlineGroup(
@@ -94,9 +101,9 @@ public class RedGoalNew extends NextFTCOpMode {
                         IntakeRoutine.intakeWithWeakFeed(),
                         ShooterCommand.holdRpm()
                 ),
+                // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        new Delay(PATH3_TIMEOUT_SECONDS), // 壁に挟まっても次に進む
-                        new FollowPath(redGoalPathNew.Path6, false, 0.8),
+                        FollowPathWithTimeout.create(redGoalPathNew.Path6, false, 0.3, PATH3_TIMEOUT_SECONDS),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new FollowPath(redGoalPathNew.Path7, false, 1.0),

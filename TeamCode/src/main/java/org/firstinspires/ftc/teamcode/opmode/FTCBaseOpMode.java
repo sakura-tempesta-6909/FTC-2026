@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -47,6 +50,41 @@ public abstract class FTCBaseOpMode extends NextFTCOpMode {
         // Panels ラッパーに置き換える前に、元の FTC SDK テレメトリを保存
         driverStationTelemetry = telemetry;
         Drawing.init();
+    }
+
+    @Override
+    public void onWaitForStart() {
+        showInitTelemetry(hardwareMap, driverStationTelemetry);
+    }
+
+    /**
+     * INIT 中に Limelight の検出状況を Driver Hub に表示する。
+     * FTCBaseOpMode を継承しない OpMode からも使えるよう static にしている。
+     */
+    public static void showInitTelemetry(com.qualcomm.robotcore.hardware.HardwareMap hardwareMap,
+                                          Telemetry driverHubTelemetry) {
+        Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        LLResult result = limelight.getLatestResult();
+
+        driverHubTelemetry.addData("--- INIT ---", "");
+        if (result != null && result.isValid()) {
+            java.util.List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+            if (fiducials != null && !fiducials.isEmpty()) {
+                StringBuilder ids = new StringBuilder();
+                for (LLResultTypes.FiducialResult fr : fiducials) {
+                    ids.append("ID:").append(fr.getFiducialId()).append(" ");
+                }
+                driverHubTelemetry.addData("タグ検出", ids.toString());
+            } else {
+                driverHubTelemetry.addData("タグ検出", "fiducial なし");
+            }
+            driverHubTelemetry.addData("Ta", String.format("%.3f", result.getTa()));
+            driverHubTelemetry.addData("tx/ty",
+                    String.format("%.1f° / %.1f°", result.getTx(), result.getTy()));
+        } else {
+            driverHubTelemetry.addData("タグ検出", "なし");
+        }
+        driverHubTelemetry.update();
     }
 
     /**

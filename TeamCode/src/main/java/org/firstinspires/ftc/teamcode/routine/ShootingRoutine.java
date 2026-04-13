@@ -58,6 +58,7 @@ public class ShootingRoutine {
      */
     public static Command shootContinuous() {
         return new SequentialGroup(
+                FeederCommand.retractFor(Const.ShootingRoutine.RETRACT_DURATION_SECONDS),
                 ShooterCommand.spinUp(),
                 new ParallelGroup(
                         ShooterCommand.holdRpm(),
