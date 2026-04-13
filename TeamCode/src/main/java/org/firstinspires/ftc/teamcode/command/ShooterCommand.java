@@ -41,6 +41,22 @@ public class ShooterCommand {
     }
 
     /**
+     * パスと並行して使うスピンアップ。中断されてもシューターを停止しない。
+     * <p>ParallelDeadlineGroup(FollowPath, spinUpForPath()) のように使い、
+     * パス完了後も RPM を維持したまま次のコマンド (shootContinuous 等) に繋げる。
+     * <p>終了: isAtVelocity() == true / 中断時: 何もしない (RPM 維持) / requires: Shooter
+     */
+    public static Command spinUpForPath() {
+        return new LambdaCommand()
+                .setStart(ShooterSubsystem.INSTANCE::setTargetRPM)
+                .setIsDone(ShooterSubsystem.INSTANCE::isAtVelocity)
+                .setStop(interrupted -> { /* 中断時も停止しない: 次のコマンドで RPM を引き継ぐ */ })
+                .setInterruptible(true)
+                .addRequirements(ShooterSubsystem.INSTANCE)
+                .named("spinUpForPath");
+    }
+
+    /**
      * 逆回転の目標速度をセットし、維持し続ける (詰まり解除等)。
      * <p>終了: 永続 (cancel のみ) / 中断時: Shooter 停止 / requires: Shooter
      */

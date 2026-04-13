@@ -19,14 +19,17 @@ import org.firstinspires.ftc.teamcode.config.Const;
 @Configurable
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(8)
-            .forwardZeroPowerAcceleration(-33.746419509264)
-            .lateralZeroPowerAcceleration(-64.84795146314282)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.085, 0.0002, 0.01, 0.03))
-            .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0.00002, 0.02, 0.015))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.25, 0, 0.008, 0.6, 0.01))
+            .mass(11.6)
+//            .mass(8.5)
+            .forwardZeroPowerAcceleration(-31.51633782361255)
+            .lateralZeroPowerAcceleration(-68.90771663346152)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0.0001, 0.01, 0))
+            .useSecondaryTranslationalPIDF(true)
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(0.06, 0.00015, 0.02, 0))
+            .headingPIDFCoefficients(new PIDFCoefficients(0.8, 0.00002, 0.02, 0))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.18, 0, 0.015, 0.6, 0.01))
             .useSecondaryHeadingPIDF(true)
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1.0, 0.00002, 0.02, 0.005))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(0.5, 0.00002, 0.02, 0))
             .centripetalScaling(0.0007);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
@@ -39,8 +42,8 @@ public class Constants {
             .leftRearMotorDirection(Const.Drive.Direction.LEFT_REAR)
             .rightFrontMotorDirection(Const.Drive.Direction.RIGHT_FRONT)
             .rightRearMotorDirection(Const.Drive.Direction.RIGHT_REAR)
-            .xVelocity(70.465150986493)
-            .yVelocity(50.63047404925902);
+            .xVelocity(77.33926703986221)
+            .yVelocity(60.2571713905635);
 
     public static TwoWheelConstants localizerConstants = new TwoWheelConstants()
             .forwardEncoder_HardwareMapName(Const.Drive.Motor.RIGHT_FRONT)
@@ -53,8 +56,8 @@ public class Constants {
             .IMU_Orientation(new RevHubOrientationOnRobot(Const.Imu.LOGO_FACING_DIRECTION, Const.Imu.USB_FACING_DIRECTION));
 
     public static PinpointConstants pinPointLocalizerConstants = new PinpointConstants()
-            .forwardPodY(-3)
-            .strafePodX(-12.5)
+            .forwardPodY(0)
+            .strafePodX(-13.5)
             .distanceUnit(DistanceUnit.CM)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)

@@ -46,7 +46,7 @@ public class RedGoalNew extends NextFTCOpMode {
     public void onInit() {
         driverStationTelemetry = telemetry;
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(118.889, 122.465, Math.toRadians(40)));
+        PedroComponent.follower().setStartingPose(new Pose(119.13834434860539, 135.39823008849552, Math.toRadians(00)));
         redGoalPathNew = new RedGoalPathNew(PedroComponent.follower());
         Drawing.init();
         Drawing.drawDebug(PedroComponent.follower());
@@ -63,13 +63,13 @@ public class RedGoalNew extends NextFTCOpMode {
                 // 後退しながらスピンアップ (移動時間でRPMを上げておく)
                 new ParallelDeadlineGroup(
                         new FollowPath(redGoalPathNew.Path1, false, 1.0),
-                        ShooterCommand.spinUp()
+                        ShooterCommand.spinUpForPath()
                 ),
 //                CorrectionCommand.correct(), // Limelight で位置補正
                 // スピンアップ済みなのですぐ射撃開始
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
-                        ShootingRoutine.shootWithRetract()
+                        ShootingRoutine.shootContinuous()
                 ),
                 new ParallelDeadlineGroup(
                         new FollowPath(redGoalPathNew.Path2, false, 1.0),
@@ -77,25 +77,49 @@ public class RedGoalNew extends NextFTCOpMode {
                         ShooterCommand.holdRpm()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(redGoalPathNew.Path3, false, 0.5),
+                        new Delay(PATH3_TIMEOUT_SECONDS), // 壁に挟まっても次に進む
+                        new FollowPath(redGoalPathNew.Path3, false, 0.8),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new ParallelDeadlineGroup(
                         new FollowPath(redGoalPathNew.Path4, false, 1.0),
-                        ShooterCommand.spinUp()
+                        ShooterCommand.spinUpForPath()
                 ),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
-                        ShootingRoutine.shootWithRetract()
+                        ShootingRoutine.shootContinuous()
+                ),
+                new ParallelDeadlineGroup(
+                        new FollowPath(redGoalPathNew.Path5, false, 1.0),
+                        IntakeRoutine.intakeWithWeakFeed(),
+                        ShooterCommand.holdRpm()
+                ),
+                new ParallelDeadlineGroup(
+                        new Delay(PATH3_TIMEOUT_SECONDS), // 壁に挟まっても次に進む
+                        new FollowPath(redGoalPathNew.Path6, false, 0.8),
+                        IntakeRoutine.intakeWithWeakFeed()
+                ),
+                new FollowPath(redGoalPathNew.Path7, false, 1.0),
+                new ParallelDeadlineGroup(
+                        new FollowPath(redGoalPathNew.Path8, false, 1.0),
+                        ShooterCommand.spinUpForPath()
+                ),
+                new ParallelDeadlineGroup(
+                        new Delay(SHOOT_DURATION_SECONDS),
+                        ShootingRoutine.shootContinuous()
                 )
         );
     }
 
     private static final double SHOOT_DURATION_SECONDS = 1.5;
+    private static final double PATH3_TIMEOUT_SECONDS = 3.0;
 
     @Override
     public void onUpdate() {
         FTCBaseOpMode.updateDriverHubTelemetry(driverStationTelemetry);
-        Drawing.drawDebug(PedroComponent.follower());
+        Drawing.drawDebug(PedroComponent.follower(), null,
+                redGoalPathNew.Path1, redGoalPathNew.Path2, redGoalPathNew.Path3,
+                redGoalPathNew.Path4, redGoalPathNew.Path5, redGoalPathNew.Path6,
+                redGoalPathNew.Path7, redGoalPathNew.Path8);
     }
 }

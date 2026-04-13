@@ -26,6 +26,7 @@ public final class Drawing {
     private static final Style HISTORY_STYLE = new Style("", "#4CAF50", 0.75);
     private static final Style LIMELIGHT_STYLE = new Style("", "#97699d", 0.75);
     private static final Style DEVIATION_LINE_STYLE = new Style("", "#FFEB3B", 0.4);
+    private static final Style ALL_PATHS_STYLE = new Style("", "#FF9800", 0.3);
 
     private Drawing() {}
 
@@ -43,12 +44,33 @@ public final class Drawing {
     }
 
     /**
+     * Follower の現在位置・パス・履歴に加え、Limelight 推定位置と全パスを描画する。
+     *
+     * @param follower       Pedro Follower
+     * @param limelightPose  Limelight から算出した位置 (null なら描画しない)
+     * @param allPaths       Auto の全パス (null なら描画しない)
+     */
+    public static void drawDebug(Follower follower, Pose limelightPose, PathChain... allPaths) {
+        // 全パスを薄いオレンジで描画
+        if (allPaths != null) {
+            for (PathChain chain : allPaths) {
+                if (chain != null) drawPath(chain, ALL_PATHS_STYLE);
+            }
+        }
+        drawDebugInternal(follower, limelightPose);
+    }
+
+    /**
      * Follower の現在位置・パス・履歴に加え、Limelight 推定位置も描画する。
      *
      * @param follower       Pedro Follower
      * @param limelightPose  Limelight から算出した位置 (null なら描画しない)
      */
     public static void drawDebug(Follower follower, Pose limelightPose) {
+        drawDebugInternal(follower, limelightPose);
+    }
+
+    private static void drawDebugInternal(Follower follower, Pose limelightPose) {
         if (follower.getCurrentPath() != null) {
             drawPath(follower.getCurrentPath(), ROBOT_STYLE);
             Pose closestPoint = follower.getPointFromPath(

@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.routine;
 
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import org.firstinspires.ftc.teamcode.command.FeederCommand;
@@ -31,7 +33,12 @@ public class ShootingRoutine {
      */
     public static Command shootWithRetract() {
         return new SequentialGroup(
-                FeederCommand.retractFor(Const.ShootingRoutine.RETRACT_DURATION_SECONDS),
+                // フィーダー引き戻し + シューター逆回転を同時に行い、詰まりを解消
+                new ParallelDeadlineGroup(
+                        new Delay(Const.ShootingRoutine.RETRACT_DURATION_SECONDS),
+                        FeederCommand.retract(),
+                        ShooterCommand.spinUpReverse()
+                ),
                 ShooterCommand.spinUp(),
                 new ParallelGroup(
                         ShooterCommand.holdRpm(),

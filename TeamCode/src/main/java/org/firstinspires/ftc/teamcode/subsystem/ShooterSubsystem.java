@@ -34,7 +34,7 @@ public class ShooterSubsystem implements Subsystem {
         shooterMotor = new MotorEx(Const.Shooter.Motor.NAME);
         shooterMotor.reverse();
         shooterMotor.brakeMode();
-        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         controller = ControlSystem.builder().velPid(pidCoefficients).build();
         controller.setGoal(new KineticState(0.0, Const.Shooter.Velocity.STOP));
@@ -42,8 +42,14 @@ public class ShooterSubsystem implements Subsystem {
 
     @Override
     public void periodic() {
-        double power = controller.calculate(
-                new KineticState(0.0, shooterMotor.getVelocity()));
+        double power;
+        if (controller.getGoal().getVelocity() == 0) {
+            // 停止時はモーターパワーを直接 0 にして、ボールが押し出されるのを防ぐ
+            power = 0;
+        } else {
+            power = controller.calculate(
+                    new KineticState(0.0, shooterMotor.getVelocity()));
+        }
         shooterMotor.setPower(power);
 
         // テレメトリ (update() は Main.onUpdate で一括送信)
