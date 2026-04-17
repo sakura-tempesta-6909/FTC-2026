@@ -50,7 +50,7 @@ public final class Const {
 
         // --- 速度 (RPM) ---
         public static final class Velocity {
-            public static double HIGHEST_RPM = 1500;
+            public static double HIGHEST_RPM = 1850;
             public static double MEDIUM_HIGH_RPM = 1400;
             public static double NORMAL_RPM = 1300;
             public static double MEDIUM_LOW_RPM = 1200;
@@ -96,7 +96,7 @@ public final class Const {
 
         // --- パワー設定 ---
         public static final class Power {
-            public static final double FEED = 1.0;
+            public static final double FEED = 0.8;
             public static final double WEAK_FEED = 0.3;
             public static final double RETRACT = -1.0;
             public static final double STOP = 0.0;
