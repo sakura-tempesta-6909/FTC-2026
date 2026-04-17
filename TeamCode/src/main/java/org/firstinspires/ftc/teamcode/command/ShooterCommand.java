@@ -31,6 +31,7 @@ public class ShooterCommand {
     public static Command spinUp() {
         return new LambdaCommand()
                 .setStart(ShooterSubsystem.INSTANCE::setTargetRPM)
+                .setUpdate(ShooterSubsystem.INSTANCE::setTargetRPM) // 毎ループ距離から RPM を更新
                 .setIsDone(ShooterSubsystem.INSTANCE::isAtVelocity)
                 .setStop(interrupted -> {
                     if (interrupted) ShooterSubsystem.INSTANCE.stop();
@@ -49,6 +50,7 @@ public class ShooterCommand {
     public static Command spinUpForPath() {
         return new LambdaCommand()
                 .setStart(ShooterSubsystem.INSTANCE::setTargetRPM)
+                .setUpdate(ShooterSubsystem.INSTANCE::setTargetRPM) // 毎ループ距離から RPM を更新
                 .setIsDone(ShooterSubsystem.INSTANCE::isAtVelocity)
                 .setStop(interrupted -> { /* 中断時も停止しない: 次のコマンドで RPM を引き継ぐ */ })
                 .setInterruptible(true)
@@ -77,6 +79,7 @@ public class ShooterCommand {
      */
     public static Command holdRpm() {
         return new LambdaCommand()
+                .setUpdate(ShooterSubsystem.INSTANCE::setTargetRPM) // 毎ループ距離から RPM を更新
                 .setIsDone(() -> false)
                 .setStop(interrupted -> ShooterSubsystem.INSTANCE.stop())
                 .setInterruptible(true)
