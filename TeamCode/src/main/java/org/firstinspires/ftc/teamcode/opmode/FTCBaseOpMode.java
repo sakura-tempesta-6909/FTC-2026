@@ -62,7 +62,7 @@ public abstract class FTCBaseOpMode extends NextFTCOpMode {
      * FTCBaseOpMode を継承しない OpMode からも使えるよう static にしている。
      */
     public static void showInitTelemetry(com.qualcomm.robotcore.hardware.HardwareMap hardwareMap,
-                                          Telemetry driverHubTelemetry) {
+                                         Telemetry driverHubTelemetry) {
         Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
         LLResult result = limelight.getLatestResult();
 

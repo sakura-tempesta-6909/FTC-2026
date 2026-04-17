@@ -53,6 +53,7 @@ public final class Const {
             public static double HIGHEST_RPM = 1500;
             public static double MEDIUM_HIGH_RPM = 1400;
             public static double NORMAL_RPM = 1300;
+            public static double MEDIUM_LOW_RPM = 1200;
             public static double LOWEST_RPM = 1100;
             public static double REVERSE_TARGET_RPM = -1400;
             public static final double STOP = 0.0;
@@ -61,9 +62,10 @@ public final class Const {
 
         // --- 距離レンジ閾値 (cm) ---
         public static final class DistanceThreshold {
-            public static double SHORT = 50;
-            public static double MEDIUM = 80;
-            public static double LONG = 110;
+            public static double SHORT = 60;
+            public static double MEDIUM_SHORT = 80;
+            public static double MEDIUM = 110;
+            public static double LONG = 130;
         }
 
     }
@@ -104,7 +106,7 @@ public final class Const {
     // ========== 射出ルーチン共通設定 ==========
     public static final class ShootingRoutine {
         /** 射出前にフィーダーを引き戻す時間 (秒)。 */
-        public static double RETRACT_DURATION_SECONDS = 0.1;
+        public static double RETRACT_DURATION_SECONDS = 0.07;
     }
 
     // ========== Limelight ==========
