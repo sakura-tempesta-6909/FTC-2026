@@ -74,6 +74,8 @@ public class ShooterSubsystem implements Subsystem {
     private static double rpmFromDistance(double distance) {
         if (distance < Const.Shooter.DistanceThreshold.SHORT) {
             return Const.Shooter.Velocity.LOWEST_RPM;
+        } else if (distance < Const.Shooter.DistanceThreshold.MEDIUM_SHORT) {
+            return Const.Shooter.Velocity.MEDIUM_LOW_RPM;
         } else if (distance < Const.Shooter.DistanceThreshold.MEDIUM) {
             return Const.Shooter.Velocity.NORMAL_RPM;
         } else if (distance < Const.Shooter.DistanceThreshold.LONG) {
