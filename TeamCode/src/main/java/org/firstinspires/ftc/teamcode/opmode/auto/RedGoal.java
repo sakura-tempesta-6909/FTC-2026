@@ -137,7 +137,7 @@ public class RedGoal extends NextFTCOpMode {
         );
     }
 
-    private static final double SHOOT_DURATION_SECONDS = 1.5;
+    private static final double SHOOT_DURATION_SECONDS = 2.0;
     private static final double PATH3_TIMEOUT_SECONDS = 3.0;
 
     @Override
