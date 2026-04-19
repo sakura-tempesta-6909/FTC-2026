@@ -48,7 +48,7 @@ public class RedGoal extends NextFTCOpMode {
     public void onInit() {
         driverStationTelemetry = telemetry;
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(117.386, 130.854, Math.toRadians(40)));
+        PedroComponent.follower().setStartingPose(new Pose(119.138, 135.398, Math.toRadians(0)));
         redGoalPath = new RedGoalPath(PedroComponent.follower());
         Drawing.init();
         Drawing.drawDebug(PedroComponent.follower());
@@ -109,6 +109,25 @@ public class RedGoal extends NextFTCOpMode {
                 new FollowPath(redGoalPath.Path7, false, 1.0),
                 new ParallelDeadlineGroup(
                         new FollowPath(redGoalPath.Path8, false, 1.0),
+                        ShooterCommand.spinUpForPath()
+                ),
+                new ParallelDeadlineGroup(
+                        new Delay(SHOOT_DURATION_SECONDS),
+                        ShootingRoutine.shootContinuous()
+                ),
+                new ParallelDeadlineGroup(
+                        new FollowPath(redGoalPath.Path9, false, 1.0),
+                        IntakeRoutine.intakeWithWeakFeed(),
+                        ShooterCommand.holdRpm()
+                ),
+                // パス完了 or タイムアウトの早い方で終了
+                new ParallelDeadlineGroup(
+                        FollowPathWithTimeout.create(redGoalPath.Path10, false, 0.3, PATH3_TIMEOUT_SECONDS),
+                        IntakeRoutine.intakeWithWeakFeed()
+                ),
+                new FollowPath(redGoalPath.Path11, false, 1.0),
+                new ParallelDeadlineGroup(
+                        new FollowPath(redGoalPath.Path12, false, 1.0),
                         ShooterCommand.spinUpForPath()
                 ),
                 new ParallelDeadlineGroup(
