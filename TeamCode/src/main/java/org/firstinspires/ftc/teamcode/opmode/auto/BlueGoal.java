@@ -48,7 +48,7 @@ public class BlueGoal extends NextFTCOpMode {
     public void onInit() {
         driverStationTelemetry = telemetry;
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(34.040, 132.355, Math.toRadians(180)));
+        PedroComponent.follower().setStartingPose(new Pose(32.722, 135.431, Math.toRadians(180)));
         blueGoalPath = new BlueGoalPath(PedroComponent.follower());
         Drawing.init();
         Drawing.drawDebug(PedroComponent.follower());
@@ -125,15 +125,17 @@ public class BlueGoal extends NextFTCOpMode {
                         FollowPathWithTimeout.create(blueGoalPath.Path10, false, 0.3, PATH3_TIMEOUT_SECONDS),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
-                new FollowPath(blueGoalPath.Path11, false, 1.0),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPath.Path12, false, 1.0),
+                       new FollowPath(blueGoalPath.Path11, false, 1.0),
                         ShooterCommand.spinUpForPath()
                 ),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
                         ShootingRoutine.shootContinuous()
-                )
+                ),
+                new FollowPath(blueGoalPath.Path12, false, 1.0)
+
+
         );
     }
 

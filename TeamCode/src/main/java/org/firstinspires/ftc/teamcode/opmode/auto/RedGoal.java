@@ -125,15 +125,16 @@ public class RedGoal extends NextFTCOpMode {
                         FollowPathWithTimeout.create(redGoalPath.Path10, false, 0.3, PATH3_TIMEOUT_SECONDS),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
-                new FollowPath(redGoalPath.Path11, false, 1.0),
+
                 new ParallelDeadlineGroup(
-                        new FollowPath(redGoalPath.Path12, false, 1.0),
+                        new FollowPath(redGoalPath.Path11, false, 1.0),
                         ShooterCommand.spinUpForPath()
                 ),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
                         ShootingRoutine.shootContinuous()
-                )
+                ) ,
+                new FollowPath(redGoalPath.Path12, false, 1.0)
         );
     }
 

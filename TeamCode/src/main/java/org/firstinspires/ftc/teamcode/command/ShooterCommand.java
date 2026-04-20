@@ -30,8 +30,8 @@ public class ShooterCommand {
      */
     public static Command spinUp() {
         return new LambdaCommand()
-                .setStart(ShooterSubsystem.INSTANCE::setTargetRPM)
-                .setUpdate(ShooterSubsystem.INSTANCE::setTargetRPM) // 毎ループ距離から RPM を更新
+                .setStart(ShooterSubsystem.INSTANCE::setTargetRPMForAuto)
+                .setUpdate(ShooterSubsystem.INSTANCE::setTargetRPMForAuto) // 毎ループ距離から RPM を更新
                 .setIsDone(ShooterSubsystem.INSTANCE::isAtVelocity)
                 .setStop(interrupted -> {
                     if (interrupted) ShooterSubsystem.INSTANCE.stop();

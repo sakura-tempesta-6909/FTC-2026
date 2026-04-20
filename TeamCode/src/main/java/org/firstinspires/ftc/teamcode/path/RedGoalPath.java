@@ -33,7 +33,7 @@ public class RedGoalPath {
                         new BezierLine(
                                 new Pose(97.043, 82.816),
 
-                                new Pose(135.871, 83.820)
+                                new Pose(131.208, 83.199)
                         )
                 ).setTangentHeadingInterpolation()
 
@@ -41,7 +41,7 @@ public class RedGoalPath {
 
         Path4 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(135.871, 83.820),
+                                new Pose(131.208, 83.199),
 
                                 new Pose(108.476, 110.043)
                         )
@@ -63,7 +63,7 @@ public class RedGoalPath {
                         new BezierLine(
                                 new Pose(96.656, 59.310),
 
-                                new Pose(138.634, 59.211)
+                                new Pose(136.277, 59.287)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -71,7 +71,7 @@ public class RedGoalPath {
 
         Path7 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(138.634, 59.211),
+                                new Pose(136.277, 59.287),
 
                                 new Pose(125.204, 58.619)
                         )
@@ -83,7 +83,7 @@ public class RedGoalPath {
                         new BezierLine(
                                 new Pose(125.204, 58.619),
 
-                                new Pose(102.271, 106.084)
+                                new Pose(108.476, 109.833)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
 
@@ -91,7 +91,7 @@ public class RedGoalPath {
 
         Path9 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(102.271, 106.084),
+                                new Pose(108.476, 109.833),
 
                                 new Pose(95.788, 34.764)
                         )
@@ -103,7 +103,7 @@ public class RedGoalPath {
                         new BezierLine(
                                 new Pose(95.788, 34.764),
 
-                                new Pose(139.912, 35.085)
+                                new Pose(131.868, 35.057)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -111,7 +111,7 @@ public class RedGoalPath {
 
         Path11 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(139.912, 35.085),
+                                new Pose(131.868, 35.057),
 
                                 new Pose(107.996, 109.788)
                         )
