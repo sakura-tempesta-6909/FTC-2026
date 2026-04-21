@@ -42,7 +42,7 @@ public class ShootingRoutine {
                 ShooterCommand.spinUp(),
                 new ParallelGroup(
                         ShooterCommand.holdRpm(),
-                        IntakeCommand.intake(),
+                        IntakeCommand.slowIntake(),
                         FeederCommand.feed()
                 )
         ).named("shootWithRetract");
@@ -62,7 +62,7 @@ public class ShootingRoutine {
                 ShooterCommand.spinUp(),
                 new ParallelGroup(
                         ShooterCommand.holdRpm(),
-                        IntakeCommand.intake(),
+                        IntakeCommand.slowIntake(),
                         FeederCommand.feed()
                 )
         ).named("shootContinuous");

@@ -23,7 +23,7 @@ public class IntakeSubsystem implements Subsystem {
     public void initialize() {
         intakeMotor = new MotorEx(Const.Intake.Motor.NAME);
         intakeMotor.brakeMode();
-        intakeMotor.reverse();
+//        intakeMotor.reverse();
         intakeMotor.setPower(Const.Intake.Power.STOP);
     }
 

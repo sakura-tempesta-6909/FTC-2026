@@ -56,6 +56,10 @@ public final class Const {
             public static double MEDIUM_LOW_RPM = 1200;
             public static double LOWEST_RPM = 1100;
             public static double REVERSE_TARGET_RPM = -1400;
+            /**
+             * HOLD 状態で PID に与える目標 RPM。微小な負値で前方向への自然回転を阻止する。
+             */
+            public static double HOLD_RPM = -50;
             public static final double STOP = 0.0;
             public static double TOLERANCE = 100;
         }
@@ -81,6 +85,10 @@ public final class Const {
         // --- パワー設定 ---
         public static final class Power {
             public static final double INTAKE = 1.0;
+            /**
+             * 射撃中にボールが外に飛び出さないようゆっくり回すためのパワー。
+             */
+            public static double SLOW_INTAKE = 0.3;
             public static final double REVERSE = -1.0;
             public static final double STOP = 0.0;
         }
@@ -97,7 +105,7 @@ public final class Const {
         // --- パワー設定 ---
         public static final class Power {
             public static final double FEED = 0.7;
-            public static final double WEAK_FEED = 0.3;
+            public static final double WEAK_FEED = 0.18;
             public static final double RETRACT = -1.0;
             public static final double STOP = 0.0;
         }

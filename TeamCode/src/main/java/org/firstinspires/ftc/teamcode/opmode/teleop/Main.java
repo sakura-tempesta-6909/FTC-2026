@@ -58,7 +58,7 @@ public class Main extends FTCBaseOpMode {
                 .whenBecomesTrue(reverseCmd::schedule)
                 .whenBecomesFalse(reverseCmd::cancel);
 
-        Command intakeCmd = IntakeRoutine.intakeWithWeakFeed();
+        Command intakeCmd = IntakeRoutine.intakeWithHold();
         Gamepads.gamepad1().a().and(Gamepads.gamepad1().b().not())
                 .whenBecomesTrue(intakeCmd::schedule)
                 .whenBecomesFalse(intakeCmd::cancel);

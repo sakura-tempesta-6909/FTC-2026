@@ -73,6 +73,21 @@ public class ShooterCommand {
     }
 
     /**
+     * HOLD 状態を維持する。PID で微小な負 RPM を保ち、ボール接触等による
+     * 前方向の自然回転を抑える。Intake 中などシューター停止相当の期間で使用する。
+     * <p>終了: 永続 (cancel のみ) / 中断時: Shooter 停止 / requires: Shooter
+     */
+    public static Command hold() {
+        return new LambdaCommand()
+                .setStart(ShooterSubsystem.INSTANCE::hold)
+                .setIsDone(() -> false)
+                .setStop(interrupted -> ShooterSubsystem.INSTANCE.stop())
+                .setInterruptible(true)
+                .addRequirements(ShooterSubsystem.INSTANCE)
+                .named("hold");
+    }
+
+    /**
      * spinUp 完了後に Shooter のオーナーとして居続ける維持コマンド。
      * target velocity は変更せず、spinUp が設定した値をそのまま維持する。
      * <p>終了: 永続 (cancel のみ) / 中断時: Shooter 停止 / requires: Shooter

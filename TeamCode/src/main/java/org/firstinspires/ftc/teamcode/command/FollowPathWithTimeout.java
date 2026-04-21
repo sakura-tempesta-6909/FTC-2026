@@ -29,7 +29,7 @@ public class FollowPathWithTimeout {
                     followPath.start();
                 })
                 .setUpdate(followPath::update)
-                .setIsDone(() -> followPath.isDone() || timer.seconds() >= timeoutSeconds)
+                .setIsDone(() -> timer.seconds() >= timeoutSeconds)
                 .setStop(followPath::stop)
                 .named("FollowPathWithTimeout");
     }

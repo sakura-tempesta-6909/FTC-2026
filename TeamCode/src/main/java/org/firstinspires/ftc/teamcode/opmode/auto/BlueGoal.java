@@ -16,6 +16,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.command.FollowPathWithTimeout;
+import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
 import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
@@ -48,7 +49,7 @@ public class BlueGoal extends NextFTCOpMode {
     public void onInit() {
         driverStationTelemetry = telemetry;
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(32.722, 135.431, Math.toRadians(180)));
+        PedroComponent.follower().setStartingPose(new Pose(33.403, 135.541, Math.toRadians(180)));
         blueGoalPath = new BlueGoalPath(PedroComponent.follower());
         Drawing.init();
         Drawing.drawDebug(PedroComponent.follower());
@@ -70,7 +71,8 @@ public class BlueGoal extends NextFTCOpMode {
                 // 後退しながらスピンアップ (移動時間でRPMを上げておく)
                 new ParallelDeadlineGroup(
                         new FollowPath(blueGoalPath.Path1, false, 1.0),
-                        ShooterCommand.spinUpForPath()
+                        ShooterCommand.spinUpForPath(),
+                        IntakeCommand.slowIntake()
                 ),
 //                CorrectionCommand.correct(), // Limelight で位置補正
                 // スピンアップ済みなのですぐ射撃開始
@@ -85,12 +87,13 @@ public class BlueGoal extends NextFTCOpMode {
                 ),
                 // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        FollowPathWithTimeout.create(blueGoalPath.Path3, false, 0.3, PATH3_TIMEOUT_SECONDS),
-                        IntakeRoutine.intakeWithWeakFeed()
+                        FollowPathWithTimeout.create(blueGoalPath.Path3, false, 0.5, PATH3_TIMEOUT_SECONDS),
+                        IntakeRoutine.intakeWithHold()
                 ),
                 new ParallelDeadlineGroup(
                         new FollowPath(blueGoalPath.Path4, false, 1.0),
-                        ShooterCommand.spinUpForPath()
+                        ShooterCommand.spinUpForPath(),
+                        IntakeCommand.slowIntake()
                 ),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
@@ -103,13 +106,17 @@ public class BlueGoal extends NextFTCOpMode {
                 ),
                 // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        FollowPathWithTimeout.create(blueGoalPath.Path6, false, 0.3, PATH3_TIMEOUT_SECONDS),
-                        IntakeRoutine.intakeWithWeakFeed()
+                        FollowPathWithTimeout.create(blueGoalPath.Path6, false, 0.5, PATH3_TIMEOUT_SECONDS),
+                        IntakeRoutine.intakeWithHold()
                 ),
-                new FollowPath(blueGoalPath.Path7, false, 1.0),
+                new ParallelDeadlineGroup(
+                        new FollowPath(blueGoalPath.Path7, false, 1.0),
+                        IntakeCommand.slowIntake()
+                ),
                 new ParallelDeadlineGroup(
                         new FollowPath(blueGoalPath.Path8, false, 1.0),
-                        ShooterCommand.spinUpForPath()
+                        ShooterCommand.spinUpForPath(),
+                        IntakeCommand.slowIntake()
                 ),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
@@ -122,24 +129,26 @@ public class BlueGoal extends NextFTCOpMode {
                 ),
                 // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        FollowPathWithTimeout.create(blueGoalPath.Path10, false, 0.3, PATH3_TIMEOUT_SECONDS),
-                        IntakeRoutine.intakeWithWeakFeed()
+                        FollowPathWithTimeout.create(blueGoalPath.Path10, false, 0.5, PATH3_TIMEOUT_SECONDS),
+                        IntakeRoutine.intakeWithHold()
                 ),
                 new ParallelDeadlineGroup(
                        new FollowPath(blueGoalPath.Path11, false, 1.0),
-                        ShooterCommand.spinUpForPath()
+                        ShooterCommand.spinUpForPath(),
+                        IntakeCommand.slowIntake()
                 ),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
                         ShootingRoutine.shootContinuous()
                 ),
-                new FollowPath(blueGoalPath.Path12, false, 1.0)
-
-
+                new ParallelDeadlineGroup(
+                        new FollowPath(blueGoalPath.Path12, false, 1.0),
+                        IntakeCommand.slowIntake()
+                )
         );
     }
 
-    private static final double SHOOT_DURATION_SECONDS = 1.5;
+    private static final double SHOOT_DURATION_SECONDS = 1.8;
     private static final double PATH3_TIMEOUT_SECONDS = 3.0;
 
     @Override

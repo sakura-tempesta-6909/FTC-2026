@@ -32,7 +32,6 @@ public class ShooterSubsystem implements Subsystem {
     @Override
     public void initialize() {
         shooterMotor = new MotorEx(Const.Shooter.Motor.NAME);
-        shooterMotor.reverse();
         shooterMotor.brakeMode();
         shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -55,6 +54,7 @@ public class ShooterSubsystem implements Subsystem {
         // テレメトリ (update() は Main.onUpdate で一括送信)
         var telemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         telemetry.addData("[射出] 状態", getStatusText());
+        telemetry.addData("[射出] HOLD", isHolding() ? "ON" : "OFF");
         telemetry.addData("[射出] RPM", String.format("%.0f / %.0f", getCurrentVelocity(), getTargetVelocity()));
     }
 
@@ -93,6 +93,14 @@ public class ShooterSubsystem implements Subsystem {
         setTargetVelocity(Const.Shooter.Velocity.REVERSE_TARGET_RPM);
     }
 
+    /**
+     * HOLD 状態に入る。PID で微小な負 RPM を維持することで、
+     * 外部トルク (ボール接触等) による前方向の自然回転をアクティブに阻止する。
+     */
+    public void hold() {
+        setTargetVelocity(Const.Shooter.Velocity.HOLD_RPM);
+    }
+
     public void stop() {
         setTargetVelocity(Const.Shooter.Velocity.STOP);
     }
@@ -100,6 +108,10 @@ public class ShooterSubsystem implements Subsystem {
     public boolean isAtVelocity() {
         return Math.abs(shooterMotor.getVelocity() - controller.getGoal().getVelocity())
                 <= Const.Shooter.Velocity.TOLERANCE;
+    }
+
+    public boolean isHolding() {
+        return controller.getGoal().getVelocity() == Const.Shooter.Velocity.HOLD_RPM;
     }
 
     /** 目標 RPM。停止中は 0。 */
@@ -119,6 +131,7 @@ public class ShooterSubsystem implements Subsystem {
     public String getStatusText() {
         double target = getTargetVelocity();
         if (target == 0) return "停止";
+        if (isHolding()) return "ホールド中";
         if (isAtVelocity()) return "準備完了";
         return String.format("加速中 (%.0f%%)", Math.min(getCurrentVelocity() / target * 100, 100));
     }
