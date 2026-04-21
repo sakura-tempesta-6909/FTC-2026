@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
+import Ori.Coval.Logging.Logger.KoalaLog;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -50,6 +51,10 @@ public abstract class FTCBaseOpMode extends NextFTCOpMode {
         // Panels ラッパーに置き換える前に、元の FTC SDK テレメトリを保存
         driverStationTelemetry = telemetry;
         Drawing.init();
+
+        // KoalaLog: /sdcard/FIRST/logs/ に wpilog を書き出す準備。
+        // AdvantageScope で時系列分析、AScope-Lite-FTC で Web 閲覧/DL できる。
+        KoalaLog.setup(hardwareMap);
     }
 
     @Override

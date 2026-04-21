@@ -33,6 +33,12 @@ android {
     }
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }                    // KoalaLog
+    maven { url 'https://maven.brott.dev/' }              // FTC Dashboard (KoalaLog が要求)
+    maven { url = "https://repo.dairy.foundation/releases" } // AdvantageScope-Lite-FTC
+}
+
 dependencies {
     implementation project(':FtcRobotController')
     implementation 'org.apache.commons:commons-math3:3.6.1'
@@ -42,6 +48,14 @@ dependencies {
     implementation 'dev.nextftc.extensions:pedro:1.0.0'
     implementation 'dev.nextftc:hardware:1.0.1'
     implementation 'dev.nextftc:control:1.0.0'
+
+    // ===== Logging =====
+    // KoalaLog: .wpilog を /sdcard/FIRST/logs/ に書き出す (AdvantageScope 互換)
+    implementation 'com.github.ori-coval.Koala-Log:KoalaLogger:1.4.1'
+    annotationProcessor 'com.github.ori-coval.Koala-Log:KoalaLoggingProcessor:1.4.1'
+
+    // AdvantageScope-Lite-FTC: http://192.168.43.1:8080/as/ で wpilog を Web 閲覧/DL
+    implementation 'page.j5155.AdvantageScope:lite:v26.0.0'
 
     // ===== Unit testing =====
     // JUnit 4 (FTC SDK は JUnit 4 系がトラブルが少ない)

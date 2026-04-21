@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
 import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
+import org.firstinspires.ftc.teamcode.telemetry.KoalaLogPublisher;
 
 @TeleOp(name = "Main")
 public class Main extends FTCBaseOpMode {
@@ -90,6 +91,9 @@ public class Main extends FTCBaseOpMode {
 
         // Driver Hub テレメトリ (元の FTC SDK テレメトリに書き込む)
         updateDriverHubTelemetry(driverStationTelemetry);
+
+        // KoalaLog (wpilog への時系列記録)
+        KoalaLogPublisher.update(hardwareMap, dt);
 
         Drawing.drawDebug(PedroComponent.follower(), LimelightSubsystem.INSTANCE.getLimelightPose());
     }
