@@ -5,6 +5,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
+import org.firstinspires.ftc.teamcode.telemetry.KoalaLogPublisher;
 
 /**
  * 全 OpMode 共通の基底クラス。
@@ -32,6 +34,11 @@ public abstract class FTCBaseOpMode extends NextFTCOpMode {
      * onInit() で telemetry が Panels ラッパーに置き換えられる前に保存する。
      */
     protected Telemetry driverStationTelemetry;
+
+    /**
+     * ログ用ループタイマー。{@link #logTick()} を呼ぶたびにリセットされる。
+     */
+    protected final ElapsedTime logLoopTimer = new ElapsedTime();
 
     public FTCBaseOpMode() {
         addComponents(
@@ -52,14 +59,35 @@ public abstract class FTCBaseOpMode extends NextFTCOpMode {
         driverStationTelemetry = telemetry;
         Drawing.init();
 
-        // KoalaLog: /sdcard/FIRST/logs/ に wpilog を書き出す準備。
+        // KoalaLog: Android/data/<package>/files/ 以下に wpilog を書き出す準備。
         // AdvantageScope で時系列分析、AScope-Lite-FTC で Web 閲覧/DL できる。
         KoalaLog.setup(hardwareMap);
+
+        // 全モーター参照を事前解決 (update() 内での hardwareMap.get() 回避)。
+        KoalaLogPublisher.init(hardwareMap);
+    }
+
+    @Override
+    public void onStop() {
+        // KoalaLog の内部 FileOutputStream を flush + close する。
+        // これを呼ばないと OS バッファにデータが溜まったまま OpMode 終了し、
+        // wpilog ファイルが 0 バイト or ヘッダのみになる可能性がある。
+        KoalaLog.close();
     }
 
     @Override
     public void onWaitForStart() {
         showInitTelemetry(hardwareMap, driverStationTelemetry);
+    }
+
+    /**
+     * 各 OpMode の {@code onUpdate()} から毎ループ呼ぶ。loopMs を計測し
+     * 全ハードウェア状態を wpilog に書き込む。
+     */
+    protected void logTick() {
+        double dt = logLoopTimer.seconds();
+        logLoopTimer.reset();
+        KoalaLogPublisher.update(hardwareMap, dt);
     }
 
     /**

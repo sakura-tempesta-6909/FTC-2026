@@ -70,10 +70,6 @@ public class ShooterSubsystem implements Subsystem {
         setTargetVelocity(rpmFromDistance(distance));
     }
 
-    public void setTargetRPMForAuto() {
-        setTargetVelocity(Const.Shooter.Velocity.HIGHEST_RPM);
-    }
-
     /** 距離 (cm) に応じた目標 RPM を返す。段階的に切り替える。 */
     private static double rpmFromDistance(double distance) {
         if (distance < Const.Shooter.DistanceThreshold.SHORT) {

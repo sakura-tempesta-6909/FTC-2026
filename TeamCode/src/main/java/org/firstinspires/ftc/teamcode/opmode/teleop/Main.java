@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmode.teleop;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.commands.utility.InstantCommand;
@@ -13,19 +12,22 @@ import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.driving.DriverControlledCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
+import org.firstinspires.ftc.teamcode.lib.SlewRateLimiter;
 import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
 import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
-import org.firstinspires.ftc.teamcode.telemetry.KoalaLogPublisher;
 
 @TeleOp(name = "Main")
 public class Main extends FTCBaseOpMode {
 
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
-    private final ElapsedTime loopTimer = new ElapsedTime();
 
     private static final Pose STARTING_POSE = new Pose(122.815, 124.882, Math.toRadians(36));
+
+    private static final double DRIVE_SLEW_PER_SEC = 8.0;
+    private static final double STRAFE_SLEW_PER_SEC = 8.0;
+    private static final double TURN_SLEW_PER_SEC = 10.0;
 
     @Override
     public void onInit() {
@@ -37,9 +39,9 @@ public class Main extends FTCBaseOpMode {
     @Override
     public void onStartButtonPressed() {
         DriverControlledCommand driverControlled = new PedroDriverControlled(
-                Gamepads.gamepad2().leftStickY().negate(),
-                Gamepads.gamepad2().leftStickX().negate(),
-                Gamepads.gamepad2().rightStickX().negate(),
+                new SlewRateLimiter(Gamepads.gamepad2().leftStickY().negate(), DRIVE_SLEW_PER_SEC),
+                new SlewRateLimiter(Gamepads.gamepad2().leftStickX().negate(), STRAFE_SLEW_PER_SEC),
+                new SlewRateLimiter(Gamepads.gamepad2().rightStickX().negate(), TURN_SLEW_PER_SEC),
                 false
         );
         Gamepads.gamepad2().rightBumper()
@@ -79,21 +81,20 @@ public class Main extends FTCBaseOpMode {
 
     @Override
     public void onUpdate() {
-        double dt = loopTimer.seconds();
-        loopTimer.reset();
+        double dt = logLoopTimer.seconds();
 
         // Panels テレメトリ
-        var panelsTelemetry = this.panelsTelemetry.getTelemetry();
-        panelsTelemetry.addData("[システム] ループ", String.format("%.1fms", dt * 1000));
-        panelsTelemetry.addData("[システム] 実行中",
+        var panels = panelsTelemetry.getTelemetry();
+        panels.addData("[システム] ループ", String.format("%.1fms", dt * 1000));
+        panels.addData("[システム] 実行中",
                 String.join(", ", CommandManager.INSTANCE.snapshot()));
-        panelsTelemetry.update();
+        panels.update();
 
         // Driver Hub テレメトリ (元の FTC SDK テレメトリに書き込む)
         updateDriverHubTelemetry(driverStationTelemetry);
 
-        // KoalaLog (wpilog への時系列記録)
-        KoalaLogPublisher.update(hardwareMap, dt);
+        // KoalaLog (wpilog への時系列記録) — logLoopTimer をリセット
+        logTick();
 
         Drawing.drawDebug(PedroComponent.follower(), LimelightSubsystem.INSTANCE.getLimelightPose());
     }

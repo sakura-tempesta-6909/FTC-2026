@@ -8,57 +8,30 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
-import dev.nextftc.core.components.BindingsComponent;
-import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
-import dev.nextftc.ftc.NextFTCOpMode;
-import dev.nextftc.ftc.components.BulkReadComponent;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.command.FollowPathWithTimeout;
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
-import org.firstinspires.ftc.teamcode.lib.pedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.path.RedGoalPath;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
-import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
-import org.firstinspires.ftc.teamcode.subsystem.ShooterSubsystem;
 
 @Autonomous(name = "Red Goal")
 @Configurable
-public class RedGoal extends NextFTCOpMode {
+public class RedGoal extends FTCBaseOpMode {
     private RedGoalPath redGoalPath;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
-    private Telemetry driverStationTelemetry;
-
-    public RedGoal() {
-        addComponents(
-                new PedroComponent(Constants::createFollower),
-                new SubsystemComponent(ShooterSubsystem.INSTANCE, FeederSubsystem.INSTANCE, IntakeSubsystem.INSTANCE, LimelightSubsystem.INSTANCE),
-                BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE
-        );
-    }
 
     @Override
     public void onInit() {
-        driverStationTelemetry = telemetry;
+        super.onInit();
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(new Pose(119.138, 135.398, Math.toRadians(0)));
         redGoalPath = new RedGoalPath(PedroComponent.follower());
-        Drawing.init();
         Drawing.drawDebug(PedroComponent.follower());
-    }
-
-
-    @Override
-    public void onWaitForStart() {
-        FTCBaseOpMode.showInitTelemetry(hardwareMap, driverStationTelemetry);
     }
 
     @Override
@@ -154,7 +127,8 @@ public class RedGoal extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
-        FTCBaseOpMode.updateDriverHubTelemetry(driverStationTelemetry);
+        updateDriverHubTelemetry(driverStationTelemetry);
+        logTick();
         Drawing.drawDebug(PedroComponent.follower(), null,
                 redGoalPath.Path1, redGoalPath.Path2, redGoalPath.Path3,
                 redGoalPath.Path4, redGoalPath.Path5, redGoalPath.Path6,

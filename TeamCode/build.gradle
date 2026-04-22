@@ -50,6 +50,11 @@ dependencies {
     implementation 'dev.nextftc:control:1.0.0'
 
     // ===== Logging =====
+    // FTC Dashboard: KoalaLog / AScope-Lite-FTC が runtime で必要。
+    // KoalaLogger 側は implementation 指定のため APK に推移伝播しない → 明示追加が必須。
+    // ブラウザで使わなくても JAR の同梱だけは必要。
+    implementation 'com.acmerobotics.dashboard:dashboard:0.5.1'
+
     // KoalaLog: .wpilog を /sdcard/FIRST/logs/ に書き出す (AdvantageScope 互換)
     implementation 'com.github.ori-coval.Koala-Log:KoalaLogger:1.4.1'
     annotationProcessor 'com.github.ori-coval.Koala-Log:KoalaLoggingProcessor:1.4.1'
