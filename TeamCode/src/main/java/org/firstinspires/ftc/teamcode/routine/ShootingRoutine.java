@@ -36,6 +36,7 @@ public class ShootingRoutine {
                 // フィーダー引き戻し + シューター逆回転を同時に行い、詰まりを解消
                 new ParallelDeadlineGroup(
                         new Delay(Const.ShootingRoutine.RETRACT_DURATION_SECONDS),
+                        IntakeCommand.intake(),
                         FeederCommand.retract(),
                         ShooterCommand.spinUpReverse()
                 ),

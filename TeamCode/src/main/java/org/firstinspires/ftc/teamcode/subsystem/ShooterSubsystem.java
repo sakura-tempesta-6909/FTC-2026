@@ -73,7 +73,7 @@ public class ShooterSubsystem implements Subsystem {
     /** 距離 (cm) に応じた目標 RPM を返す。段階的に切り替える。 */
     private static double rpmFromDistance(double distance) {
         if (distance < Const.Shooter.DistanceThreshold.SHORT) {
-            return Const.Shooter.Velocity.LOWEST_RPM;
+            return Const.Shooter.Velocity.RPM_FOR_NEAR;
         } else if (distance < Const.Shooter.DistanceThreshold.MEDIUM_SHORT) {
             return Const.Shooter.Velocity.MEDIUM_LOW_RPM;
         } else if (distance < Const.Shooter.DistanceThreshold.MEDIUM) {
