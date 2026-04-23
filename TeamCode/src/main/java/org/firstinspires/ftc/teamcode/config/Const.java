@@ -43,8 +43,8 @@ public final class Const {
 
         // --- PID 係数 ---
         public static final class PID {
-            public static final double KP = 0.0073;
-            public static final double KI = 0.0;
+            public static final double KP = 0.00743;
+            public static final double KI = 0.000000000002;
             public static final double KD = 0.0;
         }
 
@@ -52,9 +52,9 @@ public final class Const {
         public static final class Velocity {
             public static double HIGHEST_RPM = 1850;
             public static double MEDIUM_HIGH_RPM = 1400;
-            public static double NORMAL_RPM = 1300;
+            public static double NORMAL_RPM = 1280;
             public static double MEDIUM_LOW_RPM = 1200;
-            public static double RPM_FOR_NEAR = 1200;
+            public static double RPM_FOR_NEAR = 1150;
             public static double REVERSE_TARGET_RPM = -1400;
             /**
              * HOLD 状態で PID に与える目標 RPM。微小な負値で前方向への自然回転を阻止する。

@@ -63,7 +63,7 @@ public class ShootingRoutine {
                 ShooterCommand.spinUp(),
                 new ParallelGroup(
                         ShooterCommand.holdRpm(),
-                        IntakeCommand.slowIntake(),
+                        IntakeCommand.intake(),
                         FeederCommand.feed()
                 )
         ).named("shootContinuous");
