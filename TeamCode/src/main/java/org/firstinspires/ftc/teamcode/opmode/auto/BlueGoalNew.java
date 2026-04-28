@@ -58,17 +58,16 @@ public class BlueGoalNew extends FTCBaseOpMode {
                 ),
                 // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        FollowPathWithTimeout.create(blueGoalPathnew.Path3, false, 0.5, PATH3_TIMEOUT_SECONDS),
+                        new FollowPath(blueGoalPathnew.Path3, false, 0.5),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new ParallelDeadlineGroup(
                         new FollowPath(blueGoalPathnew.Path4, false, 1.0),
                         ShooterCommand.spinUpForPath(),
-                        IntakeCommand.slowIntake()
+                        IntakeCommand.intake()
                 ),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
-                        IntakeCommand.slowIntake(),
                         ShootingRoutine.shootContinuous()
                 ),
                 new ParallelDeadlineGroup(
@@ -89,11 +88,10 @@ public class BlueGoalNew extends FTCBaseOpMode {
                 new ParallelDeadlineGroup(
                         new FollowPath(blueGoalPathnew.Path9, false, 1.0),
                         ShooterCommand.spinUpForPath(),
-                        IntakeCommand.slowIntake()
+                        IntakeCommand.intake()
                 ),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
-                        IntakeCommand.slowIntake(),
                         ShootingRoutine.shootContinuous()
                 ),
                 new ParallelDeadlineGroup(
@@ -107,11 +105,10 @@ public class BlueGoalNew extends FTCBaseOpMode {
                 new ParallelDeadlineGroup(
                         new FollowPath(blueGoalPathnew.Path12, true, 1.0),
                         ShooterCommand.spinUpForPath(),
-                        IntakeCommand.slowIntake()
+                        IntakeCommand.intake()
                 ),
                 new ParallelDeadlineGroup(
                         new Delay(SHOOT_DURATION_SECONDS),
-                        IntakeCommand.slowIntake(),
                         ShootingRoutine.shootContinuous()
                 ),
                 new FollowPath(blueGoalPathnew.Path13,false,1.0)
@@ -120,7 +117,6 @@ public class BlueGoalNew extends FTCBaseOpMode {
     }
 
     private static final double SHOOT_DURATION_SECONDS = 1.6;
-    private static final double PATH3_TIMEOUT_SECONDS = 2.3;
 
     @Override
     public void onUpdate() {
