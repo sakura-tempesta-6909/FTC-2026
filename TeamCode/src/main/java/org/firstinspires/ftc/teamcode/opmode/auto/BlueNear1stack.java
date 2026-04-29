@@ -76,8 +76,10 @@ public class BlueNear1stack extends FTCBaseOpMode {
                 new FollowPath(blueNear1stackPath.Path5, false, 0.7),
 
                 // パス完了 or タイムアウトの早い方で終了
-                new FollowPath(blueNear1stackPath.Path6, false, 0.5),
-
+                new ParallelDeadlineGroup(
+                        new Delay(3),
+                        new FollowPath(blueNear1stackPath.Path6, false, 0.7)
+                ),
                 new FollowPath(blueNear1stackPath.Path7, false, 0.6)
         );
     }
