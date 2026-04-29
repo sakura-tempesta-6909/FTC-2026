@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.path.Blue2gatesPath;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
 
-@Autonomous(name = "Blue Goal")
+@Autonomous(name = "Blue 2gates")
 @Configurable
 public class Blue2gates extends FTCBaseOpMode {
     private Blue2gatesPath blue2gatesPath;

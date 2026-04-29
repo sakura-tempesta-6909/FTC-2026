@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
 import org.firstinspires.ftc.teamcode.path.BlueGoalPathNew;
 
-@Autonomous(name = "Blue Goal")
+@Autonomous(name = "Blue Goal New")
 @Configurable
 public class BlueGoalNew extends FTCBaseOpMode {
     private BlueGoalPathNew blueGoalPathnew;
