@@ -30,7 +30,7 @@ public class BlueNear1stack extends FTCBaseOpMode {
     public void onInit() {
         super.onInit();
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(33.403, 135.541, Math.toRadians(180)));
+        PedroComponent.follower().setStartingPose(new Pose(32.670, 135.143, Math.toRadians(180)));
         blueNear1stackPath = new BlueNear1stackPath(PedroComponent.follower());
         Drawing.drawDebug(PedroComponent.follower());
     }
@@ -77,7 +77,7 @@ public class BlueNear1stack extends FTCBaseOpMode {
 
                 // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        new Delay(3),
+                        new Delay(1.6),
                         new FollowPath(blueNear1stackPath.Path6, false, 0.7)
                 ),
                 new FollowPath(blueNear1stackPath.Path7, false, 0.6)

@@ -50,7 +50,7 @@ public final class Const {
 
         // --- 速度 (RPM) ---
         public static final class Velocity {
-            public static double HIGHEST_RPM = 1850;
+            public static double HIGHEST_RPM = 1520;
             public static double MEDIUM_HIGH_RPM = 1400;
             public static double NORMAL_RPM = 1280;
             public static double MEDIUM_LOW_RPM = 1200;

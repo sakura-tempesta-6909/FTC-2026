@@ -16,21 +16,22 @@ import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
 import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.path.Blue2gatesPath;
+import org.firstinspires.ftc.teamcode.path.Red2gatesPath;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
 
-@Autonomous(name = "Blue 2gates")
+@Autonomous(name = "Red 2gates")
 @Configurable
-public class Blue2gates extends FTCBaseOpMode {
-    private Blue2gatesPath blue2gatesPath;
+public class Red2gates extends FTCBaseOpMode {
+    private Red2gatesPath red2gatesPath;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
 
     @Override
     public void onInit() {
         super.onInit();
         telemetry = panelsTelemetry.getFtcTelemetry();
-        PedroComponent.follower().setStartingPose(new Pose(32.778, 135.360, Math.toRadians(180)));
-        blue2gatesPath = new Blue2gatesPath(PedroComponent.follower());
+        PedroComponent.follower().setStartingPose(new Pose(112.377, 135.194, Math.toRadians(0)));
+        red2gatesPath = new Red2gatesPath(PedroComponent.follower());
         Drawing.drawDebug(PedroComponent.follower());
     }
 
@@ -43,7 +44,7 @@ public class Blue2gates extends FTCBaseOpMode {
         return new SequentialGroup(
                 // 後退しながらスピンアップ (移動時間でRPMを上げておく)
                 new ParallelDeadlineGroup(
-                        new FollowPath(blue2gatesPath.Path1, false, 1.0),
+                        new FollowPath(red2gatesPath.Path1, false, 1.0),
                         ShooterCommand.spinUpForPath(),
                         IntakeCommand.slowIntake()
                 ),
@@ -54,26 +55,26 @@ public class Blue2gates extends FTCBaseOpMode {
                         ShootingRoutine.shootContinuous()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blue2gatesPath.Path2, false, 1.0),
+                        new FollowPath(red2gatesPath.Path2, false, 1.0),
                         IntakeCommand.intake()
                 ),
                 // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        new FollowPath(blue2gatesPath.Path3, false, 0.5),
+                        new FollowPath(red2gatesPath.Path3, false, 0.5),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blue2gatesPath.Path4, false, 1.0),
+                        new FollowPath(red2gatesPath.Path4, false, 1.0),
                         IntakeCommand.intake()
                 ),
                 new ParallelDeadlineGroup(
                         new Delay(2.0),
-                        new FollowPath(blue2gatesPath.Path5,false,0.5)
+                        new FollowPath(red2gatesPath.Path5,false,0.5)
                 ),
-                new FollowPath(blue2gatesPath.Path6, false, 1.0),
+                new FollowPath(red2gatesPath.Path6, false, 1.0),
                 // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        new FollowPath(blue2gatesPath.Path7, false, 1.0),
+                        new FollowPath(red2gatesPath.Path7, false, 1.0),
                         ShooterCommand.spinUpForPath()
                 ),
                 new ParallelDeadlineGroup(
@@ -81,24 +82,24 @@ public class Blue2gates extends FTCBaseOpMode {
                         ShootingRoutine.shootContinuous()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blue2gatesPath.Path8, false, 1.0),
+                        new FollowPath(red2gatesPath.Path8, false, 1.0),
                         IntakeCommand.slowIntake()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blue2gatesPath.Path9, false, 0.5),
+                        new FollowPath(red2gatesPath.Path9, false, 0.5),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blue2gatesPath.Path10, false, 1.0),
+                        new FollowPath(red2gatesPath.Path10, false, 1.0),
                         IntakeCommand.intake()
                 ),
                 // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
                         new Delay(2.0),
-                        new FollowPath(blue2gatesPath.Path11,false,0.5)
+                        new FollowPath(red2gatesPath.Path11,false,0.5)
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blue2gatesPath.Path12, false, 1.0),
+                        new FollowPath(red2gatesPath.Path12, false, 1.0),
                         ShooterCommand.spinUpForPath(),
                         IntakeCommand.slowIntake()
                 ),
@@ -106,7 +107,7 @@ public class Blue2gates extends FTCBaseOpMode {
                         new Delay(SHOOT_DURATION_SECONDS),
                         ShootingRoutine.shootContinuous()
                 ),
-                new FollowPath(blue2gatesPath.Path13, false, 1.0)
+                new FollowPath(red2gatesPath.Path13, false, 1.0)
         );
     }
 
@@ -117,8 +118,8 @@ public class Blue2gates extends FTCBaseOpMode {
         updateDriverHubTelemetry(driverStationTelemetry);
         logTick();
         Drawing.drawDebug(PedroComponent.follower(), null,
-                blue2gatesPath.Path1, blue2gatesPath.Path2, blue2gatesPath.Path3,
-                blue2gatesPath.Path4, blue2gatesPath.Path5, blue2gatesPath.Path6,
-                blue2gatesPath.Path7, blue2gatesPath.Path8);
+                red2gatesPath.Path1, red2gatesPath.Path2, red2gatesPath.Path3,
+                red2gatesPath.Path4, red2gatesPath.Path5, red2gatesPath.Path6,
+                red2gatesPath.Path7, red2gatesPath.Path8);
     }
 }

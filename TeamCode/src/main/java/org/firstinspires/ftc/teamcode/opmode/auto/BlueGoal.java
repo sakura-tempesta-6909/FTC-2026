@@ -10,19 +10,19 @@ import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
-import org.firstinspires.ftc.teamcode.command.FollowPathWithTimeout;
+
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
 import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
-import org.firstinspires.ftc.teamcode.path.BlueGoalPathNew;
+import org.firstinspires.ftc.teamcode.path.BlueGoalPath;
 
-@Autonomous(name = "Blue Goal New")
+@Autonomous(name = "Blue Goal")
 @Configurable
-public class BlueGoalNew extends FTCBaseOpMode {
-    private BlueGoalPathNew blueGoalPathnew;
+public class BlueGoal extends FTCBaseOpMode {
+    private BlueGoalPath blueGoalPathnew;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
 
     @Override
@@ -30,7 +30,7 @@ public class BlueGoalNew extends FTCBaseOpMode {
         super.onInit();
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(new Pose(33.456, 135.469, Math.toRadians(180)));
-        blueGoalPathnew = new BlueGoalPathNew(PedroComponent.follower());
+        blueGoalPathnew = new BlueGoalPath(PedroComponent.follower());
         Drawing.drawDebug(PedroComponent.follower());
     }
 
