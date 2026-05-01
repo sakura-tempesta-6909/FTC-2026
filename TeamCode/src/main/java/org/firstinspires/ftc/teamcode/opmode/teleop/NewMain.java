@@ -74,7 +74,6 @@ public class NewMain extends OpMode {
     private final ElapsedTime feederNudgeTimer = new ElapsedTime();
     private boolean nudgeActive = false;
     private boolean lastNudge = false;
-    private boolean lastStart = false;
 
     // Shooter speed 切替 (dpad で直接選択するので edge 検出不要)
     private int shooterSpeedIndex = DEFAULT_SHOOTER_SPEED_INDEX;
@@ -151,11 +150,10 @@ public class NewMain extends OpMode {
         boolean speedMid = gamepad2.x;  // □  (左)
         boolean speedHigh = gamepad2.y;  // △  (上)
 
-        // ----- Gyro リセット (立ち上がり) -----
-        if (resetGyro && !lastStart) {
+        // ----- Gyro リセット (押している間ずっと再ゼロ化、離したタイミングの向きが 0° に固定) -----
+        if (resetGyro) {
             imu.resetYaw();
         }
-        lastStart = resetGyro;
 
         // ----- Shooter speed 直接選択 -----
         // 押されたボタンに対応する index に固定。何も押されてなければ前回値を維持。
