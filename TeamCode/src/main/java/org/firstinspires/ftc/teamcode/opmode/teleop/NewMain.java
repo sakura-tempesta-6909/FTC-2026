@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmode.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import dev.nextftc.bindings.BindingManager;
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
-import dev.nextftc.ftc.Gamepads;
 
 import java.util.Locale;
 
@@ -19,11 +17,13 @@ import java.util.Locale;
  *   <li>メカナムドライブ: gamepad1 左スティック (移動) / 右スティック X (旋回)
  *   <li>Shooter: Start 後 PID で目標 RPM 維持
  *   <li>Intake: Start 直後 ON、leftBumper = ON / rightBumper = OFF で切替
- *   <li>Feeder: gamepad1.a ホールドで通常フィード、gamepad1.b で短時間 nudge
+ *   <li>Shoot: gamepad1.a ホールド中は feeder を全力で回して発射
+ *   <li>Nudge: gamepad1.b で feeder を短時間ゆっくり回す (装填調整)
+ *   <li>Outtake: gamepad1.y ホールドで shooter 弱逆回転 + feeder/intake 全力逆回転 (詰まり解消)
  * </ul>
  */
 @TeleOp(name = "NewMain")
-public class NewMain extends LinearOpMode {
+public class NewMain extends OpMode {
 
     // シューター速度 PID 係数 (Const.Shooter.PID と同じ)
     private static final double SHOOTER_KP = 0.00743;
@@ -38,20 +38,39 @@ public class NewMain extends LinearOpMode {
     private static final double FEEDER_NUDGE_POWER = 0.3;
     private static final double FEEDER_NUDGE_SECONDS = 0.6;
 
-    // gamepad1.b のラムダ内で参照/代入するためフィールドで保持する。
+    // 吐き出し (outtake) — 詰まり解消用に逆回転
+    private static final double OUTTAKE_SHOOTER_POWER = -0.2;  // 直接 setPower、PID バイパス
+    private static final double OUTTAKE_FEEDER_POWER = -1.0;
+    private static final double OUTTAKE_INTAKE_POWER = -1.0;
+
+    // ハードウェア (init() で取得)
+    private DcMotor leftFront;
+    private DcMotor leftBack;
+    private DcMotor rightFront;
+    private DcMotor rightBack;
+    private DcMotor intake;
+    private DcMotor feeder;
+    private DcMotorEx shooter;
+
+    private ControlSystem shooterPid;
+
+    // Feeder nudge 状態
     private final ElapsedTime feederNudgeTimer = new ElapsedTime();
     private boolean nudgeActive = false;
+    private boolean lastB = false;
+
+    private final ElapsedTime runtime = new ElapsedTime();
 
     @Override
-    public void runOpMode() {
+    public void init() {
         // ===== ハードウェア取得 =====
-        DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftRear");
-        DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightRear");
-        DcMotor intake = hardwareMap.get(DcMotor.class, "IntakeMotor");
-        DcMotor feeder = hardwareMap.get(DcMotor.class, "FeederMotor");
-        DcMotorEx shooter = hardwareMap.get(DcMotorEx.class, "ShooterMotor");
+        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        leftBack = hardwareMap.get(DcMotor.class, "leftRear");
+        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
+        rightBack = hardwareMap.get(DcMotor.class, "rightRear");
+        intake = hardwareMap.get(DcMotor.class, "IntakeMotor");
+        feeder = hardwareMap.get(DcMotor.class, "FeederMotor");
+        shooter = hardwareMap.get(DcMotorEx.class, "ShooterMotor");
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -67,69 +86,66 @@ public class NewMain extends LinearOpMode {
         }
 
         // ===== シューター速度 PID =====
-        ControlSystem shooterPid = ControlSystem.builder()
+        shooterPid = ControlSystem.builder()
                 .velPid(SHOOTER_KP, SHOOTER_KI, SHOOTER_KD)
                 .build();
         shooterPid.setGoal(new KineticState(0.0, 0.0));
 
         telemetry.addData("Status", "Initialized");
-        telemetry.update();
+    }
 
-        waitForStart();
+    @Override
+    public void start() {
+        runtime.reset();
 
-        // Start 直後: Shooter PID 起動 + Intake ON
+        // Shooter PID 起動 + Intake ON
         shooterPid.setGoal(new KineticState(0.0, SHOOTER_TARGET));
         intake.setPower(INTAKE_POWER);
+    }
 
-        // Intake は bumper で ON/OFF を切替 (NextFTC Bindings)
-        Gamepads.gamepad1().leftBumper()
-                .whenBecomesTrue(() -> intake.setPower(INTAKE_POWER));
-        Gamepads.gamepad1().rightBumper()
-                .whenBecomesTrue(() -> intake.setPower(0.0));
+    @Override
+    public void loop() {
+        // ===== ボタン読み取り =====
+        double driveAxial = -gamepad1.left_stick_y;
+        double driveLateral = gamepad1.left_stick_x;
+        double driveYaw = gamepad1.right_stick_x;
+        boolean shoot = gamepad1.a;
+        boolean nudgePress = gamepad1.b;
+        boolean outtake = gamepad1.y;
+        boolean intakeOn = gamepad1.left_bumper;
+        boolean intakeOff = gamepad1.right_bumper;
 
-        // gamepad1.b の立ち上がりで feeder を短時間 nudge
-        Gamepads.gamepad1().b().whenBecomesTrue(() -> {
+        // ===== ドライブ (POV mecanum) =====
+        drive(driveAxial, driveLateral, driveYaw);
+
+        // ===== B nudge エッジ検出 (outtake 中も状態だけ更新しておく) =====
+        if (nudgePress && !lastB) {
             feederNudgeTimer.reset();
             nudgeActive = true;
-        });
+        }
+        lastB = nudgePress;
+        if (nudgeActive && feederNudgeTimer.seconds() >= FEEDER_NUDGE_SECONDS) {
+            nudgeActive = false;
+        }
 
-        ElapsedTime runtime = new ElapsedTime();
-        while (opModeIsActive()) {
-            BindingManager.update();
-
-            // ===== ドライブ (POV mecanum) =====
-            double axial = -gamepad1.left_stick_y;
-            double lateral = gamepad1.left_stick_x;
-            double yaw = gamepad1.right_stick_x;
-
-            double lf = axial + lateral + yaw;
-            double rf = axial - lateral - yaw;
-            double lb = axial - lateral + yaw;
-            double rb = axial + lateral - yaw;
-
-            double max = Math.max(
-                    Math.max(Math.abs(lf), Math.abs(rf)),
-                    Math.max(Math.abs(lb), Math.abs(rb)));
-            if (max > 1.0) {
-                lf /= max;
-                rf /= max;
-                lb /= max;
-                rb /= max;
+        if (outtake) {
+            // ===== 吐き出し: 全部逆回転で上書き、shooter は PID バイパス =====
+            intake.setPower(OUTTAKE_INTAKE_POWER);
+            feeder.setPower(OUTTAKE_FEEDER_POWER);
+            shooter.setPower(OUTTAKE_SHOOTER_POWER);
+        } else {
+            // ===== Intake (bumper で ON/OFF 切替、setPower は冪等なので edge 検出不要) =====
+            if (intakeOn) {
+                intake.setPower(INTAKE_POWER);
+            } else if (intakeOff) {
+                intake.setPower(0.0);
             }
-            leftFront.setPower(lf);
-            rightFront.setPower(rf);
-            leftBack.setPower(lb);
-            rightBack.setPower(rb);
 
             // ===== Feeder =====
-            if (nudgeActive && feederNudgeTimer.seconds() >= FEEDER_NUDGE_SECONDS) {
-                nudgeActive = false;
-            }
-            boolean feedHold = gamepad1.a;
-            if (nudgeActive) {
-                feeder.setPower(FEEDER_NUDGE_POWER);
-            } else if (feedHold) {
+            if (shoot) {
                 feeder.setPower(FEEDER_POWER);
+            } else if (nudgeActive) {
+                feeder.setPower(FEEDER_NUDGE_POWER);
             } else {
                 feeder.setPower(0.0);
             }
@@ -137,24 +153,53 @@ public class NewMain extends LinearOpMode {
             // ===== Shooter (PID) =====
             shooter.setPower(shooterPid.calculate(
                     new KineticState(0.0, shooter.getVelocity())));
-
-            // ===== Telemetry =====
-            telemetry.addData("Run Time", runtime.toString());
-            telemetry.addData("Drive LF/RF",
-                    String.format(Locale.ROOT, "%4.2f, %4.2f", lf, rf));
-            telemetry.addData("Drive LB/RB",
-                    String.format(Locale.ROOT, "%4.2f, %4.2f", lb, rb));
-            telemetry.addData("Shooter (act/target)",
-                    String.format(Locale.ROOT, "%.0f / %.0f",
-                            shooter.getVelocity(), shooterPid.getGoal().getVelocity()));
-            telemetry.addData("Feeder", feederStatus(feedHold));
-            telemetry.update();
         }
+
+        // ===== Telemetry (OpMode は loop() 終了時に自動 update) =====
+        telemetry.addData("Run Time", runtime.toString());
+        telemetry.addData("Drive LF/RF",
+                String.format(Locale.ROOT, "%4.2f, %4.2f",
+                        leftFront.getPower(), rightFront.getPower()));
+        telemetry.addData("Drive LB/RB",
+                String.format(Locale.ROOT, "%4.2f, %4.2f",
+                        leftBack.getPower(), rightBack.getPower()));
+        telemetry.addData("Shooter (act/target)",
+                String.format(Locale.ROOT, "%.0f / %.0f",
+                        shooter.getVelocity(), shooterPid.getGoal().getVelocity()));
+        telemetry.addData("Feeder", feederStatus(shoot, outtake));
     }
 
-    private String feederStatus(boolean feedHold) {
-        if (feedHold) {
-            return "HOLD";
+    /**
+     * メカナム POV ドライブ。各成分は -1..1 を想定。合計が 1 を超える場合は等倍縮小して
+     * モーターパワーが 1 を超えないように正規化する。
+     */
+    private void drive(double axial, double lateral, double yaw) {
+        double lf = axial + lateral + yaw;
+        double rf = axial - lateral - yaw;
+        double lb = axial - lateral + yaw;
+        double rb = axial + lateral - yaw;
+
+        double max = Math.max(
+                Math.max(Math.abs(lf), Math.abs(rf)),
+                Math.max(Math.abs(lb), Math.abs(rb)));
+        if (max > 1.0) {
+            lf /= max;
+            rf /= max;
+            lb /= max;
+            rb /= max;
+        }
+        leftFront.setPower(lf);
+        rightFront.setPower(rf);
+        leftBack.setPower(lb);
+        rightBack.setPower(rb);
+    }
+
+    private String feederStatus(boolean shoot, boolean outtake) {
+        if (outtake) {
+            return "OUTTAKE";
+        }
+        if (shoot) {
+            return "SHOOT";
         }
         if (nudgeActive) {
             return String.format(Locale.ROOT, "NUDGE %.2fs", feederNudgeTimer.seconds());
