@@ -19,7 +19,7 @@ import java.util.Locale;
  *   <li>Intake: Start 直後 ON、leftBumper = ON / rightBumper = OFF で切替
  *   <li>Shoot: gamepad1.a ホールド中は feeder を全力で回して発射
  *   <li>Nudge: gamepad1.b で feeder を短時間ゆっくり回す (装填調整)
- *   <li>Outtake: gamepad1.y ホールドで shooter 弱逆回転 + feeder/intake 全力逆回転 (詰まり解消)
+ *   <li>Outtake: gamepad1.y ホールドで feeder/intake 逆回転 (shooter は通常回転を維持、詰まり解消)
  * </ul>
  */
 @TeleOp(name = "NewMain")
@@ -38,8 +38,7 @@ public class NewMain extends OpMode {
     private static final double FEEDER_NUDGE_POWER = 0.3;
     private static final double FEEDER_NUDGE_SECONDS = 0.6;
 
-    // 吐き出し (outtake) — 詰まり解消用に逆回転
-    private static final double OUTTAKE_SHOOTER_POWER = -0.2;  // 直接 setPower、PID バイパス
+    // Outtake (詰まり解消の逆回転)。shooter は通常 PID のまま。
     private static final double OUTTAKE_FEEDER_POWER = -1.0;
     private static final double OUTTAKE_INTAKE_POWER = -1.0;
 
@@ -63,7 +62,7 @@ public class NewMain extends OpMode {
 
     @Override
     public void init() {
-        // ===== ハードウェア取得 =====
+        // ----- ハードウェア取得 -----
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
         leftBack = hardwareMap.get(DcMotor.class, "leftRear");
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
@@ -85,7 +84,7 @@ public class NewMain extends OpMode {
             m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        // ===== シューター速度 PID =====
+        // ----- シューター速度 PID -----
         shooterPid = ControlSystem.builder()
                 .velPid(SHOOTER_KP, SHOOTER_KI, SHOOTER_KD)
                 .build();
@@ -96,16 +95,15 @@ public class NewMain extends OpMode {
 
     @Override
     public void start() {
+        // Shooter PID 起動、Intake は ON で開始
         runtime.reset();
-
-        // Shooter PID 起動 + Intake ON
         shooterPid.setGoal(new KineticState(0.0, SHOOTER_TARGET));
         intake.setPower(INTAKE_POWER);
     }
 
     @Override
     public void loop() {
-        // ===== ボタン読み取り =====
+        // ----- 入力読み取り -----
         double driveAxial = -gamepad1.left_stick_y;
         double driveLateral = gamepad1.left_stick_x;
         double driveYaw = gamepad1.right_stick_x;
@@ -115,10 +113,11 @@ public class NewMain extends OpMode {
         boolean intakeOn = gamepad1.left_bumper;
         boolean intakeOff = gamepad1.right_bumper;
 
-        // ===== ドライブ (POV mecanum) =====
+        // ----- ドライブ (POV mecanum) -----
         drive(driveAxial, driveLateral, driveYaw);
 
-        // ===== B nudge エッジ検出 (outtake 中も状態だけ更新しておく) =====
+        // ----- Nudge エッジ検出 -----
+        // outtake 中も状態だけ更新しておく
         if (nudgePress && !lastB) {
             feederNudgeTimer.reset();
             nudgeActive = true;
@@ -129,19 +128,19 @@ public class NewMain extends OpMode {
         }
 
         if (outtake) {
-            // ===== 吐き出し: 全部逆回転で上書き、shooter は PID バイパス =====
+            // ----- Outtake (intake / feeder のみ逆回転) -----
             intake.setPower(OUTTAKE_INTAKE_POWER);
             feeder.setPower(OUTTAKE_FEEDER_POWER);
-            shooter.setPower(OUTTAKE_SHOOTER_POWER);
         } else {
-            // ===== Intake (bumper で ON/OFF 切替、setPower は冪等なので edge 検出不要) =====
+            // ----- Intake -----
+            // bumper で ON/OFF 切替。setPower は冪等なので edge 検出不要
             if (intakeOn) {
                 intake.setPower(INTAKE_POWER);
             } else if (intakeOff) {
                 intake.setPower(0.0);
             }
 
-            // ===== Feeder =====
+            // ----- Feeder -----
             if (shoot) {
                 feeder.setPower(FEEDER_POWER);
             } else if (nudgeActive) {
@@ -149,13 +148,14 @@ public class NewMain extends OpMode {
             } else {
                 feeder.setPower(0.0);
             }
-
-            // ===== Shooter (PID) =====
-            shooter.setPower(shooterPid.calculate(
-                    new KineticState(0.0, shooter.getVelocity())));
         }
 
-        // ===== Telemetry (OpMode は loop() 終了時に自動 update) =====
+        // ----- Shooter (PID、outtake 中も通常稼働) -----
+        shooter.setPower(shooterPid.calculate(
+                new KineticState(0.0, shooter.getVelocity())));
+
+        // ----- Telemetry -----
+        // OpMode は loop() 終了時に自動 update
         telemetry.addData("Run Time", runtime.toString());
         telemetry.addData("Drive LF/RF",
                 String.format(Locale.ROOT, "%4.2f, %4.2f",
