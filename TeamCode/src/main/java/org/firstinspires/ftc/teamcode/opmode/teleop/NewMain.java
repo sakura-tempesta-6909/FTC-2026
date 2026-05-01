@@ -27,10 +27,10 @@ import java.util.Locale;
  * <h3>Driver 2 (gamepad2)</h3>
  * <ul>
  *   <li>b: feeder を短時間ゆっくり回す (Nudge、装填調整)
- *   <li>leftBumper / rightBumper: shooter speed を LOW / MID / HIGH の 3 段階で切替
+ *   <li>a / x / y: shooter speed を LOW / MID / HIGH に直接設定
  * </ul>
  */
-@TeleOp(name = "Main")
+@TeleOp(name = "NewMain")
 public class NewMain extends OpMode {
 
     // シューター速度 PID 係数 (Const.Shooter.PID と同じ)
@@ -76,10 +76,8 @@ public class NewMain extends OpMode {
     private boolean lastNudge = false;
     private boolean lastStart = false;
 
-    // Shooter speed 切替
+    // Shooter speed 切替 (dpad で直接選択するので edge 検出不要)
     private int shooterSpeedIndex = DEFAULT_SHOOTER_SPEED_INDEX;
-    private boolean lastSpeedUp = false;
-    private boolean lastSpeedDown = false;
 
     // Intake の意図状態 (outtake 中は上書きされるが、release 後にここの値へ戻る)
     private boolean intakeRunning = true;
@@ -147,10 +145,11 @@ public class NewMain extends OpMode {
         boolean intakeOff = gamepad1.right_bumper;
         boolean resetGyro = gamepad1.start;
 
-        // Driver 2: Nudge、Shooter speed
+        // Driver 2: Nudge、Shooter speed (face button で直接選択)
         boolean nudgePress = gamepad2.b;
-        boolean speedUp = gamepad2.right_bumper;
-        boolean speedDown = gamepad2.left_bumper;
+        boolean speedLow = gamepad2.a;  // ×  (下)
+        boolean speedMid = gamepad2.x;  // □  (左)
+        boolean speedHigh = gamepad2.y;  // △  (上)
 
         // ----- Gyro リセット (立ち上がり) -----
         if (resetGyro && !lastStart) {
@@ -158,15 +157,11 @@ public class NewMain extends OpMode {
         }
         lastStart = resetGyro;
 
-        // ----- Shooter speed 切替 (立ち上がりでインデックスを増減) -----
-        if (speedUp && !lastSpeedUp) {
-            shooterSpeedIndex = Math.min(shooterSpeedIndex + 1, SHOOTER_SPEEDS.length - 1);
-        }
-        if (speedDown && !lastSpeedDown) {
-            shooterSpeedIndex = Math.max(shooterSpeedIndex - 1, 0);
-        }
-        lastSpeedUp = speedUp;
-        lastSpeedDown = speedDown;
+        // ----- Shooter speed 直接選択 -----
+        // 押されたボタンに対応する index に固定。何も押されてなければ前回値を維持。
+        if (speedLow) shooterSpeedIndex = 0;
+        if (speedMid) shooterSpeedIndex = 1;
+        if (speedHigh) shooterSpeedIndex = 2;
         shooterPid.setGoal(new KineticState(0.0, SHOOTER_SPEEDS[shooterSpeedIndex]));
 
         // ----- Field-oriented ドライブ -----
