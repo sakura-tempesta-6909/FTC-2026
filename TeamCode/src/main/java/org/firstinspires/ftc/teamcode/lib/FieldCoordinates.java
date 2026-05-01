@@ -26,7 +26,7 @@ package org.firstinspires.ftc.teamcode.lib;
  * <ul>
  *   <li>x_field = {@code 1.8288 - y_pedro * 0.0254}  (Pedro Y を反転して Field X に)</li>
  *   <li>y_field = {@code x_pedro * 0.0254 - 1.8288}  (Pedro X を Field Y に)</li>
- *   <li>heading_field = {@code -θ_pedro + π/2}  (符号反転 - 90°回転)</li>
+ *   <li>heading_field = {@code θ_pedro + π/2}  (90°回転のみ。回転方向は Pedro と一致)</li>
  * </ul>
  *
  * <p><b>参考: Panels FieldPresets.PEDRO_PATHING との違い</b><br>
@@ -66,8 +66,9 @@ public final class FieldCoordinates {
     }
 
     public static double pedroToFieldHeading(double pedroHeadingRad) {
-        // 符号反転 - 90°回転。BlueGoal (Pedro θ=π) → Field θ=-π/2 (-Y 方向 = Blue Goal 側)
-        return -pedroHeadingRad + Math.PI / 2.0;
+        // 90°回転のみ (符号反転なし)。BlueGoal (Pedro θ=π) → Field θ=+3π/2 ≡ -π/2 (-Y 方向 = Blue Goal 側)
+        // 回転方向は Pedro と同じ (CCW が CCW)。
+        return pedroHeadingRad + Math.PI / 2.0;
     }
 
     // === 通常系 (Field 系) → Pedro 系 (往復用) ===
@@ -81,7 +82,7 @@ public final class FieldCoordinates {
     }
 
     public static double fieldToPedroHeading(double fieldHeadingRad) {
-        return -fieldHeadingRad + Math.PI / 2.0;
+        return fieldHeadingRad - Math.PI / 2.0;
     }
 
     // === 距離スカラー変換 (原点シフト不要のベクトル量) ===

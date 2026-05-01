@@ -84,4 +84,22 @@ public class ShootingRoutine {
                 )
         ).named("shootContinuous");
     }
+
+    /**
+     * 連射 (Intake 非所有版)。Intake の制御は呼び出し側に任せる。
+     * <p>{@link #shootContinuous()} との差分は内部で Intake を使わないこと。
+     * ParallelDeadlineGroup の兄弟に {@link IntakeCommand#slowIntake()} 等を置いて
+     * 射撃中の Intake を外部制御したい場合に使う。
+     * <p>requires (自動集約): Shooter, Feeder
+     */
+    public static Command shootContinuousNoIntake() {
+        return new SequentialGroup(
+                FeederCommand.retractFor(Const.ShootingRoutine.RETRACT_DURATION_SECONDS),
+                ShooterCommand.spinUp(),
+                new ParallelGroup(
+                        ShooterCommand.holdRpm(),
+                        FeederCommand.feed()
+                )
+        ).named("shootContinuousNoIntake");
+    }
 }

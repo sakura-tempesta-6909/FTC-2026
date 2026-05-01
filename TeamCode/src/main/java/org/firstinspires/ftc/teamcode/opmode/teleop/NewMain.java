@@ -20,10 +20,11 @@ package org.firstinspires.ftc.teamcode.opmode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import dev.nextftc.control.ControlSystem;
+import dev.nextftc.control.KineticState;
 
 /**
  * This file contains a minimal example of a Linear "OpMode". An OpMode is a 'program' that runs
@@ -45,10 +46,27 @@ public class NewMain extends LinearOpMode {
     private DcMotor rightBackDrive = null;
     private DcMotor intake = null;
     private DcMotor blender = null;
-    private DcMotor shooter = null;
+    private DcMotorEx shooter = null;
 
-    private boolean lastYState = false;
-    private boolean state = false;
+    // シューター速度 PID 係数 (Const.Shooter.PID と同じ)
+    private static final double SHOOTER_KP = 0.00743;
+    private static final double SHOOTER_KI = 0.000000000002;
+    private static final double SHOOTER_KD = 0.0;
+
+    // 目標速度。getVelocity() の単位 (ticks/sec) と揃える前提。
+    private static final double SHOOTER_TARGET = 1280;
+    private static final double SHOOTER_STOP = 0.0;
+
+    // Intake / Feeder 出力
+    private static final double INTAKE_POWER = 1.0;
+    private static final double FEEDER_POWER = 0.7;
+
+    // パルス feed の長さ (秒)
+    private static final double FEEDER_PULSE_SECONDS = 1.0;
+
+    private final ElapsedTime feederPulseTimer = new ElapsedTime();
+    private boolean pulseActive = false;
+    private boolean lastPulseButton = false;
 
 
     @Override
@@ -60,7 +78,7 @@ public class NewMain extends LinearOpMode {
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightRear");
         intake  = hardwareMap.get(DcMotor.class, "IntakeMotor");
         blender = hardwareMap.get(DcMotor.class, "FeederMotor");
-        shooter = hardwareMap.get(DcMotor.class, "ShooterMotor");
+        shooter = hardwareMap.get(DcMotorEx.class, "ShooterMotor");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -78,19 +96,24 @@ public class NewMain extends LinearOpMode {
         blender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // シューター速度 PID。停止時 (target=0) はパワーを直接 0 にする。
+        ControlSystem shooterPid = ControlSystem.builder()
+                .velPid(SHOOTER_KP, SHOOTER_KI, SHOOTER_KD)
+                .build();
+        shooterPid.setGoal(new KineticState(0.0, SHOOTER_STOP));
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
+        // Start 後: Shooter と Intake は常時回転 (毎ループ呼ぶ必要はない)
+        intake.setPower(INTAKE_POWER);
+        shooterPid.setGoal(new KineticState(0.0, SHOOTER_TARGET));
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            if(gamepad1.a){
-                intake.setPower(1);
-                blender.setPower(0);
-            }
-
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
@@ -124,27 +147,48 @@ public class NewMain extends LinearOpMode {
             rightBackDrive.setPower(rightBackPower);
 
 
-            boolean currentYState = gamepad1.y;
-            if (currentYState && !lastYState && !state) {
-                intake.setPower(0);
-                blender.setPower(-0.5);
-                sleep(50);
-                shooter.setPower(0.7);
-                sleep(200);
-                blender.setPower(0);
-                state = true;
-            } else if (currentYState && !lastYState && state) {
-                intake.setPower(0.7);
-                blender.setPower(0.7);
-                shooter.setPower(0.7);
-                sleep(100);
-                state = false;
+            // ===== Feeder 制御 =====
+            // gamepad1.a: 押している間だけ回す (ホールド)
+            // gamepad1.b: 押した瞬間に 1 秒間だけ回す (パルス)
+            boolean currentPulseButton = gamepad1.b;
+            if (currentPulseButton && !lastPulseButton) {
+                feederPulseTimer.reset();
+                pulseActive = true;
             }
-            lastYState = currentYState;
+            lastPulseButton = currentPulseButton;
+
+            if (pulseActive && feederPulseTimer.seconds() >= FEEDER_PULSE_SECONDS) {
+                pulseActive = false;
+            }
+
+            boolean feedHold = gamepad1.a;
+            if (feedHold || pulseActive) {
+                blender.setPower(FEEDER_POWER);
+            } else {
+                blender.setPower(0.0);
+            }
+
+            // シューター速度 PID 計算 → モーターパワー反映。
+            // 目標 0 のときはボールが押し出されないようパワーも 0 にする。
+            double shooterPower;
+            if (shooterPid.getGoal().getVelocity() == 0.0) {
+                shooterPower = 0.0;
+            } else {
+                shooterPower = shooterPid.calculate(
+                        new KineticState(0.0, shooter.getVelocity()));
+            }
+            shooter.setPower(shooterPower);
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Shooter target/actual", "%.0f / %.0f",
+                    shooterPid.getGoal().getVelocity(), shooter.getVelocity());
+            telemetry.addData("Feeder",
+                    feedHold ? "HOLD"
+                            : pulseActive
+                            ? String.format("PULSE %.2fs", feederPulseTimer.seconds())
+                            : "OFF");
             telemetry.addData("Status", "Running");
             telemetry.update();
 
