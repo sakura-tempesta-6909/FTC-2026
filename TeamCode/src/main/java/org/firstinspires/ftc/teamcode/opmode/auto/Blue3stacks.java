@@ -15,14 +15,15 @@ import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
 import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
+import org.firstinspires.ftc.teamcode.path.Blue3stacksPath;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
 import org.firstinspires.ftc.teamcode.path.BlueGoalPath;
 
-@Autonomous(name = "Blue Goal")
+@Autonomous(name = "Blue 3stacks")
 @Configurable
-public class BlueGoal extends FTCBaseOpMode {
-    private BlueGoalPath blueGoalPathnew;
+public class Blue3stacks extends FTCBaseOpMode {
+    private Blue3stacksPath blue3stacksPath;
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
 
     @Override
@@ -30,7 +31,7 @@ public class BlueGoal extends FTCBaseOpMode {
         super.onInit();
         telemetry = panelsTelemetry.getFtcTelemetry();
         PedroComponent.follower().setStartingPose(new Pose(33.456, 135.469, Math.toRadians(180)));
-        blueGoalPathnew = new BlueGoalPath(PedroComponent.follower());
+        blue3stacksPath = new Blue3stacksPath(PedroComponent.follower());
         Drawing.drawDebug(PedroComponent.follower());
     }
 
@@ -43,7 +44,7 @@ public class BlueGoal extends FTCBaseOpMode {
         return new SequentialGroup(
                 // 後退しながらスピンアップ (移動時間でRPMを上げておく)
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path1, false, 1.0),
+                        new FollowPath(blue3stacksPath.Path1, false, 1.0),
                         ShooterCommand.spinUpForPath()
                 ),
 //                CorrectionCommand.correct(), // Limelight で位置補正
@@ -53,16 +54,16 @@ public class BlueGoal extends FTCBaseOpMode {
                         ShootingRoutine.shootContinuous()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path2, true, 1.0),
+                        new FollowPath(blue3stacksPath.Path2, true, 1.0),
                         IntakeCommand.intake()
                 ),
                 // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path3, false, 0.5),
+                        new FollowPath(blue3stacksPath.Path3, false, 0.5),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path4, false, 1.0),
+                        new FollowPath(blue3stacksPath.Path4, false, 1.0),
                         ShooterCommand.spinUpForPath(),
                         IntakeCommand.intake()
                 ),
@@ -71,26 +72,26 @@ public class BlueGoal extends FTCBaseOpMode {
                         ShootingRoutine.shootContinuous()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path5, true, 1.0),
+                        new FollowPath(blue3stacksPath.Path5, true, 1.0),
                         IntakeCommand.slowIntake()
                 ),
                 // パス完了 or タイムアウトの早い方で終了
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path6, false, 0.5),
+                        new FollowPath(blue3stacksPath.Path6, false, 0.5),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path7, false, 0.5),
+                        new FollowPath(blue3stacksPath.Path7, false, 1.0),
                         IntakeCommand.intake()
                 ),
-                new FollowPath(blueGoalPathnew.Path8,false,0.8),
+                new FollowPath(blue3stacksPath.Path8,false,0.8),
 
                 new ParallelDeadlineGroup(
                         new Delay(1.6),
-                        new FollowPath(blueGoalPathnew.Path9,false,0.5)
+                        new FollowPath(blue3stacksPath.Path9,false,0.5)
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path10, false, 1.0),
+                        new FollowPath(blue3stacksPath.Path10, false, 1.0),
                         ShooterCommand.spinUpForPath(),
                         IntakeCommand.intake()
                 ),
@@ -99,15 +100,15 @@ public class BlueGoal extends FTCBaseOpMode {
                         ShootingRoutine.shootContinuous()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path11, false, 1.0),
+                        new FollowPath(blue3stacksPath.Path11, false, 1.0),
                         IntakeCommand.intake()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path12, false, 0.7),
+                        new FollowPath(blue3stacksPath.Path12, false, 0.5),
                         IntakeRoutine.intakeWithWeakFeed()
                 ),
                 new ParallelDeadlineGroup(
-                        new FollowPath(blueGoalPathnew.Path13, true, 1.0),
+                        new FollowPath(blue3stacksPath.Path13, true, 1.0),
                         ShooterCommand.spinUpForPath(),
                         IntakeCommand.intake()
                 ),
@@ -115,7 +116,7 @@ public class BlueGoal extends FTCBaseOpMode {
                         new Delay(SHOOT_DURATION_SECONDS),
                         ShootingRoutine.shootContinuous()
                 ),
-                new FollowPath(blueGoalPathnew.Path14,false,1.0)
+                new FollowPath(blue3stacksPath.Path14,false,1.0)
 
         );
     }
@@ -127,10 +128,10 @@ public class BlueGoal extends FTCBaseOpMode {
         updateDriverHubTelemetry(driverStationTelemetry);
         logTick();
         Drawing.drawDebug(PedroComponent.follower(), null,
-                blueGoalPathnew.Path1, blueGoalPathnew.Path2, blueGoalPathnew.Path3,
-                blueGoalPathnew.Path4, blueGoalPathnew.Path5, blueGoalPathnew.Path6,
-                blueGoalPathnew.Path7, blueGoalPathnew.Path8,blueGoalPathnew.Path9,
-                blueGoalPathnew.Path10, blueGoalPathnew.Path11, blueGoalPathnew.Path12,
-                blueGoalPathnew.Path13);
+                blue3stacksPath.Path1, blue3stacksPath.Path2, blue3stacksPath.Path3,
+                blue3stacksPath.Path4, blue3stacksPath.Path5, blue3stacksPath.Path6,
+                blue3stacksPath.Path7, blue3stacksPath.Path8, blue3stacksPath.Path9,
+                blue3stacksPath.Path10, blue3stacksPath.Path11, blue3stacksPath.Path12,
+                blue3stacksPath.Path13, blue3stacksPath.Path14);
     }
 }

@@ -43,7 +43,7 @@ public class BlueNear1stackPath {
                         new BezierLine(
                                 new Pose(13.816, 83.760),
 
-                                new Pose(33.992, 108.203)
+                                new Pose(31.362, 105.883)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(139))
 
@@ -51,7 +51,7 @@ public class BlueNear1stackPath {
 
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(33.992, 108.203),
+                                new Pose(31.362, 105.883),
 
                                 new Pose(34.082, 73.392)
                         )

@@ -69,6 +69,10 @@ public class ShooterSubsystem implements Subsystem {
         double distance = LimelightSubsystem.INSTANCE.getDistance();
         setTargetVelocity(rpmFromDistance(distance));
     }
+    public void set1280RPM() {
+        setTargetVelocity(1280);
+    }
+
 
     /** 距離 (cm) に応じた目標 RPM を返す。段階的に切り替える。 */
     private static double rpmFromDistance(double distance) {

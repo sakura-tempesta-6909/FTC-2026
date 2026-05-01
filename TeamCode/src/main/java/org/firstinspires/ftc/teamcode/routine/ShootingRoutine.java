@@ -49,6 +49,22 @@ public class ShootingRoutine {
         ).named("shootWithRetract");
     }
 
+    public static Command shootWithRetract1280RPM() {
+        return new SequentialGroup(
+                new ParallelDeadlineGroup(
+                        new Delay(Const.ShootingRoutine.RETRACT_DURATION_SECONDS),
+                        IntakeCommand.intake(),
+                        FeederCommand.retract(),
+                        ShooterCommand.spinUpReverse()
+                ),
+                ShooterCommand.spinUpFor1280RPM(),
+                new ParallelGroup(
+                       ShooterCommand.holdRpm(),
+                       IntakeCommand.slowIntake(),
+                        FeederCommand.feed()
+        )
+        ).named("shootwithRetract1280RPM");
+    }
     /**
      * スピンアップ → 連射 (引き戻しなし)。
      * <ol>

@@ -5,10 +5,10 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 
-public class BlueGoalPath {
+public class Blue3stacksPath {
     public PathChain Path1, Path2, Path3, Path4, Path5, Path6, Path7, Path8, Path9,Path10, Path11, Path12, Path13,Path14;
 
-    public BlueGoalPath(Follower follower) {
+    public Blue3stacksPath(Follower follower) {
         Path1 = follower.pathBuilder().addPath(
                         new BezierLine(
                                 new Pose(33.456, 135.469),

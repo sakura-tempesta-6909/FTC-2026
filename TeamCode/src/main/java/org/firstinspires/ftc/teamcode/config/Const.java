@@ -114,7 +114,7 @@ public final class Const {
     // ========== 射出ルーチン共通設定 ==========
     public static final class ShootingRoutine {
         /** 射出前にフィーダーを引き戻す時間 (秒)。 */
-        public static double RETRACT_DURATION_SECONDS = 0.07;
+        public static double RETRACT_DURATION_SECONDS = 0.04;
     }
 
     // ========== Limelight ==========

@@ -40,6 +40,18 @@ public class ShooterCommand {
                 .addRequirements(ShooterSubsystem.INSTANCE)
                 .named("spinUp");
     }
+    public static Command spinUpFor1280RPM() {
+        return new LambdaCommand()
+                .setStart(ShooterSubsystem.INSTANCE::set1280RPM)
+                .setUpdate(ShooterSubsystem.INSTANCE::set1280RPM) // 毎ループ距離から RPM を更新
+                .setIsDone(ShooterSubsystem.INSTANCE::isAtVelocity)
+                .setStop(interrupted -> {
+                    if (interrupted) ShooterSubsystem.INSTANCE.stop();
+                })
+                .setInterruptible(true)
+                .addRequirements(ShooterSubsystem.INSTANCE)
+                .named("spinUpFor1280RPM");
+    }
 
     /**
      * パスと並行して使うスピンアップ。中断されてもシューターを停止しない。

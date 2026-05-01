@@ -42,6 +42,7 @@ public class Constants {
             .leftRearMotorDirection(Const.Drive.Direction.LEFT_REAR)
             .rightFrontMotorDirection(Const.Drive.Direction.RIGHT_FRONT)
             .rightRearMotorDirection(Const.Drive.Direction.RIGHT_REAR)
+            .useBrakeModeInTeleOp(true)
             .xVelocity(77.33926703986221)
             .yVelocity(60.2571713905635);
 

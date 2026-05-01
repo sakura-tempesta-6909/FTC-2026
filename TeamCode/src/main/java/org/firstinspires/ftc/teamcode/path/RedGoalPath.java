@@ -43,7 +43,7 @@ public class RedGoalPath {
                         new BezierLine(
                                 new Pose(131.264, 83.708),
 
-                                new Pose(110.580, 108.434)
+                                new Pose(112.900, 104.412)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(41))
 
@@ -51,7 +51,7 @@ public class RedGoalPath {
 
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(110.580, 108.434),
+                                new Pose(112.900, 104.412),
 
                                 new Pose(97.838, 59.035)
                         )
@@ -103,7 +103,7 @@ public class RedGoalPath {
                         new BezierLine(
                                 new Pose(131.511, 70.145),
 
-                                new Pose(110.745, 108.271)
+                                new Pose(113.066, 104.404)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(41))
 
@@ -111,7 +111,7 @@ public class RedGoalPath {
 
         Path11 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(110.745, 108.271),
+                                new Pose(113.066, 104.404),
 
                                 new Pose(127.520, 59.727)
                         )
@@ -133,7 +133,7 @@ public class RedGoalPath {
                         new BezierLine(
                                 new Pose(129.627, 39.043),
 
-                                new Pose(110.545, 108.523)
+                                new Pose(113.174, 104.347)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(275), Math.toRadians(41))
 
@@ -141,9 +141,9 @@ public class RedGoalPath {
 
         Path14 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(110.545, 108.523),
+                                new Pose(113.174, 104.347),
 
-                                new Pose(120.232, 93.432)
+                                new Pose(122.088, 90.029)
                         )
                 ).setTangentHeadingInterpolation()
 
