@@ -46,8 +46,9 @@ public abstract class FTCBaseOpMode extends NextFTCOpMode {
                 new SubsystemComponent(
                         ShooterSubsystem.INSTANCE,
                         FeederSubsystem.INSTANCE,
-                        IntakeSubsystem.INSTANCE,
-                        LimelightSubsystem.INSTANCE),
+                        IntakeSubsystem.INSTANCE
+//                        LimelightSubsystem.INSTANCE
+                ),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
@@ -77,7 +78,7 @@ public abstract class FTCBaseOpMode extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-        showInitTelemetry(hardwareMap, driverStationTelemetry);
+//        showInitTelemetry(hardwareMap, driverStationTelemetry);
     }
 
     /**

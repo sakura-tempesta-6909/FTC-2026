@@ -21,8 +21,6 @@ public class IntakeCommand {
         return new LambdaCommand()
                 .setStart(() -> IntakeSubsystem.INSTANCE.setPower(Const.Intake.Power.INTAKE))
                 .setIsDone(() -> false)
-                .setStop(interrupted -> IntakeSubsystem.INSTANCE.stop())
-                .setInterruptible(true)
                 .addRequirements(IntakeSubsystem.INSTANCE)
                 .named("intake");
     }

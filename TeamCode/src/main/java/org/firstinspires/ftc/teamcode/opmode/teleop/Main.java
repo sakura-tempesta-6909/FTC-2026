@@ -2,20 +2,29 @@ package org.firstinspires.ftc.teamcode.opmode.teleop;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.CommandManager;
+import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.ParallelGroup;
+import dev.nextftc.core.commands.groups.ParallelRaceGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.extensions.pedro.PedroDriverControlled;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.driving.DriverControlledCommand;
+
+import org.firstinspires.ftc.teamcode.command.FeederCommand;
+import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
 import org.firstinspires.ftc.teamcode.lib.SlewRateLimiter;
 import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
 import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
+import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
 
 @TeleOp(name = "Main")
@@ -39,37 +48,38 @@ public class Main extends FTCBaseOpMode {
     @Override
     public void onStartButtonPressed() {
         DriverControlledCommand driverControlled = new PedroDriverControlled(
-                new SlewRateLimiter(Gamepads.gamepad2().leftStickY().negate(), DRIVE_SLEW_PER_SEC),
-                new SlewRateLimiter(Gamepads.gamepad2().leftStickX().negate(), STRAFE_SLEW_PER_SEC),
-                new SlewRateLimiter(Gamepads.gamepad2().rightStickX().negate(), TURN_SLEW_PER_SEC),
+                Gamepads.gamepad1().leftStickY().negate(),
+                Gamepads.gamepad1().leftStickX().negate(),
+                Gamepads.gamepad1().rightStickX().negate(),
                 false
         );
-        Gamepads.gamepad2().rightBumper()
+        Gamepads.gamepad1().rightBumper()
                 .whenTrue(() -> driverControlled.setScalar(0.2))
                 .whenFalse(() -> driverControlled.setScalar(1.0));
 
         driverControlled.schedule();
 
         // ===== ホールド系バインディング =====
-        Command shootCmd = ShootingRoutine.shootWithRetract();
+        Command shootCmd = ShootingRoutine.shootContinuous();
         Gamepads.gamepad1().x().and(Gamepads.gamepad1().y().not())
-                .whenBecomesTrue(shootCmd::schedule)
-                .whenBecomesFalse(shootCmd::cancel);
+                .whenBecomesTrue(new ParallelGroup(
+                        FeederCommand.feed(),
+                        ShooterCommand.holdRpm(),
+                        IntakeCommand.intake()
+                ))
+                .whenFalse(new ParallelGroup(
+                        ShooterCommand.holdRpm(),
+                        IntakeCommand.intake())
+                );
 
-        Command reverseCmd = ShooterCommand.spinUpReverse();
-        Gamepads.gamepad1().y().and(Gamepads.gamepad1().x().not())
-                .whenBecomesTrue(reverseCmd::schedule)
-                .whenBecomesFalse(reverseCmd::cancel);
+        Gamepads.gamepad1().b()
+                .whenBecomesTrue(new ParallelRaceGroup(
+                        new Delay(0.5),
+                        FeederCommand.feed()
 
-        Command intakeCmd = IntakeRoutine.intakeWithHold();
-        Gamepads.gamepad1().a().and(Gamepads.gamepad1().b().not())
-                .whenBecomesTrue(intakeCmd::schedule)
-                .whenBecomesFalse(intakeCmd::cancel);
+                ))
+                .whenBecomesFalse(FeederCommand.stop());
 
-        Command outtakeCmd = IntakeRoutine.outtakeWithRetract();
-        Gamepads.gamepad1().b().and(Gamepads.gamepad1().a().not())
-                .whenBecomesTrue(outtakeCmd::schedule)
-                .whenBecomesFalse(outtakeCmd::cancel);
 
         Gamepads.gamepad2().options()
                 .whenBecomesTrue(new InstantCommand(() -> {

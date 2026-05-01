@@ -24,7 +24,7 @@ public class IntakeSubsystem implements Subsystem {
         intakeMotor = new MotorEx(Const.Intake.Motor.NAME);
         intakeMotor.brakeMode();
 //        intakeMotor.reverse();
-        intakeMotor.setPower(Const.Intake.Power.STOP);
+        intakeMotor.setPower(Const.Intake.Power.INTAKE);
     }
 
     /** 任意のパワーをセットする。{@link Const.Intake.Power} の値を渡すこと。 */

@@ -33,6 +33,16 @@ public class FeederCommand {
                 .named("feed");
     }
 
+    public static Command stop() {
+        return new LambdaCommand()
+                .setStart(FeederSubsystem.INSTANCE::stop)
+                .setIsDone(() -> false)
+                .setStop(interrupted -> FeederSubsystem.INSTANCE.stop())
+                .setInterruptible(true)
+                .addRequirements(FeederSubsystem.INSTANCE)
+                .named("feed");
+    }
+
     /**
      * 弱い速度で送り込みを続ける (インテーク中の詰まり防止用)。
      * <p>終了: 永続 (cancel のみ) / 中断時: Feeder 停止 / requires: Feeder

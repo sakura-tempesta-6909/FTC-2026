@@ -66,8 +66,8 @@ public class ShooterSubsystem implements Subsystem {
 
     /** {@link LimelightSubsystem} の距離から段階的に目標 RPM を決めてセットする。 */
     public void setTargetRPM() {
-        double distance = LimelightSubsystem.INSTANCE.getDistance();
-        setTargetVelocity(rpmFromDistance(distance));
+//        double distance = LimelightSubsystem.INSTANCE.getDistance();
+        setTargetVelocity(Const.Shooter.Velocity.NORMAL_RPM);
     }
     public void set1280RPM() {
         setTargetVelocity(1280);
