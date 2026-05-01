@@ -1,28 +1,36 @@
 package org.firstinspires.ftc.teamcode.opmode.teleop;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.util.Locale;
 
 /**
- * シンプルな手動操縦 OpMode。
+ * シンプルな手動操縦 OpMode。役割分担: Driver1 = 足回り + Shoot + Outtake、Driver2 = Nudge + Shooter speed.
+ * <h3>Driver 1 (gamepad1)</h3>
  * <ul>
- *   <li>メカナムドライブ: gamepad1 左スティック (移動) / 右スティック X (旋回)
- *   <li>Shooter: Start 後 PID で目標 RPM 維持
- *   <li>Intake: Start 直後 ON、leftBumper = ON / rightBumper = OFF で切替
- *   <li>Shoot: gamepad1.a ホールド中は feeder を全力で回して発射
- *   <li>Nudge: gamepad1.b で feeder を短時間ゆっくり回す (装填調整)
- *   <li>Outtake: gamepad1.y ホールドで feeder/intake 逆回転 (shooter は通常回転を維持、詰まり解消)
+ *   <li>Field-oriented メカナムドライブ: 左スティック (移動) / 右スティック X (旋回)、IMU で field 方向に補正
+ *   <li>start: 現在の向きを 0° に再定義 (gyro reset)
+ *   <li>a (ホールド): feeder 全力で発射 (Shoot)
+ *   <li>y (ホールド): feeder/intake 逆回転 (Outtake、shooter は通常回転維持)
+ *   <li>leftBumper / rightBumper: intake ON / OFF
+ * </ul>
+ * <h3>Driver 2 (gamepad2)</h3>
+ * <ul>
+ *   <li>b: feeder を短時間ゆっくり回す (Nudge、装填調整)
+ *   <li>leftBumper / rightBumper: shooter speed を LOW / MID / HIGH の 3 段階で切替
  * </ul>
  */
-@TeleOp(name = "NewMain")
+@TeleOp(name = "Main")
 public class NewMain extends OpMode {
 
     // シューター速度 PID 係数 (Const.Shooter.PID と同じ)
@@ -30,8 +38,10 @@ public class NewMain extends OpMode {
     private static final double SHOOTER_KI = 0.000000000002;
     private static final double SHOOTER_KD = 0.0;
 
-    // 目標速度。DcMotorEx.getVelocity() の単位 (ticks/sec) で扱う。
-    private static final double SHOOTER_TARGET = 1000;
+    // シューター目標速度の 3 段階 (LOW/MID/HIGH)。単位は ticks/sec。
+    private static final double[] SHOOTER_SPEEDS = {800, 1000, 1200};
+    private static final String[] SHOOTER_SPEED_NAMES = {"LOW", "MID", "HIGH"};
+    private static final int DEFAULT_SHOOTER_SPEED_INDEX = 1;  // MID
 
     private static final double INTAKE_POWER = 1.0;
     private static final double FEEDER_POWER = 1.0;
@@ -42,6 +52,12 @@ public class NewMain extends OpMode {
     private static final double OUTTAKE_FEEDER_POWER = -1.0;
     private static final double OUTTAKE_INTAKE_POWER = -1.0;
 
+    // IMU マウント方向 (Const.Imu と同じ)
+    private static final RevHubOrientationOnRobot.LogoFacingDirection IMU_LOGO_DIRECTION =
+            RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+    private static final RevHubOrientationOnRobot.UsbFacingDirection IMU_USB_DIRECTION =
+            RevHubOrientationOnRobot.UsbFacingDirection.UP;
+
     // ハードウェア (init() で取得)
     private DcMotor leftFront;
     private DcMotor leftBack;
@@ -50,13 +66,23 @@ public class NewMain extends OpMode {
     private DcMotor intake;
     private DcMotor feeder;
     private DcMotorEx shooter;
+    private IMU imu;
 
     private ControlSystem shooterPid;
 
     // Feeder nudge 状態
     private final ElapsedTime feederNudgeTimer = new ElapsedTime();
     private boolean nudgeActive = false;
-    private boolean lastB = false;
+    private boolean lastNudge = false;
+    private boolean lastStart = false;
+
+    // Shooter speed 切替
+    private int shooterSpeedIndex = DEFAULT_SHOOTER_SPEED_INDEX;
+    private boolean lastSpeedUp = false;
+    private boolean lastSpeedDown = false;
+
+    // Intake の意図状態 (outtake 中は上書きされるが、release 後にここの値へ戻る)
+    private boolean intakeRunning = true;
 
     private final ElapsedTime runtime = new ElapsedTime();
 
@@ -84,6 +110,12 @@ public class NewMain extends OpMode {
             m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
+        // ----- IMU -----
+        imu = hardwareMap.get(IMU.class, "imu");
+        imu.initialize(new IMU.Parameters(
+                new RevHubOrientationOnRobot(IMU_LOGO_DIRECTION, IMU_USB_DIRECTION)));
+        imu.resetYaw();
+
         // ----- シューター速度 PID -----
         shooterPid = ControlSystem.builder()
                 .velPid(SHOOTER_KP, SHOOTER_KI, SHOOTER_KD)
@@ -95,60 +127,76 @@ public class NewMain extends OpMode {
 
     @Override
     public void start() {
-        // Shooter PID 起動、Intake は ON で開始
+        // Shooter PID は loop() で毎回 setGoal するのでここでは触らない。
+        // gyro はマッチ開始時の向きを 0° に再定義する。
         runtime.reset();
-        shooterPid.setGoal(new KineticState(0.0, SHOOTER_TARGET));
+        imu.resetYaw();
         intake.setPower(INTAKE_POWER);
     }
 
     @Override
     public void loop() {
         // ----- 入力読み取り -----
+        // Driver 1: 足回り、Shoot、Outtake、Intake、Gyro reset
         double driveAxial = -gamepad1.left_stick_y;
         double driveLateral = gamepad1.left_stick_x;
         double driveYaw = gamepad1.right_stick_x;
         boolean shoot = gamepad1.a;
-        boolean nudgePress = gamepad1.b;
         boolean outtake = gamepad1.y;
         boolean intakeOn = gamepad1.left_bumper;
         boolean intakeOff = gamepad1.right_bumper;
+        boolean resetGyro = gamepad1.start;
 
-        // ----- ドライブ (POV mecanum) -----
-        drive(driveAxial, driveLateral, driveYaw);
+        // Driver 2: Nudge、Shooter speed
+        boolean nudgePress = gamepad2.b;
+        boolean speedUp = gamepad2.right_bumper;
+        boolean speedDown = gamepad2.left_bumper;
 
-        // ----- Nudge エッジ検出 -----
-        // outtake 中も状態だけ更新しておく
-        if (nudgePress && !lastB) {
+        // ----- Gyro リセット (立ち上がり) -----
+        if (resetGyro && !lastStart) {
+            imu.resetYaw();
+        }
+        lastStart = resetGyro;
+
+        // ----- Shooter speed 切替 (立ち上がりでインデックスを増減) -----
+        if (speedUp && !lastSpeedUp) {
+            shooterSpeedIndex = Math.min(shooterSpeedIndex + 1, SHOOTER_SPEEDS.length - 1);
+        }
+        if (speedDown && !lastSpeedDown) {
+            shooterSpeedIndex = Math.max(shooterSpeedIndex - 1, 0);
+        }
+        lastSpeedUp = speedUp;
+        lastSpeedDown = speedDown;
+        shooterPid.setGoal(new KineticState(0.0, SHOOTER_SPEEDS[shooterSpeedIndex]));
+
+        // ----- Field-oriented ドライブ -----
+        double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        drive(driveAxial, driveLateral, driveYaw, heading);
+
+        // ----- Nudge エッジ検出 (outtake 中も状態だけ更新) -----
+        if (nudgePress && !lastNudge) {
             feederNudgeTimer.reset();
             nudgeActive = true;
         }
-        lastB = nudgePress;
+        lastNudge = nudgePress;
         if (nudgeActive && feederNudgeTimer.seconds() >= FEEDER_NUDGE_SECONDS) {
             nudgeActive = false;
         }
 
-        if (outtake) {
-            // ----- Outtake (intake / feeder のみ逆回転) -----
-            intake.setPower(OUTTAKE_INTAKE_POWER);
-            feeder.setPower(OUTTAKE_FEEDER_POWER);
-        } else {
-            // ----- Intake -----
-            // bumper で ON/OFF 切替。setPower は冪等なので edge 検出不要
-            if (intakeOn) {
-                intake.setPower(INTAKE_POWER);
-            } else if (intakeOff) {
-                intake.setPower(0.0);
-            }
+        // ----- Intake -----
+        // bumper で意図状態を更新。outtake 中は逆回転で一時上書き
+        if (intakeOn) intakeRunning = true;
+        if (intakeOff) intakeRunning = false;
+        double normalIntakePower = intakeRunning ? INTAKE_POWER : 0.0;
+        intake.setPower(outtake ? OUTTAKE_INTAKE_POWER : normalIntakePower);
 
-            // ----- Feeder -----
-            if (shoot) {
-                feeder.setPower(FEEDER_POWER);
-            } else if (nudgeActive) {
-                feeder.setPower(FEEDER_NUDGE_POWER);
-            } else {
-                feeder.setPower(0.0);
-            }
-        }
+        // ----- Feeder -----
+        // shoot / nudge で通常パワーを決め、outtake 中は逆回転で一時上書き
+        double normalFeederPower;
+        if (shoot) normalFeederPower = FEEDER_POWER;
+        else if (nudgeActive) normalFeederPower = FEEDER_NUDGE_POWER;
+        else normalFeederPower = 0.0;
+        feeder.setPower(outtake ? OUTTAKE_FEEDER_POWER : normalFeederPower);
 
         // ----- Shooter (PID、outtake 中も通常稼働) -----
         shooter.setPower(shooterPid.calculate(
@@ -156,7 +204,15 @@ public class NewMain extends OpMode {
 
         // ----- Telemetry -----
         // OpMode は loop() 終了時に自動 update
+        // 最上段に Shooter speed バナー (driver から見やすく)
+        telemetry.addLine("================================");
+        telemetry.addLine(String.format(Locale.ROOT, "  >>>  SHOOTER: %s  (%.0f)  <<<",
+                SHOOTER_SPEED_NAMES[shooterSpeedIndex], SHOOTER_SPEEDS[shooterSpeedIndex]));
+        telemetry.addLine("================================");
+
         telemetry.addData("Run Time", runtime.toString());
+        telemetry.addData("Heading",
+                String.format(Locale.ROOT, "%.1f°", Math.toDegrees(heading)));
         telemetry.addData("Drive LF/RF",
                 String.format(Locale.ROOT, "%4.2f, %4.2f",
                         leftFront.getPower(), rightFront.getPower()));
@@ -170,10 +226,19 @@ public class NewMain extends OpMode {
     }
 
     /**
-     * メカナム POV ドライブ。各成分は -1..1 を想定。合計が 1 を超える場合は等倍縮小して
-     * モーターパワーが 1 を超えないように正規化する。
+     * Field-oriented メカナムドライブ。
+     * <p>
+     * (fieldAxial, fieldLateral) は field 座標系のスティック入力 (-1..1)。
+     * heading (rad、CCW 正) でロボット座標系に回転してから mecanum kinematics に渡す。
+     * 合計が 1 を超える場合はホイールパワーを等倍縮小して飽和を防ぐ。
      */
-    private void drive(double axial, double lateral, double yaw) {
+    private void drive(double fieldAxial, double fieldLateral, double yaw, double heading) {
+        // field → robot 座標への変換。heading は IMU yaw (CCW 正)
+        double cosH = Math.cos(heading);
+        double sinH = Math.sin(heading);
+        double axial = fieldAxial * cosH - fieldLateral * sinH;
+        double lateral = fieldAxial * sinH + fieldLateral * cosH;
+
         double lf = axial + lateral + yaw;
         double rf = axial - lateral - yaw;
         double lb = axial - lateral + yaw;

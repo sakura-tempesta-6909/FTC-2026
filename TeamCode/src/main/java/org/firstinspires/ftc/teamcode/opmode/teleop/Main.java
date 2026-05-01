@@ -2,9 +2,7 @@ package org.firstinspires.ftc.teamcode.opmode.teleop;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.CommandManager;
 import dev.nextftc.core.commands.delays.Delay;
@@ -15,19 +13,15 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.extensions.pedro.PedroDriverControlled;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.driving.DriverControlledCommand;
-
 import org.firstinspires.ftc.teamcode.command.FeederCommand;
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.ShooterCommand;
 import org.firstinspires.ftc.teamcode.lib.Drawing;
-import org.firstinspires.ftc.teamcode.lib.SlewRateLimiter;
 import org.firstinspires.ftc.teamcode.opmode.FTCBaseOpMode;
-import org.firstinspires.ftc.teamcode.routine.IntakeRoutine;
 import org.firstinspires.ftc.teamcode.routine.ShootingRoutine;
-import org.firstinspires.ftc.teamcode.subsystem.FeederSubsystem;
 import org.firstinspires.ftc.teamcode.subsystem.LimelightSubsystem;
 
-@TeleOp(name = "Main")
+@TeleOp(name = "Main_Old")
 public class Main extends FTCBaseOpMode {
 
     private final PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
