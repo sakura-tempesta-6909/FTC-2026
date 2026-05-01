@@ -81,6 +81,9 @@ public class NewMain extends OpMode {
     // Intake の意図状態 (outtake 中は上書きされるが、release 後にここの値へ戻る)
     private boolean intakeRunning = true;
 
+    // IMU yaw の offset。imu.resetYaw() が動作不安定なので自前で 0° 基準を持つ。
+    private double headingOffset = 0.0;
+
     private final ElapsedTime runtime = new ElapsedTime();
 
     @Override
@@ -111,7 +114,6 @@ public class NewMain extends OpMode {
         imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(IMU_LOGO_DIRECTION, IMU_USB_DIRECTION)));
-        imu.resetYaw();
 
         // ----- シューター速度 PID -----
         shooterPid = ControlSystem.builder()
@@ -125,9 +127,9 @@ public class NewMain extends OpMode {
     @Override
     public void start() {
         // Shooter PID は loop() で毎回 setGoal するのでここでは触らない。
-        // gyro はマッチ開始時の向きを 0° に再定義する。
+        // gyro: マッチ開始時の向きを 0° に記録 (offset 自前管理)
         runtime.reset();
-        imu.resetYaw();
+        headingOffset = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         intake.setPower(INTAKE_POWER);
     }
 
@@ -152,7 +154,7 @@ public class NewMain extends OpMode {
 
         // ----- Gyro リセット (押している間ずっと再ゼロ化、離したタイミングの向きが 0° に固定) -----
         if (resetGyro) {
-            imu.resetYaw();
+            headingOffset = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         }
 
         // ----- Shooter speed 直接選択 -----
@@ -162,9 +164,12 @@ public class NewMain extends OpMode {
         if (speedHigh) shooterSpeedIndex = 2;
         shooterPid.setGoal(new KineticState(0.0, SHOOTER_SPEEDS[shooterSpeedIndex]));
 
-        // ----- Field-oriented ドライブ -----
-        double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        drive(driveAxial, driveLateral, driveYaw, heading);
+        // ----- ドライブ -----
+        // 切替: 下のどちらか 1 行だけ有効にする。
+        double heading = AngleUnit.RADIANS.normalize(
+                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset);
+        driveFieldOriented(driveAxial, driveLateral, driveYaw, heading);
+        // drive(driveAxial, driveLateral, driveYaw);  // ← Robot-Centric に切替えるならこちら
 
         // ----- Nudge エッジ検出 (outtake 中も状態だけ更新) -----
         if (nudgePress && !lastNudge) {
@@ -219,19 +224,11 @@ public class NewMain extends OpMode {
     }
 
     /**
-     * Field-oriented メカナムドライブ。
-     * <p>
-     * (fieldAxial, fieldLateral) は field 座標系のスティック入力 (-1..1)。
-     * heading (rad、CCW 正) でロボット座標系に回転してから mecanum kinematics に渡す。
+     * ロボット座標系メカナムドライブ (Robot-Centric)。
+     * (axial, lateral, yaw) はロボットフレームの指令そのまま。
      * 合計が 1 を超える場合はホイールパワーを等倍縮小して飽和を防ぐ。
      */
-    private void drive(double fieldAxial, double fieldLateral, double yaw, double heading) {
-        // field → robot 座標への変換。heading は IMU yaw (CCW 正)
-        double cosH = Math.cos(heading);
-        double sinH = Math.sin(heading);
-        double axial = fieldAxial * cosH - fieldLateral * sinH;
-        double lateral = fieldAxial * sinH + fieldLateral * cosH;
-
+    private void drive(double axial, double lateral, double yaw) {
         double lf = axial + lateral + yaw;
         double rf = axial - lateral - yaw;
         double lb = axial - lateral + yaw;
@@ -250,6 +247,20 @@ public class NewMain extends OpMode {
         rightFront.setPower(rf);
         leftBack.setPower(lb);
         rightBack.setPower(rb);
+    }
+
+    /**
+     * Field-Oriented メカナムドライブ。
+     * <p>
+     * (fieldAxial, fieldLateral) を heading で回転してロボット座標に変換し {@link #drive} に渡す。
+     * heading は IMU yaw (rad、CCW 正)。
+     */
+    private void driveFieldOriented(double fieldAxial, double fieldLateral, double yaw, double heading) {
+        double cosH = Math.cos(heading);
+        double sinH = Math.sin(heading);
+        double axial = fieldAxial * cosH - fieldLateral * sinH;
+        double lateral = fieldAxial * sinH + fieldLateral * cosH;
+        drive(axial, lateral, yaw);
     }
 
     private String feederStatus(boolean shoot, boolean outtake) {
