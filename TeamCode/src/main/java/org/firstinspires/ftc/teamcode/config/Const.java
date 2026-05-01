@@ -52,7 +52,7 @@ public final class Const {
         public static final class Velocity {
             public static double HIGHEST_RPM = 1520;
             public static double MEDIUM_HIGH_RPM = 1400;
-            public static double NORMAL_RPM = 1280;
+            public static double NORMAL_RPM = 980;
             public static double MEDIUM_LOW_RPM = 1200;
             public static double RPM_FOR_NEAR = 1150;
             public static double REVERSE_TARGET_RPM = -1400;
@@ -105,7 +105,7 @@ public final class Const {
         // --- パワー設定 ---
         public static final class Power {
             public static final double FEED = 0.7;
-            public static final double WEAK_FEED = 0.22;
+            public static final double WEAK_FEED = 0.1;
             public static final double RETRACT = -1.0;
             public static final double STOP = 0.0;
         }
