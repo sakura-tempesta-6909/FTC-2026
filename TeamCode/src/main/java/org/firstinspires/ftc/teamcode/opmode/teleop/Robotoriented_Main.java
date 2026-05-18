@@ -8,11 +8,13 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import dev.nextftc.control.ControlSystem;
-import dev.nextftc.control.KineticState;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.util.Locale;
+
+import dev.nextftc.control.ControlSystem;
+import dev.nextftc.control.KineticState;
 
 /**
  * シンプルな手動操縦 OpMode。役割分担: Driver1 = 足回り + Shoot + Outtake、Driver2 = Nudge + Shooter speed.
@@ -30,8 +32,8 @@ import java.util.Locale;
  *   <li>a / x / y: shooter speed を LOW / MID / HIGH に直接設定
  * </ul>
  */
-@TeleOp(name = "NewMain")
-public class NewMain extends OpMode {
+@TeleOp(name = "RobotOriented_Main")
+public class Robotoriented_Main extends OpMode {
 
     // シューター速度 PID 係数 (Const.Shooter.PID と同じ)
     private static final double SHOOTER_KP = 0.00743;
@@ -168,8 +170,8 @@ public class NewMain extends OpMode {
         // 切替: 下のどちらか 1 行だけ有効にする。
         double heading = AngleUnit.RADIANS.normalize(
                 imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset);
-        driveFieldOriented(driveAxial, driveLateral, driveYaw, heading);
-        // drive(driveAxial, driveLateral, driveYaw);  // ← Robot-Centric に切替えるならこちら
+        //driveFieldOriented(driveAxial, driveLateral, driveYaw, heading);
+        drive(driveAxial, driveLateral, driveYaw);  // ← Robot-Centric に切替えるならこちら
 
         // ----- Nudge エッジ検出 (outtake 中も状態だけ更新) -----
         if (nudgePress && !lastNudge) {

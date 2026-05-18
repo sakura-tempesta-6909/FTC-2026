@@ -11,9 +11,9 @@ public class Red2gatesPath {
     public Red2gatesPath(Follower follower) {
         Path1 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(112.377, 135.194),
+                                new Pose(112.141, 135.624),
 
-                                new Pose(105.851, 112.696)
+                                new Pose(106.534, 111.022)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(41))
 
@@ -21,9 +21,9 @@ public class Red2gatesPath {
 
         Path2 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(105.851, 112.696),
+                                new Pose(106.534, 111.022),
 
-                                new Pose(95.921, 59.795)
+                                new Pose(99.194, 83.517)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(41), Math.toRadians(0))
 
@@ -31,19 +31,19 @@ public class Red2gatesPath {
 
         Path3 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(95.921, 59.795),
+                                new Pose(99.194, 83.517),
 
-                                new Pose(136.401, 59.341)
+                                new Pose(131.034, 83.616)
                         )
-                ).setTangentHeadingInterpolation()
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
                 .build();
 
         Path4 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(136.401, 59.341),
+                                new Pose(131.034, 83.616),
 
-                                new Pose(113.523, 59.486)
+                                new Pose(116.020, 79.425)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -51,49 +51,49 @@ public class Red2gatesPath {
 
         Path5 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(113.523, 59.486),
+                                new Pose(116.020, 79.425),
 
-                                new Pose(130.220, 69.596)
+                                new Pose(128.154, 74.735)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
                 .build();
 
         Path6 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(130.220, 69.596),
+                                new Pose(128.154, 74.735),
 
-                                new Pose(93.514, 69.899)
+                                new Pose(103.840, 102.555)
                         )
-                ).setTangentHeadingInterpolation()
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(41))
 
                 .build();
 
         Path7 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(93.514, 69.899),
+                                new Pose(103.840, 102.555),
 
-                                new Pose(106.303, 106.413)
-                        )
-                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(41))
-
-                .build();
-
-        Path8 = follower.pathBuilder().addPath(
-                        new BezierLine(
-                                new Pose(106.303, 106.413),
-
-                                new Pose(96.587, 83.982)
+                                new Pose(99.875, 59.582)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(41), Math.toRadians(0))
 
                 .build();
 
+        Path8 = follower.pathBuilder().addPath(
+                        new BezierLine(
+                                new Pose(99.875, 59.582),
+
+                                new Pose(136.221, 59.502)
+                        )
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+
+                .build();
+
         Path9 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(96.587, 83.982),
+                                new Pose(136.221, 59.502),
 
-                                new Pose(130.514, 83.835)
+                                new Pose(110.430, 63.639)
                         )
                 ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -101,41 +101,41 @@ public class Red2gatesPath {
 
         Path10 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(130.514, 83.835),
+                                new Pose(110.430, 63.639),
 
-                                new Pose(117.284, 69.890)
+                                new Pose(128.304, 69.894)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
                 .build();
 
         Path11 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(117.284, 69.890),
+                                new Pose(128.304, 69.894),
 
-                                new Pose(130.330, 69.725)
+                                new Pose(104.183, 102.711)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(41))
 
                 .build();
 
         Path12 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(130.330, 69.725),
+                                new Pose(104.183, 102.711),
 
-                                new Pose(106.532, 106.450)
+                                new Pose(128.419, 71.795)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(41))
+                ).setLinearHeadingInterpolation(Math.toRadians(41), Math.toRadians(0))
 
                 .build();
 
         Path13 = follower.pathBuilder().addPath(
                         new BezierLine(
-                                new Pose(106.532, 106.450),
+                                new Pose(128.419, 71.795),
 
-                                new Pose(113.624, 95.945)
+                                new Pose(123.155, 95.069)
                         )
-                ).setLinearHeadingInterpolation(Math.toRadians(41), Math.toRadians(41))
+                ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
                 .build();
     }
